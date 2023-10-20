@@ -20,8 +20,7 @@ public class Magatzem extends javax.swing.JPanel {
 
     public Magatzem() {
         initComponents();
-        //////omplirTaula();
-        omplirTaula();
+        //omplirTaula();
         
     }
 
