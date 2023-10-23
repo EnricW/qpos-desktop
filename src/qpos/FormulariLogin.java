@@ -1,5 +1,9 @@
 package qpos;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Enric
@@ -390,8 +394,34 @@ public class FormulariLogin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void botoLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoLoginActionPerformed
-        ConnexioLogin log = new ConnexioLogin();
-        log.validaUsuari(usuariText, passwordText);
+
+        try {
+            ResultSet rs = null;
+            PreparedStatement ps = null;
+
+            ConnexioBD c = new ConnexioBD();
+
+            String consulta = "SELECT * FROM usuaris WHERE usuaris.usuari =(?) AND usuaris.password=(?);";
+            ps = ConnexioBD.mycon().prepareStatement(consulta);
+
+            String contrasenya = String.valueOf(passwordText.getPassword());
+
+            ps.setString(1, usuariText.getText());
+            ps.setString(2, contrasenya);
+
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                Menu m = new Menu();
+                m.setUsuari(usuariText.getText());
+                m.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(null, "Usuari o contrasenya icorrecta");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "ERROR: " + e.toString());
+        }
     }//GEN-LAST:event_botoLoginActionPerformed
 
     private void passwordTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_passwordTextFocusLost
@@ -403,7 +433,7 @@ public class FormulariLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_passwordTextFocusGained
 
     private void usuariTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_usuariTextFocusLost
-        if (usuariText.getText().isEmpty()){
+        if (usuariText.getText().isEmpty()) {
             usuariText.setText("DNI");
         }
     }//GEN-LAST:event_usuariTextFocusLost
@@ -433,7 +463,7 @@ public class FormulariLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_passwordRTextFocusGained
 
     private void mailRTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_mailRTextFocusLost
-        if (mailRText.getText().isEmpty()){
+        if (mailRText.getText().isEmpty()) {
             mailRText.setText("CORREU ELECTRÒNIC");
         }
     }//GEN-LAST:event_mailRTextFocusLost
@@ -443,7 +473,7 @@ public class FormulariLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_mailRTextFocusGained
 
     private void telefonRTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_telefonRTextFocusLost
-        if (telefonRText.getText().isEmpty()){
+        if (telefonRText.getText().isEmpty()) {
             telefonRText.setText("TELÉFON");
         }
     }//GEN-LAST:event_telefonRTextFocusLost
@@ -453,7 +483,7 @@ public class FormulariLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_telefonRTextFocusGained
 
     private void cognomsRTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cognomsRTextFocusLost
-        if (cognomsRText.getText().isEmpty()){
+        if (cognomsRText.getText().isEmpty()) {
             cognomsRText.setText("COGNOMS");
         }
     }//GEN-LAST:event_cognomsRTextFocusLost
@@ -467,7 +497,7 @@ public class FormulariLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_nomRTextActionPerformed
 
     private void nomRTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nomRTextFocusLost
-        if (nomRText.getText().isEmpty()){
+        if (nomRText.getText().isEmpty()) {
             nomRText.setText("NOM");
         }
     }//GEN-LAST:event_nomRTextFocusLost
@@ -477,7 +507,7 @@ public class FormulariLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_nomRTextFocusGained
 
     private void usuariRTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_usuariRTextFocusLost
-        if (usuariRText.getText().isEmpty()){
+        if (usuariRText.getText().isEmpty()) {
             usuariRText.setText("DNI");
         }
     }//GEN-LAST:event_usuariRTextFocusLost

@@ -7,7 +7,9 @@ package qpos;
 public class Menu extends javax.swing.JFrame {
 
     JPanelLoader JPLoader = new JPanelLoader();
-
+    private String usuari;
+    private boolean esAdmin;
+    
     public Menu() {
 
         initComponents();
@@ -15,7 +17,26 @@ public class Menu extends javax.swing.JFrame {
         this.setExtendedState(Menu.MAXIMIZED_BOTH);
         Puntdevenda pdv = new Puntdevenda();
         JPLoader.jPanelLoader(pantalla, pdv);
-
+        
+        
+    
+    }
+    
+    public void setUsuari(String usuari){
+        this.usuari = usuari;
+        usuariText.setText(usuari);
+        
+        // CODI TEMPORAL, SI ES ADMIN, ACTIVA BOTO ESDEVENIMENTS.
+        if (usuariText.getText().equals("admin")){
+            botoEsdeveniments.setEnabled(true);
+        } else {
+            botoEsdeveniments.setEnabled(false);
+        }
+       
+    }
+    
+    public void setAdmin (Boolean esAdmin){
+        this.esAdmin = esAdmin;
     }
 
     @SuppressWarnings("unchecked")
@@ -24,10 +45,13 @@ public class Menu extends javax.swing.JFrame {
 
         menuLateral = new javax.swing.JPanel();
         infoUsuari = new javax.swing.JPanel();
+        iconoUsuari1 = new javax.swing.JLabel();
+        usuariText = new javax.swing.JLabel();
         botoPuntDeVenda = new javax.swing.JToggleButton();
         botoClients = new javax.swing.JToggleButton();
         botoMagatzem = new javax.swing.JToggleButton();
         botoVendes = new javax.swing.JToggleButton();
+        botoEsdeveniments = new javax.swing.JToggleButton();
         pantalla = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -38,15 +62,32 @@ public class Menu extends javax.swing.JFrame {
 
         infoUsuari.setBackground(new java.awt.Color(43, 45, 66));
 
+        iconoUsuari1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imatges/usuari.png"))); // NOI18N
+
+        usuariText.setBackground(new java.awt.Color(141, 153, 174));
+        usuariText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        usuariText.setForeground(new java.awt.Color(141, 153, 174));
+        usuariText.setText("USUARI");
+
         javax.swing.GroupLayout infoUsuariLayout = new javax.swing.GroupLayout(infoUsuari);
         infoUsuari.setLayout(infoUsuariLayout);
         infoUsuariLayout.setHorizontalGroup(
             infoUsuariLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(infoUsuariLayout.createSequentialGroup()
+                .addComponent(iconoUsuari1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(usuariText)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         infoUsuariLayout.setVerticalGroup(
             infoUsuariLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 125, Short.MAX_VALUE)
+            .addGroup(infoUsuariLayout.createSequentialGroup()
+                .addGroup(infoUsuariLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(iconoUsuari1)
+                    .addGroup(infoUsuariLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(usuariText)))
+                .addContainerGap())
         );
 
         botoPuntDeVenda.setBackground(new java.awt.Color(43, 45, 66));
@@ -105,6 +146,20 @@ public class Menu extends javax.swing.JFrame {
             }
         });
 
+        botoEsdeveniments.setBackground(new java.awt.Color(43, 45, 66));
+        botoEsdeveniments.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 16)); // NOI18N
+        botoEsdeveniments.setForeground(new java.awt.Color(141, 153, 174));
+        botoEsdeveniments.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imatges/vendes_1.png"))); // NOI18N
+        botoEsdeveniments.setText("ESDEVENIMENTS");
+        botoEsdeveniments.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        botoEsdeveniments.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+        botoEsdeveniments.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        botoEsdeveniments.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botoEsdevenimentsActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout menuLateralLayout = new javax.swing.GroupLayout(menuLateral);
         menuLateral.setLayout(menuLateralLayout);
         menuLateralLayout.setHorizontalGroup(
@@ -116,22 +171,25 @@ public class Menu extends javax.swing.JFrame {
                     .addComponent(botoClients, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(botoMagatzem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(botoVendes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(infoUsuari, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(64, Short.MAX_VALUE))
+                    .addComponent(infoUsuari, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(botoEsdeveniments, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(60, Short.MAX_VALUE))
         );
         menuLateralLayout.setVerticalGroup(
             menuLateralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(menuLateralLayout.createSequentialGroup()
-                .addGap(24, 24, 24)
+                .addGap(15, 15, 15)
                 .addComponent(infoUsuari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(15, 15, 15)
                 .addComponent(botoPuntDeVenda, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(15, 15, 15)
                 .addComponent(botoClients, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(15, 15, 15)
                 .addComponent(botoMagatzem, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(15, 15, 15)
                 .addComponent(botoVendes, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15)
+                .addComponent(botoEsdeveniments, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -196,6 +254,13 @@ public class Menu extends javax.swing.JFrame {
 
     }//GEN-LAST:event_botoVendesActionPerformed
 
+    private void botoEsdevenimentsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoEsdevenimentsActionPerformed
+        
+        Clients cli = new Clients();
+        JPLoader.jPanelLoader(pantalla, cli);
+        
+    }//GEN-LAST:event_botoEsdevenimentsActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -236,11 +301,14 @@ public class Menu extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton botoClients;
+    private javax.swing.JToggleButton botoEsdeveniments;
     private javax.swing.JToggleButton botoMagatzem;
     private javax.swing.JToggleButton botoPuntDeVenda;
     private javax.swing.JToggleButton botoVendes;
+    private javax.swing.JLabel iconoUsuari1;
     private javax.swing.JPanel infoUsuari;
     private javax.swing.JPanel menuLateral;
     private javax.swing.JPanel pantalla;
+    private javax.swing.JLabel usuariText;
     // End of variables declaration//GEN-END:variables
 }
