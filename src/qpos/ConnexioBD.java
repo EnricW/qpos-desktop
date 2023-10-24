@@ -13,6 +13,9 @@ import java.sql.SQLException;
  *
  * @author Enric
  */
+
+// CONNEXIO A UNA BASE DE DADES PROVISIONAL EN LOCAL
+
 public class ConnexioBD {
 
     public static Connection mycon() {

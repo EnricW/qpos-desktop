@@ -10,6 +10,8 @@ import javax.swing.JPanel;
  *
  * @author Enric
  */
+
+// CARREGA LA PANTALLA A LA ESQUERRA DEL MENU
 public class JPanelLoader {
 
     public void jPanelLoader(JPanel Main, JPanel setPanel) {

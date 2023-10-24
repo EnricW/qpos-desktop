@@ -24,6 +24,7 @@ public class Magatzem extends javax.swing.JPanel {
         
     }
 
+    // OMPLE TAULA AMB TOTS ELS PRODUCTES
     public void omplirTaula() {
 
         try {
@@ -55,6 +56,7 @@ public class Magatzem extends javax.swing.JPanel {
 
     }
 
+    // BUIDA FORMULARI
     public void buidaFormulari() {
         
         taulaProductes.clearSelection();

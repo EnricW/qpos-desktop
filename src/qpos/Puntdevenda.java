@@ -21,6 +21,8 @@ public class Puntdevenda extends javax.swing.JPanel {
     public Puntdevenda() {
         initComponents();
     }
+    
+    // ACTUALITZA L'IMPORT TOTAL
 
     private void actualitzaTotal() {
         DefaultTableModel model = (DefaultTableModel) taulaProductesTicket.getModel();
@@ -591,6 +593,8 @@ public class Puntdevenda extends javax.swing.JPanel {
 
     private void taulaProductesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taulaProductesMouseClicked
 
+        // AFEGEIX EL PRODUCTE A LA TAULA TICKET
+        
         int filaSeleccionada = taulaProductes.getSelectedRow();
 
         if (filaSeleccionada != -1) {
@@ -608,6 +612,9 @@ public class Puntdevenda extends javax.swing.JPanel {
     }//GEN-LAST:event_taulaProductesMouseClicked
 
     private void buscadorProductesKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buscadorProductesKeyReleased
+        
+        // BUSCA EL PRODUCTE
+        
         String producteABuscar = buscadorProductes.getText();
 
         try {
@@ -643,6 +650,9 @@ public class Puntdevenda extends javax.swing.JPanel {
     }//GEN-LAST:event_buscadorProductesKeyReleased
 
     private void buscadorClientsKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buscadorClientsKeyReleased
+        
+        // BUSCA EL CLIENT PER DNI
+        
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             String clientABuscar = buscadorClients.getText();
 
@@ -663,6 +673,9 @@ public class Puntdevenda extends javax.swing.JPanel {
     }//GEN-LAST:event_buscadorClientsKeyReleased
 
     private void taulaProductesTicketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taulaProductesTicketMouseClicked
+        
+        // ELIMINA PRODUCTE DEL TICKET
+        
         int filaSeleccionada = taulaProductesTicket.getSelectedRow();
 
         if (filaSeleccionada != -1) {

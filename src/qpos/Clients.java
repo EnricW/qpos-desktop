@@ -24,6 +24,9 @@ public class Clients extends javax.swing.JPanel {
 
     }
 
+    
+    // OMPLE LA TAULA AMB TOTS ELS CLIENTS
+    
     public void omplirTaula() {
 
         try {
@@ -55,6 +58,8 @@ public class Clients extends javax.swing.JPanel {
 
     }
 
+    // BUIDA FORLUMARI
+    
     public void buidaFormulari() {
 
         taulaClients.clearSelection();
@@ -581,6 +586,7 @@ public class Clients extends javax.swing.JPanel {
     private void taulaClientsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taulaClientsMouseClicked
 
         // OMPLIR FORMULARI
+        
         int fila = taulaClients.getSelectedRow();
 
         String dni = taulaClients.getValueAt(fila, 0).toString();
@@ -610,6 +616,7 @@ public class Clients extends javax.swing.JPanel {
     private void afegirBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afegirBotoActionPerformed
 
         // AFEGIR CLIENT
+        
         String dni = dniText.getText();
         String nom = nomText.getText();
         String cognoms = cognomsText.getText();
@@ -641,6 +648,7 @@ public class Clients extends javax.swing.JPanel {
     private void eliminarBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarBotoActionPerformed
 
         // ELIMINAR CLIENT
+        
         String dni = dniText.getText();
 
         try {
@@ -661,6 +669,7 @@ public class Clients extends javax.swing.JPanel {
     private void editarBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarBotoActionPerformed
 
         // EDITAR CLIENT
+        
         String dni = dniText.getText();
         String nom = nomText.getText();
         String cognoms = cognomsText.getText();
@@ -689,6 +698,8 @@ public class Clients extends javax.swing.JPanel {
 
     private void buscadorTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buscadorTextKeyReleased
 
+        // BUSCA CLIENT
+        
         String clientABuscar = buscadorText.getText();
 
         try {

@@ -395,6 +395,7 @@ public class FormulariLogin extends javax.swing.JFrame {
 
     private void botoLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoLoginActionPerformed
 
+        //VALIDA EL LOGIN, COMPARANT USUARI I PASSWORD A LA BASE DE DADES
         try {
             ResultSet rs = null;
             PreparedStatement ps = null;
@@ -411,12 +412,12 @@ public class FormulariLogin extends javax.swing.JFrame {
 
             rs = ps.executeQuery();
 
-            if (rs.next()) {
+            if (rs.next()) { //SI HI HA RESULTAT, OBRE MENU
                 Menu m = new Menu();
                 m.setUsuari(usuariText.getText());
                 m.setVisible(true);
             } else {
-                JOptionPane.showMessageDialog(null, "Usuari o contrasenya icorrecta");
+                JOptionPane.showMessageDialog(null, "Usuari o contrasenya icorrecta"); //DEL CONTRARI, MOSTRA ERROR
             }
 
         } catch (Exception e) {
