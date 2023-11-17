@@ -317,6 +317,9 @@
             </Property>
             <Property name="borderPainted" type="boolean" value="false"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="botoBuscaProducteActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -357,13 +360,16 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
                                   <Component id="proveidorLabel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="34" pref="34" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" attributes="0">
+                                          <EmptySpace min="34" pref="34" max="-2" attributes="0"/>
                                           <Component id="netejaBoto" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace pref="198" max="32767" attributes="0"/>
                                       </Group>
-                                      <Component id="proveidorText" max="32767" attributes="0"/>
+                                      <Group type="102" attributes="0">
+                                          <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
+                                          <Component id="proveidorText" max="32767" attributes="0"/>
+                                      </Group>
                                   </Group>
                               </Group>
                               <Group type="102" attributes="0">
@@ -372,19 +378,19 @@
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="codiLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="eanLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="nomLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="eanLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="descripcioLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="preuLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="quantitatLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="estocLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="quantitatText" max="32767" attributes="0"/>
+                                      <Component id="estocText" max="32767" attributes="0"/>
                                       <Component id="preuText" max="32767" attributes="0"/>
-                                      <Component id="nomText" max="32767" attributes="0"/>
+                                      <Component id="descripcioText" max="32767" attributes="0"/>
                                       <Component id="eanText" max="32767" attributes="0"/>
-                                      <Component id="codiText" max="32767" attributes="0"/>
+                                      <Component id="nomText" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -424,8 +430,8 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="codiText" alignment="1" min="-2" pref="29" max="-2" attributes="0"/>
-                              <Component id="codiLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                              <Component id="nomText" alignment="1" min="-2" pref="29" max="-2" attributes="0"/>
+                              <Component id="nomLabel" alignment="1" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
@@ -434,8 +440,8 @@
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="nomText" alignment="1" min="-2" pref="29" max="-2" attributes="0"/>
-                              <Component id="nomLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                              <Component id="descripcioText" alignment="1" min="-2" pref="29" max="-2" attributes="0"/>
+                              <Component id="descripcioLabel" alignment="1" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
@@ -444,8 +450,8 @@
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="quantitatText" alignment="1" min="-2" pref="29" max="-2" attributes="0"/>
-                              <Component id="quantitatLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                              <Component id="estocText" alignment="1" min="-2" pref="29" max="-2" attributes="0"/>
+                              <Component id="estocLabel" alignment="1" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
@@ -502,7 +508,7 @@
             </DimensionLayout>
           </Layout>
         </Container>
-        <Component class="javax.swing.JLabel" name="codiLabel">
+        <Component class="javax.swing.JLabel" name="nomLabel">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="DejaVu Sans Condensed" size="24" style="1"/>
@@ -510,7 +516,7 @@
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="f4" green="f2" red="ed" type="rgb"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Codi"/>
+            <Property name="text" type="java.lang.String" value="Nom"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="eanLabel">
@@ -524,7 +530,7 @@
             <Property name="text" type="java.lang.String" value="Codi EAN"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="nomLabel">
+        <Component class="javax.swing.JLabel" name="descripcioLabel">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="DejaVu Sans Condensed" size="24" style="1"/>
@@ -532,7 +538,7 @@
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="f4" green="f2" red="ed" type="rgb"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Nom"/>
+            <Property name="text" type="java.lang.String" value="Descripcio"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="preuLabel">
@@ -546,7 +552,7 @@
             <Property name="text" type="java.lang.String" value="Preu"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="quantitatLabel">
+        <Component class="javax.swing.JLabel" name="estocLabel">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="DejaVu Sans Condensed" size="24" style="1"/>
@@ -554,7 +560,7 @@
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="f4" green="f2" red="ed" type="rgb"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Quantitat"/>
+            <Property name="text" type="java.lang.String" value="Estoc"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="proveidorLabel">
@@ -579,9 +585,8 @@
             <Property name="text" type="java.lang.String" value="INFORMACI&#xd3; DEL PRODUCTE"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="codiText">
+        <Component class="javax.swing.JTextField" name="nomText">
           <Properties>
-            <Property name="editable" type="boolean" value="false"/>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="DejaVu Sans Condensed" size="18" style="1"/>
             </Property>
@@ -625,7 +630,7 @@
             <Property name="horizontalAlignment" type="int" value="11"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="nomText">
+        <Component class="javax.swing.JTextField" name="descripcioText">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="DejaVu Sans Condensed" size="18" style="1"/>
@@ -633,7 +638,7 @@
             <Property name="horizontalAlignment" type="int" value="11"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="nomTextActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="descripcioTextActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="preuText">
@@ -644,7 +649,7 @@
             <Property name="horizontalAlignment" type="int" value="11"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="quantitatText">
+        <Component class="javax.swing.JTextField" name="estocText">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="DejaVu Sans Condensed" size="18" style="1"/>

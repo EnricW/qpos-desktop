@@ -8,6 +8,9 @@ package vista;
 import controlador.ProducteC;
 import javax.swing.table.DefaultTableModel;
 import model.ProducteM;
+import model.ProveidorM;
+import model.nouProducteM;
+import util.GestorErrors;
 
 /**
  *
@@ -60,11 +63,11 @@ public class ProducteV extends javax.swing.JPanel {
     public void buidaFormulari() {
         taulaProductes.clearSelection();
 
-        codiText.setText("");
         nomText.setText("");
+        descripcioText.setText("");
         eanText.setText("");
         preuText.setText("");
-        quantitatText.setText("");
+        estocText.setText("");
         proveidorText.setText("");
     }
 
@@ -90,20 +93,20 @@ public class ProducteV extends javax.swing.JPanel {
         infoPanel = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         jPanel10 = new javax.swing.JPanel();
-        codiLabel = new javax.swing.JLabel();
-        eanLabel = new javax.swing.JLabel();
         nomLabel = new javax.swing.JLabel();
+        eanLabel = new javax.swing.JLabel();
+        descripcioLabel = new javax.swing.JLabel();
         preuLabel = new javax.swing.JLabel();
-        quantitatLabel = new javax.swing.JLabel();
+        estocLabel = new javax.swing.JLabel();
         proveidorLabel = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
-        codiText = new javax.swing.JTextField();
+        nomText = new javax.swing.JTextField();
         separadorLabel = new javax.swing.JLabel();
         netejaBoto = new javax.swing.JButton();
         eanText = new javax.swing.JTextField();
-        nomText = new javax.swing.JTextField();
+        descripcioText = new javax.swing.JTextField();
         preuText = new javax.swing.JTextField();
-        quantitatText = new javax.swing.JTextField();
+        estocText = new javax.swing.JTextField();
         proveidorText = new javax.swing.JTextField();
         jPanel4 = new javax.swing.JPanel();
         editarBoto = new javax.swing.JButton();
@@ -229,6 +232,11 @@ public class ProducteV extends javax.swing.JPanel {
         botoBuscaProducte.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/lupaB.png"))); // NOI18N
         botoBuscaProducte.setBorder(null);
         botoBuscaProducte.setBorderPainted(false);
+        botoBuscaProducte.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botoBuscaProducteActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout buscadorPanelLayout = new javax.swing.GroupLayout(buscadorPanel);
         buscadorPanel.setLayout(buscadorPanelLayout);
@@ -321,25 +329,25 @@ public class ProducteV extends javax.swing.JPanel {
             .addGap(0, 100, Short.MAX_VALUE)
         );
 
-        codiLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
-        codiLabel.setForeground(new java.awt.Color(237, 242, 244));
-        codiLabel.setText("Codi");
+        nomLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        nomLabel.setForeground(new java.awt.Color(237, 242, 244));
+        nomLabel.setText("Nom");
 
         eanLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
         eanLabel.setForeground(new java.awt.Color(237, 242, 244));
         eanLabel.setText("Codi EAN");
 
-        nomLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
-        nomLabel.setForeground(new java.awt.Color(237, 242, 244));
-        nomLabel.setText("Nom");
+        descripcioLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        descripcioLabel.setForeground(new java.awt.Color(237, 242, 244));
+        descripcioLabel.setText("Descripcio");
 
         preuLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
         preuLabel.setForeground(new java.awt.Color(237, 242, 244));
         preuLabel.setText("Preu");
 
-        quantitatLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
-        quantitatLabel.setForeground(new java.awt.Color(237, 242, 244));
-        quantitatLabel.setText("Quantitat");
+        estocLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        estocLabel.setForeground(new java.awt.Color(237, 242, 244));
+        estocLabel.setText("Estoc");
 
         proveidorLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
         proveidorLabel.setForeground(new java.awt.Color(237, 242, 244));
@@ -349,9 +357,8 @@ public class ProducteV extends javax.swing.JPanel {
         jLabel14.setForeground(new java.awt.Color(237, 242, 244));
         jLabel14.setText("INFORMACIÓ DEL PRODUCTE");
 
-        codiText.setEditable(false);
-        codiText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
-        codiText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        nomText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
+        nomText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
 
         separadorLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         separadorLabel.setForeground(new java.awt.Color(237, 242, 244));
@@ -371,19 +378,19 @@ public class ProducteV extends javax.swing.JPanel {
         eanText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         eanText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
 
-        nomText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
-        nomText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
-        nomText.addActionListener(new java.awt.event.ActionListener() {
+        descripcioText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
+        descripcioText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        descripcioText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nomTextActionPerformed(evt);
+                descripcioTextActionPerformed(evt);
             }
         });
 
         preuText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         preuText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
 
-        quantitatText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
-        quantitatText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        estocText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
+        estocText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
 
         proveidorText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         proveidorText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
@@ -404,29 +411,31 @@ public class ProducteV extends javax.swing.JPanel {
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(infoPanelLayout.createSequentialGroup()
                                 .addComponent(proveidorLabel)
-                                .addGap(34, 34, 34)
                                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(infoPanelLayout.createSequentialGroup()
+                                        .addGap(34, 34, 34)
                                         .addComponent(netejaBoto)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 198, Short.MAX_VALUE))
-                                    .addComponent(proveidorText)))
+                                    .addGroup(infoPanelLayout.createSequentialGroup()
+                                        .addGap(46, 46, 46)
+                                        .addComponent(proveidorText))))
                             .addGroup(infoPanelLayout.createSequentialGroup()
                                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(infoPanelLayout.createSequentialGroup()
                                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(codiLabel)
-                                    .addComponent(eanLabel)
                                     .addComponent(nomLabel)
+                                    .addComponent(eanLabel)
+                                    .addComponent(descripcioLabel)
                                     .addComponent(preuLabel)
-                                    .addComponent(quantitatLabel))
+                                    .addComponent(estocLabel))
                                 .addGap(38, 38, 38)
                                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(quantitatText)
+                                    .addComponent(estocText)
                                     .addComponent(preuText)
-                                    .addComponent(nomText)
+                                    .addComponent(descripcioText)
                                     .addComponent(eanText)
-                                    .addComponent(codiText))))
+                                    .addComponent(nomText))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(infoPanelLayout.createSequentialGroup()
@@ -455,24 +464,24 @@ public class ProducteV extends javax.swing.JPanel {
                     .addGroup(infoPanelLayout.createSequentialGroup()
                         .addGap(41, 41, 41)
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(codiText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(codiLabel, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addComponent(nomText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(nomLabel, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addGap(18, 18, 18)
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(eanText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(eanLabel, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addGap(18, 18, 18)
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(nomText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(nomLabel, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addComponent(descripcioText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(descripcioLabel, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addGap(18, 18, 18)
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(preuText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(preuLabel, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addGap(18, 18, 18)
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(quantitatText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(quantitatLabel, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addComponent(estocText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(estocLabel, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addGap(18, 18, 18)
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(proveidorLabel)
@@ -587,9 +596,9 @@ public class ProducteV extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void nomTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nomTextActionPerformed
+    private void descripcioTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_descripcioTextActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_nomTextActionPerformed
+    }//GEN-LAST:event_descripcioTextActionPerformed
 
     private void proveidorTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proveidorTextActionPerformed
         // TODO add your handling code here:
@@ -597,6 +606,29 @@ public class ProducteV extends javax.swing.JPanel {
 
     private void afegirBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afegirBotoActionPerformed
 
+    try {
+        int proveidor_id = Integer.parseInt(proveidorText.getText());
+        String nom = nomText.getText();
+        String descripcio = descripcioText.getText();
+        double preu = Double.parseDouble(preuText.getText());
+        String codiean = eanText.getText();
+        int estoc = Integer.parseInt(estocText.getText());
+
+        // Create a ProducteCreateDTO object with the form data
+        nouProducteM nouproducte = new nouProducteM();
+        nouproducte.setProveidor_id(proveidor_id);
+        nouproducte.setNom(nom);
+        nouproducte.setDescripcio(descripcio);
+        nouproducte.setPreu(preu);
+        nouproducte.setCodiBarres(codiean);
+        nouproducte.setEstoc(estoc);
+
+        // Call the addProduct method in ProducteC
+        producteC.afegeixProducte(nouproducte);
+    } catch (NumberFormatException e) {
+        // Handle the case where the text is not a valid number
+        GestorErrors.displayError("Invalid input for numeric values");
+    }
     }//GEN-LAST:event_afegirBotoActionPerformed
 
     private void netejaBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_netejaBotoActionPerformed
@@ -606,8 +638,7 @@ public class ProducteV extends javax.swing.JPanel {
     }//GEN-LAST:event_netejaBotoActionPerformed
 
     private void eliminarBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarBotoActionPerformed
-        ProducteM actualProducteM = producteC.getProductes();
-        actualitzaModelDeTaula(actualProducteM);
+
     }//GEN-LAST:event_eliminarBotoActionPerformed
 
     private void editarBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarBotoActionPerformed
@@ -630,11 +661,11 @@ public class ProducteV extends javax.swing.JPanel {
         String quantitat = taulaProductes.getValueAt(fila, 4).toString();
         String proveidor = taulaProductes.getValueAt(fila, 5).toString();
 
-        codiText.setText(codi);
-        nomText.setText(nom);
+        nomText.setText(codi);
+        descripcioText.setText(nom);
         eanText.setText(ean);
         preuText.setText(preu);
-        quantitatText.setText(quantitat);
+        estocText.setText(quantitat);
         proveidorText.setText(proveidor);
     }//GEN-LAST:event_taulaProductesMouseClicked
 
@@ -656,6 +687,11 @@ public class ProducteV extends javax.swing.JPanel {
         buscadorProductes.setText("");
     }//GEN-LAST:event_buscadorProductesFocusGained
 
+    private void botoBuscaProducteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBuscaProducteActionPerformed
+        ProducteM actualProducteM = producteC.getProductes();
+        actualitzaModelDeTaula(actualProducteM);
+    }//GEN-LAST:event_botoBuscaProducteActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton afegirBoto;
@@ -663,12 +699,14 @@ public class ProducteV extends javax.swing.JPanel {
     private javax.swing.JButton botoNetejaBuscadorProducte;
     private javax.swing.JPanel buscadorPanel;
     private javax.swing.JTextField buscadorProductes;
-    private javax.swing.JLabel codiLabel;
-    private javax.swing.JTextField codiText;
+    private javax.swing.JLabel descripcioLabel;
+    private javax.swing.JTextField descripcioText;
     private javax.swing.JLabel eanLabel;
     private javax.swing.JTextField eanText;
     private javax.swing.JButton editarBoto;
     private javax.swing.JButton eliminarBoto;
+    private javax.swing.JLabel estocLabel;
+    private javax.swing.JTextField estocText;
     private javax.swing.JPanel infoPanel;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JPanel jPanel10;
@@ -687,8 +725,6 @@ public class ProducteV extends javax.swing.JPanel {
     private javax.swing.JTextField preuText;
     private javax.swing.JLabel proveidorLabel;
     private javax.swing.JTextField proveidorText;
-    private javax.swing.JLabel quantitatLabel;
-    private javax.swing.JTextField quantitatText;
     private javax.swing.JLabel separadorLabel;
     private javax.swing.JTable taulaProductes;
     // End of variables declaration//GEN-END:variables

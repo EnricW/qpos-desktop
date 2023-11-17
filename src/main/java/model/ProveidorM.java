@@ -17,6 +17,15 @@ public class ProveidorM {
     private int id;
     private String nom;
     private String descripcio;
+    
+    // Contructors
+    public ProveidorM(){
+        
+    }
+    
+    public ProveidorM(int id){
+        
+    }
 
     // Mètodes getters i setters per als atributs de la classe
     public int getId() {
