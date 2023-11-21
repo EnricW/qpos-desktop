@@ -1,25 +1,29 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package vista;
 
 /**
- *
+ * Classe que representa la pantalla de esdeveniments
  * @author Enric
  */
 public class EsdevenimentsV extends javax.swing.JPanel {
 
+    /**
+     * Constructor de Esdeveniments
+     */
     public EsdevenimentsV() {
         initComponents();
 
     }
 
+    /**
+     * Mètode per omplir taula
+     */
     public void omplirTaula() {
 
     }
 
+    /**
+     * Mètode per buidar formulari
+     */
     public void buidaFormulari() {
 
         taulaClients.clearSelection();

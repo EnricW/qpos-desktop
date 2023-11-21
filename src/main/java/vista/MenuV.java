@@ -10,21 +10,33 @@ import javax.swing.ButtonGroup;
 import javax.swing.JToggleButton;
 
 /**
- *
+ * Classe que representa la pantalla del menú
  * @author Enric
  */
 public class MenuV extends javax.swing.JFrame {
 
+    /**
+     * Atributs de la classe
+     */
     private JPanelLoader JPLoader = new JPanelLoader();
     private ButtonGroup buttonGroup = new ButtonGroup();
     private static final Color SELECTED_COLOR = new Color(217, 4, 41);
     private static final Color DEFAULT_COLOR = null;
 
+    /**
+     * Accions del menu
+     */
     private enum ButtonAction {
-        PUNT_DE_VENDA, CLIENTS, MAGATZEM, VENDES, ESDEVENIMENTS
+        PUNT_DE_VENDA,
+        CLIENTS,
+        MAGATZEM,
+        VENDES,
+        ESDEVENIMENTS
     }
 
-    // Constructor de la classe
+    /**
+     * Constructor de la classe
+     */
     public MenuV() {
 
         initComponents();
@@ -55,11 +67,20 @@ public class MenuV extends javax.swing.JFrame {
 
     }
 
+    /**
+     * Configura sessió de login
+     * @param usuari
+     * @param esAdmin
+     */
     public void setSessio(String usuari, Boolean esAdmin) {
         usuariText.setText(usuari);
         botoEsdeveniments.setEnabled(esAdmin);
     }
 
+    /**
+     * Gestiona estat del botó
+     * @param button
+     */
     private void addToggleButtonListener(JToggleButton button) {
         button.addItemListener(new ItemListener() {
             @Override
@@ -69,6 +90,11 @@ public class MenuV extends javax.swing.JFrame {
         });
     }
 
+    /**
+     * Gestiona selecció dels botons
+     * @param button
+     * @param e
+     */
     private void gestionaSeleccioBottons(JToggleButton button, ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED) {
             iluminaBotoSeleccionat(button);
@@ -79,11 +105,19 @@ public class MenuV extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Mètode que ilumina el botó seleccionat
+     * @param button
+     */
     private void iluminaBotoSeleccionat(JToggleButton button) {
         button.setBackground(SELECTED_COLOR);
         button.setContentAreaFilled(true);
     }
 
+    /**
+     * Mètode que reinicia els altres botons
+     * @param selectedButton
+     */
     private void resetejaAltresBotons(JToggleButton selectedButton) {
         for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
             AbstractButton currentButton = buttons.nextElement();
@@ -93,11 +127,19 @@ public class MenuV extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Mètode que enfosqueix botó
+     * @param button
+     */
     private void enfosqueixBoto(JToggleButton button) {
         button.setBackground(DEFAULT_COLOR);
         button.setContentAreaFilled(false);
     }
 
+    /**
+     * Mètode que carrega el panel segons el botó del menú
+     * @param button
+     */
     private void carregaPanel(JToggleButton button) {
         ButtonAction action = getButtonAction(button);
         switch (action) {
@@ -124,9 +166,12 @@ public class MenuV extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Mètode que determina l'acció basada en el botó
+     * @param button
+     * @return el valor d'enum corresponent
+     */
     private ButtonAction getButtonAction(JToggleButton button) {
-        // Determineu l'acció basada en el botó
-        // Torneu el valor d'enum corresponent
         if (button == botoPuntDeVenda) {
             return ButtonAction.PUNT_DE_VENDA;
         } else if (button == botoClients) {
@@ -140,6 +185,9 @@ public class MenuV extends javax.swing.JFrame {
         }
     }
 
+    /**
+     *
+     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

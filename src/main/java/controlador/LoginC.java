@@ -9,10 +9,9 @@ import vista.LoginV;
 import vista.MenuV;
 
 /**
- *
+ * Classe principal per iniciar l'aplicació de l'inici de sessió (Login)
  * @author Enric
  */
-// Classe principal per iniciar l'aplicació de l'inici de sessió (Login)
 public class LoginC {
 
     /**

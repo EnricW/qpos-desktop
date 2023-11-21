@@ -1,16 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package util;
 
 import javax.swing.JPanel;
 
 /**
- *
+ * Classe encarregada de carregar panells (JPanel) a la part esquerra del menú
  * @author Enric
  */
-// Classe encarregada de carregar panells (JPanel) a la part esquerra del menú
 public class JPanelLoader {
 
     // Mètode per carregar un JPanel a la part esquerra del menú

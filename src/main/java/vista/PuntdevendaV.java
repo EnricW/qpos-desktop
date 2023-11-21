@@ -1,23 +1,23 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package vista;
 
 import javax.swing.table.DefaultTableModel;
 
 /**
- *
+ * Classe que representa la pantalla del punt de venda
  * @author Enric
  */
 public class PuntdevendaV extends javax.swing.JPanel {
 
+    /**
+     * Constructor
+     */
     public PuntdevendaV() {
         initComponents();
     }
-    
-    // Actualitzar l'import total
+
+    /**
+     * Mètode que actualitza l'import total
+     */
 
     private void actualitzaTotal() {
         DefaultTableModel model = (DefaultTableModel) taulaProductesTicket.getModel();

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package vista;
 
 import controlador.ProducteC;
@@ -18,33 +13,53 @@ import model.nouProducteM;
 import util.GestorErrors;
 
 /**
- *
+ * Classe que representa la pantalla de productes
  * @author Enric
  */
 public class ProducteV extends javax.swing.JPanel {
 
+    /**
+     * Instància de ProducteC
+     */
     ProducteC producteC = new ProducteC();
 
-    // Map per guardar la relació entre idProveidor i nomProveidor
+    /**
+     * Map per guardar la relació entre idProveidor i nomProveidor
+     */
     private Map<Integer, String> proveidorMap;
+
+    /**
+     * Set per a detectar proveidors únics
+     */
     private Set<String> nomsProveidorUnics;
 
+    /**
+     * Missatge que es mostra a la barra de cerca
+     */
     private String missatgeBuscador = "Busca tots els productes o busca per ID";
 
-    // Constructor sense paràmetres
+    /**
+     * Constructor sense paràmetres
+     */
     public ProducteV() {
         initComponents();
         inicialitzaModelDeTaula();
     }
 
-    // Constructor amb paràmetres
+    /**
+     * Constructor amb paràmetres
+     * @param producteM
+     * @param producteC
+     */
     public ProducteV(ProducteM producteM, ProducteC producteC) {
         this(); // Truca al constructor sense paràmetres
         this.producteC = producteC;
         inicialitzaModelDeTaula();
     }
 
-    // Mètode per inicialitzar el model de la taula
+    /**
+     * Mètode per inicialitzar el model de la taula
+     */
     private void inicialitzaModelDeTaula() {
         String[] nomsColumnes = {"ID", "Nom", "Codi de Barres", "Preu", "Estoc", "Proveidor"};
         DefaultTableModel modelDeTaula = new DefaultTableModel(nomsColumnes, 0);
@@ -55,6 +70,9 @@ public class ProducteV extends javax.swing.JPanel {
         nomsProveidorUnics = new HashSet<>();
     }
 
+    /**
+     * Mètode per mostrar productes a la taula
+     */
     public void actualitzaModelDeTaula() {
         DefaultTableModel modelDeTaula = (DefaultTableModel) taulaProductes.getModel();
         modelDeTaula.setRowCount(0); // Esborra les dades existents
@@ -101,7 +119,10 @@ public class ProducteV extends javax.swing.JPanel {
         }
     }
 
-    // Mètode per obtenir i mostrar un producte específic a la taula
+    /**
+     * Mètode per obtenir i mostrar un producte específic a la taula
+     * @param idProducte
+     */
     private void mostrarProducte(int idProducte) {
         // Obté el producte utilitzant el mètode getProducte a ProducteC
         ProducteM producte = producteC.getProducte(idProducte);
@@ -145,6 +166,9 @@ public class ProducteV extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * Mètode per determinar l'amplada de les columnes a la taula
+     */
     private void setColumnWidths() {
         TableColumnModel columnModel = taulaProductes.getColumnModel();
 
@@ -165,7 +189,9 @@ public class ProducteV extends javax.swing.JPanel {
         proveidorColumn.setPreferredWidth(160);
     }
 
-    // Mètode per buidar el formulari
+    /**
+     * Mètode per buidar el formulari
+     */
     public void buidaFormulari() {
         taulaProductes.clearSelection();
 
@@ -176,11 +202,19 @@ public class ProducteV extends javax.swing.JPanel {
         estocText.setText("");
     }
 
+    /**
+     * Mètode per buidar la taula
+     */
     public void buidaTaula() {
         DefaultTableModel modelDeTaula = (DefaultTableModel) taulaProductes.getModel();
         modelDeTaula.setRowCount(0);
     }
 
+    /**
+     * Mètode per retornar el valor Integer en el Map per els proveidors
+     * @param value
+     * @return La id del proveidor
+     */
     private Integer getKeyByValue(String value) {
         for (Map.Entry<Integer, String> entry : proveidorMap.entrySet()) {
             if (entry.getValue().equals(value)) {

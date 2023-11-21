@@ -13,13 +13,17 @@ import java.util.logging.Logger;
 import model.AuthorizationM;
 
 /**
- *
- * @author sardineta_fresca
+ * Classe encarregada de processar la resposta de l'autenticació
+ * @author Enric
  */
-// Classe encarregada de processar la resposta de l'autenticació
 public class AuthorizationC {
 
-    // Mètode per obtenir el token d'autenticació a partir del contingut de la resposta
+    /**
+     * Mètode per obtenir el token d'autenticació a partir del contingut de la resposta
+     * @param responseContent
+     * @return
+     * @throws IOException
+     */
     public String getAuthToken(String responseContent) throws IOException {
         try {
             // Objecte ObjectMapper converteix el contingut de la resposta a un objecte AuthorizationM

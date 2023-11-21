@@ -1,35 +1,32 @@
 package model;
 
-
-/*package model;
-
 /**
- *
- * @author sardineta_fresca
+ * Classe que actua com a gestor del token d'autenticació (Singleton)
+ * @author Enric
  */
- /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-/**
- *
- * @author sardineta_fresca
- */
-// Classe que actua com a gestor del token d'autenticació (Singleton)
 public class AuthorizationM {
 
-    // Atributs privats per emmagatzemar el nom d'usuari i el token
+    /**
+     * Atributs privats per emmagatzemar el nom d'usuari i el token
+     */
     private String username;
     private String token;
 
-    // Instància singleton
+    /**
+     * Instància singleton
+     */
     private static AuthorizationM instance;
 
-    // Constructor privat
+    /**
+     * Constructor privat
+     */
     private AuthorizationM() {
     }
 
-    // Mètode estàtic públic per obtenir la instància singleton
+    /**
+     * Mètode estàtic públic per obtenir la instància singleton
+     * @return
+     */
     public static AuthorizationM getInstance() {
         if (instance == null) {
             instance = new AuthorizationM();
@@ -37,24 +34,42 @@ public class AuthorizationM {
         return instance;
     }
 
-    // Mètodes getters i setters per als atributs de la classe
+    /**
+     * Mètode getter d'username
+     * @return
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Mètode setter d'username
+     * @param username
+     */
     public void setUsername(String username) {
         this.username = username;
     }
 
+    /**
+     * Mètode getter de token
+     * @return
+     */
     public String getToken() {
         return token;
     }
 
+    /**
+     * Mètode setter de token
+     * @param token
+     */
     public void setToken(String token) {
         this.token = token;
     }
 
-    // Override del mètode toString per obtenir una representació en cadena de l'objecte
+    /**
+     * Override del mètode toString per obtenir una representació en cadena de l'objecte
+     * @return
+     */
     @Override
     public String toString() {
         return "Credentials{"

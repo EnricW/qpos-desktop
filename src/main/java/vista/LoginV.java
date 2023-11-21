@@ -7,20 +7,27 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Classe que representa la pantalla del login
  * @author Enric
  */
 public class LoginV extends javax.swing.JFrame {
 
-    // Instància del controlador d'usuari
+    /**
+     * Instància del controlador d'usuari
+     */
     private final UserC userC;
     
-    // Constructor de la classe
+    /**
+     * Constructor de la classe
+     */
     public LoginV() {
         initComponents();
         this.userC = new UserC();
     }
     
+    /**
+     *
+     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -182,7 +189,11 @@ public class LoginV extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    // Mètode que s'executa quan es fa clic al botó de login
+    /**
+     * Mètode que s'executa quan es fa clic al botó de login
+     * @param evt
+     * @throws IOException
+     */
     private void loginActionPerformed(ActionEvent evt) throws IOException {
         String username = usuariText.getText();
         char[] password = passwordText.getPassword();

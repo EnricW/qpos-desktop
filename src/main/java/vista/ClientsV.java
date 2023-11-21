@@ -1,25 +1,29 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package vista;
 
 /**
- *
+ * Classe per representar la pantalla de clients
  * @author Enric
  */
 public class ClientsV extends javax.swing.JPanel {
 
+    /**
+     * Constructor ClientsV
+     */
     public ClientsV() {
         initComponents();
 
     }
 
+    /**
+     * Mètode per omplir taula
+     */
     public void omplirTaula() {
 
     }
 
+    /**
+     * Mètode per buidar formulari
+     */
     public void buidaFormulari() {
 
         taulaClients.clearSelection();

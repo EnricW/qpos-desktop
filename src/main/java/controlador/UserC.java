@@ -20,13 +20,18 @@ import model.UserM;
 import vista.MenuV;
 
 /**
- *
- * @author sardineta_fresca
+ * Classe encarregada de gestionar les operacions relacionades amb l'usuari, com ara el login
+ * @author Enric
  */
-// Classe encarregada de gestionar les operacions relacionades amb l'usuari, com ara el login
 public class UserC {
 
-    // Mètode per iniciar la sessió d'un usuari
+    /**
+     * Mètode per iniciar la sessió d'un usuari
+     * @param username
+     * @param password
+     * @param isAdmin
+     * @throws IOException
+     */
     public void loginUser(String username, char[] password, boolean isAdmin) throws IOException {
         try {
             // Converteix el password de tipus char[] a String
@@ -89,7 +94,10 @@ public class UserC {
         }
     }
 
-    // Mètode per gestionar el login amb èxit
+    /**
+     * Mètode per gestionar el login amb èxit
+     * @param user
+     */
     private void handleSuccessfulLogin(UserM user) {
         // Obre el menú principal i estableix la sessió
         MenuV m = new MenuV();
@@ -97,7 +105,9 @@ public class UserC {
         m.setVisible(true);
     }
 
-    // Mètode per gestionar els errors de login
+    /**
+     * Mètode per gestionar els errors de login
+     */
     private void handleLoginError() {
         // Imprimeix un missatge d'error a la consola i mostra un dialeg amb l'usuari
         System.out.println("Error");
