@@ -6,6 +6,7 @@ package util;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -21,14 +22,16 @@ public class GestorErrors {
     }
 
     public static void displayError(String message) {
+        JOptionPane.showMessageDialog(null, message);
         System.err.println("Error: " + message);
     }
     
     public static void handleHttpError(HttpURLConnection conn) {
-        // Implementation for handling HTTP errors
+        // Gestiona errors HTTP
         int responseCode;
         try {
             responseCode = conn.getResponseCode();
+            JOptionPane.showMessageDialog(null, "HTTP Error: " + responseCode);
             System.err.println("HTTP Error: " + responseCode);
         } catch (IOException e) {
             e.printStackTrace();
@@ -36,7 +39,7 @@ public class GestorErrors {
     }
     
     public static void handleIOException(IOException e) {
-        // Implementation for handling IO errors
+        // Gestiona errors IO
         e.printStackTrace();
     }
 }

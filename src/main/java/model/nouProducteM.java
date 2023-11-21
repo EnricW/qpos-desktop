@@ -8,8 +8,10 @@ package model;
  *
  * @author sardineta_fresca
  */
+// Classe per a afegir nous productes
 public class nouProducteM {
 
+    // Atributs de la classe que representen les dades del producte
     private int proveidor_id;
     private String nom;
     private String descripcio;

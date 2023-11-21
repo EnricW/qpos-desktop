@@ -64,41 +64,41 @@ public class MenuV extends javax.swing.JFrame {
         button.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                handleButtonSelection(button, e);
+                gestionaSeleccioBottons(button, e);
             }
         });
     }
 
-    private void handleButtonSelection(JToggleButton button, ItemEvent e) {
+    private void gestionaSeleccioBottons(JToggleButton button, ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED) {
-            highlightSelectedButton(button);
-            resetOtherButtons(button);
-            loadCorrespondingPanel(button);
+            iluminaBotoSeleccionat(button);
+            resetejaAltresBotons(button);
+            carregaPanel(button);
         } else if (e.getStateChange() == ItemEvent.DESELECTED) {
-            unhighlightButton(button);
+            enfosqueixBoto(button);
         }
     }
 
-    private void highlightSelectedButton(JToggleButton button) {
+    private void iluminaBotoSeleccionat(JToggleButton button) {
         button.setBackground(SELECTED_COLOR);
         button.setContentAreaFilled(true);
     }
 
-    private void resetOtherButtons(JToggleButton selectedButton) {
+    private void resetejaAltresBotons(JToggleButton selectedButton) {
         for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
             AbstractButton currentButton = buttons.nextElement();
             if (currentButton instanceof JToggleButton && currentButton != selectedButton) {
-                unhighlightButton((JToggleButton) currentButton);
+                enfosqueixBoto((JToggleButton) currentButton);
             }
         }
     }
 
-    private void unhighlightButton(JToggleButton button) {
+    private void enfosqueixBoto(JToggleButton button) {
         button.setBackground(DEFAULT_COLOR);
         button.setContentAreaFilled(false);
     }
 
-    private void loadCorrespondingPanel(JToggleButton button) {
+    private void carregaPanel(JToggleButton button) {
         ButtonAction action = getButtonAction(button);
         switch (action) {
             case PUNT_DE_VENDA:
@@ -139,7 +139,7 @@ public class MenuV extends javax.swing.JFrame {
             return ButtonAction.ESDEVENIMENTS;
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

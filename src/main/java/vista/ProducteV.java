@@ -6,9 +6,14 @@
 package vista;
 
 import controlador.ProducteC;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import model.ProducteM;
-import model.ProveidorM;
 import model.nouProducteM;
 import util.GestorErrors;
 
@@ -19,6 +24,12 @@ import util.GestorErrors;
 public class ProducteV extends javax.swing.JPanel {
 
     ProducteC producteC = new ProducteC();
+
+    // Map per guardar la relació entre idProveidor i nomProveidor
+    private Map<Integer, String> proveidorMap;
+    private Set<String> nomsProveidorUnics;
+
+    private String missatgeBuscador = "Busca tots els productes o busca per ID";
 
     // Constructor sense paràmetres
     public ProducteV() {
@@ -38,25 +49,120 @@ public class ProducteV extends javax.swing.JPanel {
         String[] nomsColumnes = {"ID", "Nom", "Codi de Barres", "Preu", "Estoc", "Proveidor"};
         DefaultTableModel modelDeTaula = new DefaultTableModel(nomsColumnes, 0);
         taulaProductes.setModel(modelDeTaula);
+
+        // Inicialitza el proveidorMap i nomsProveidorUnics
+        proveidorMap = new HashMap<>();
+        nomsProveidorUnics = new HashSet<>();
     }
 
-    // Mètode per actualitzar el model de la taula i assignar-lo a la JTable
-    public void actualitzaModelDeTaula(ProducteM producteM) {
+    public void actualitzaModelDeTaula() {
         DefaultTableModel modelDeTaula = (DefaultTableModel) taulaProductes.getModel();
         modelDeTaula.setRowCount(0); // Esborra les dades existents
 
-        // Omple el model de la taula amb les dades de l'array de ProducteM
-        for (ProducteM producte : producteM.getProductes()) {
+        // Crida el mètode getProductes a ProducteC per obtenir les dades actualitzades del producte
+        ProducteM producteM = producteC.getProductes();
+
+        if (producteM != null && producteM.getProductes() != null) {
+
+            // Esborra els elements existents al JComboBox
+            proveidorComboBox.removeAllItems();
+            // Esborra el conjunt nomsProveidorUnics
+            nomsProveidorUnics.clear();
+
+            // Omple el proveidorMap i el JComboBox
+            for (ProducteM producte : producteM.getProductes()) {
+                int proveidorId = producte.getProveidor().getId();
+                String proveidorNom = producte.getProveidor().getNom();
+
+                // Comprova si el nom del proveidor encara no s'ha afegit
+                if (nomsProveidorUnics.add(proveidorNom)) {
+                    proveidorMap.put(proveidorId, proveidorNom);
+                    proveidorComboBox.addItem(proveidorNom);
+                }
+            }
+
+            // Omple el model de la taula amb les dades de l'array de ProducteM
+            for (ProducteM producte : producteM.getProductes()) {
+                Object[] dadesFila = {
+                    producte.getId(),
+                    producte.getNom(),
+                    producte.getCodiBarres(),
+                    producte.getPreu(),
+                    producte.getEstoc(),
+                    // Mostra el nomProveidor a la taula
+                    proveidorMap.get(producte.getProveidor().getId())
+                };
+                modelDeTaula.addRow(dadesFila);
+            }
+            // Actualitza l'amplada de les columnes
+            setColumnWidths();
+        } else {
+            GestorErrors.displayError("Error en recuperar les dades del producte.");
+        }
+    }
+
+    // Mètode per obtenir i mostrar un producte específic a la taula
+    private void mostrarProducte(int idProducte) {
+        // Obté el producte utilitzant el mètode getProducte a ProducteC
+        ProducteM producte = producteC.getProducte(idProducte);
+
+        // Comprova si el producte no és nul
+        if (producte != null) {
+            // Esborra els elements existents al JComboBox
+            proveidorComboBox.removeAllItems();
+            // Esborra el conjunt nomsProveidorUnics
+            nomsProveidorUnics.clear();
+
+            // Omple el proveidorMap i el JComboBox amb el proveidor del producte individual
+            int proveidorId = producte.getProveidor().getId();
+            String proveidorNom = producte.getProveidor().getNom();
+
+            // Comprova si el nom del proveidor encara no s'ha afegit
+            if (nomsProveidorUnics.add(proveidorNom)) {
+                proveidorMap.put(proveidorId, proveidorNom);
+                proveidorComboBox.addItem(proveidorNom);
+            }
+
+            // Esborra el model de la taula
+            DefaultTableModel modelDeTaula = (DefaultTableModel) taulaProductes.getModel();
+            modelDeTaula.setRowCount(0);
+
+            // Omple la taula amb les dades del producte individual
             Object[] dadesFila = {
                 producte.getId(),
                 producte.getNom(),
                 producte.getCodiBarres(),
                 producte.getPreu(),
                 producte.getEstoc(),
-                producte.getProveidor().getNom()
+                proveidorNom
             };
             modelDeTaula.addRow(dadesFila);
+
+            // Estableix l'amplada de les columnes
+            setColumnWidths();
+        } else {
+            GestorErrors.displayError("Error en recuperar les dades del producte amb ID: " + idProducte);
         }
+    }
+
+    private void setColumnWidths() {
+        TableColumnModel columnModel = taulaProductes.getColumnModel();
+
+        // Columnes de la taula
+        TableColumn idColumn = columnModel.getColumn(0);
+        TableColumn nomColumn = columnModel.getColumn(1);
+        TableColumn codiBarresColumn = columnModel.getColumn(2);
+        TableColumn preuColumn = columnModel.getColumn(3);
+        TableColumn estocColumn = columnModel.getColumn(4);
+        TableColumn proveidorColumn = columnModel.getColumn(5);
+
+        // Ajusta amplada de les columnes
+        idColumn.setPreferredWidth(4);
+        nomColumn.setPreferredWidth(280);
+        codiBarresColumn.setPreferredWidth(110);
+        preuColumn.setPreferredWidth(30);
+        estocColumn.setPreferredWidth(10);
+        proveidorColumn.setPreferredWidth(160);
     }
 
     // Mètode per buidar el formulari
@@ -68,7 +174,20 @@ public class ProducteV extends javax.swing.JPanel {
         eanText.setText("");
         preuText.setText("");
         estocText.setText("");
-        proveidorText.setText("");
+    }
+
+    public void buidaTaula() {
+        DefaultTableModel modelDeTaula = (DefaultTableModel) taulaProductes.getModel();
+        modelDeTaula.setRowCount(0);
+    }
+
+    private Integer getKeyByValue(String value) {
+        for (Map.Entry<Integer, String> entry : proveidorMap.entrySet()) {
+            if (entry.getValue().equals(value)) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 
     /**
@@ -107,7 +226,7 @@ public class ProducteV extends javax.swing.JPanel {
         descripcioText = new javax.swing.JTextField();
         preuText = new javax.swing.JTextField();
         estocText = new javax.swing.JTextField();
-        proveidorText = new javax.swing.JTextField();
+        proveidorComboBox = new javax.swing.JComboBox<>();
         jPanel4 = new javax.swing.JPanel();
         editarBoto = new javax.swing.JButton();
         afegirBoto = new javax.swing.JButton();
@@ -121,7 +240,7 @@ public class ProducteV extends javax.swing.JPanel {
         buscadorProductes.setBackground(new java.awt.Color(237, 242, 244));
         buscadorProductes.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         buscadorProductes.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        buscadorProductes.setText("Buscador de productes");
+        buscadorProductes.setText("Busca tots els productes o busca per ID");
         buscadorProductes.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 buscadorProductesFocusGained(evt);
@@ -175,12 +294,24 @@ public class ProducteV extends javax.swing.JPanel {
         jScrollPane1.setViewportView(taulaProductes);
         taulaProductes.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         if (taulaProductes.getColumnModel().getColumnCount() > 0) {
+            taulaProductes.getColumnModel().getColumn(0).setMinWidth(2);
             taulaProductes.getColumnModel().getColumn(0).setPreferredWidth(2);
+            taulaProductes.getColumnModel().getColumn(0).setMaxWidth(2);
+            taulaProductes.getColumnModel().getColumn(1).setMinWidth(300);
             taulaProductes.getColumnModel().getColumn(1).setPreferredWidth(300);
+            taulaProductes.getColumnModel().getColumn(1).setMaxWidth(300);
+            taulaProductes.getColumnModel().getColumn(2).setMinWidth(35);
             taulaProductes.getColumnModel().getColumn(2).setPreferredWidth(35);
+            taulaProductes.getColumnModel().getColumn(2).setMaxWidth(35);
+            taulaProductes.getColumnModel().getColumn(3).setMinWidth(3);
             taulaProductes.getColumnModel().getColumn(3).setPreferredWidth(3);
+            taulaProductes.getColumnModel().getColumn(3).setMaxWidth(3);
+            taulaProductes.getColumnModel().getColumn(4).setMinWidth(3);
             taulaProductes.getColumnModel().getColumn(4).setPreferredWidth(3);
+            taulaProductes.getColumnModel().getColumn(4).setMaxWidth(3);
+            taulaProductes.getColumnModel().getColumn(5).setMinWidth(40);
             taulaProductes.getColumnModel().getColumn(5).setPreferredWidth(40);
+            taulaProductes.getColumnModel().getColumn(5).setMaxWidth(40);
         }
         taulaProductes.setRowHeight(30);
 
@@ -227,6 +358,11 @@ public class ProducteV extends javax.swing.JPanel {
         botoNetejaBuscadorProducte.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/XB.png"))); // NOI18N
         botoNetejaBuscadorProducte.setBorder(null);
         botoNetejaBuscadorProducte.setBorderPainted(false);
+        botoNetejaBuscadorProducte.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botoNetejaBuscadorProducteActionPerformed(evt);
+            }
+        });
 
         botoBuscaProducte.setBackground(new java.awt.Color(43, 45, 66));
         botoBuscaProducte.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/lupaB.png"))); // NOI18N
@@ -366,9 +502,10 @@ public class ProducteV extends javax.swing.JPanel {
         separadorLabel.setText("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
 
         netejaBoto.setBackground(new java.awt.Color(43, 45, 66));
-        netejaBoto.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        netejaBoto.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         netejaBoto.setForeground(new java.awt.Color(237, 242, 244));
-        netejaBoto.setText("NETEJA");
+        netejaBoto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/buida2.png"))); // NOI18N
+        netejaBoto.setText(" BUIDA FORMULARI");
         netejaBoto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 netejaBotoActionPerformed(evt);
@@ -392,13 +529,7 @@ public class ProducteV extends javax.swing.JPanel {
         estocText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         estocText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
 
-        proveidorText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
-        proveidorText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
-        proveidorText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                proveidorTextActionPerformed(evt);
-            }
-        });
+        proveidorComboBox.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
 
         javax.swing.GroupLayout infoPanelLayout = new javax.swing.GroupLayout(infoPanel);
         infoPanel.setLayout(infoPanelLayout);
@@ -410,27 +541,19 @@ public class ProducteV extends javax.swing.JPanel {
                         .addGap(10, 10, 10)
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(infoPanelLayout.createSequentialGroup()
-                                .addComponent(proveidorLabel)
-                                .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(infoPanelLayout.createSequentialGroup()
-                                        .addGap(34, 34, 34)
-                                        .addComponent(netejaBoto)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 198, Short.MAX_VALUE))
-                                    .addGroup(infoPanelLayout.createSequentialGroup()
-                                        .addGap(46, 46, 46)
-                                        .addComponent(proveidorText))))
-                            .addGroup(infoPanelLayout.createSequentialGroup()
                                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
+                                .addGap(0, 29, Short.MAX_VALUE))
                             .addGroup(infoPanelLayout.createSequentialGroup()
                                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(nomLabel)
                                     .addComponent(eanLabel)
                                     .addComponent(descripcioLabel)
                                     .addComponent(preuLabel)
-                                    .addComponent(estocLabel))
+                                    .addComponent(estocLabel)
+                                    .addComponent(proveidorLabel))
                                 .addGap(38, 38, 38)
                                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(proveidorComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(estocText)
                                     .addComponent(preuText)
                                     .addComponent(descripcioText)
@@ -443,7 +566,10 @@ public class ProducteV extends javax.swing.JPanel {
                             .addGroup(infoPanelLayout.createSequentialGroup()
                                 .addGap(78, 78, 78)
                                 .addComponent(jLabel14))
-                            .addComponent(separadorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 508, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(separadorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 508, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(infoPanelLayout.createSequentialGroup()
+                                .addGap(120, 120, 120)
+                                .addComponent(netejaBoto, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -483,20 +609,20 @@ public class ProducteV extends javax.swing.JPanel {
                             .addComponent(estocText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(estocLabel, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addGap(18, 18, 18)
-                        .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(proveidorLabel)
-                            .addComponent(proveidorText, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
-                        .addComponent(netejaBoto)
-                        .addContainerGap())))
+                            .addComponent(proveidorComboBox))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(netejaBoto, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE))))
         );
 
         jPanel4.setBackground(new java.awt.Color(217, 4, 41));
 
         editarBoto.setBackground(new java.awt.Color(43, 45, 66));
-        editarBoto.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        editarBoto.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         editarBoto.setForeground(new java.awt.Color(237, 242, 244));
-        editarBoto.setText("EDITAR");
+        editarBoto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/editar2.png"))); // NOI18N
+        editarBoto.setText(" EDITAR");
         editarBoto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editarBotoActionPerformed(evt);
@@ -504,9 +630,10 @@ public class ProducteV extends javax.swing.JPanel {
         });
 
         afegirBoto.setBackground(new java.awt.Color(43, 45, 66));
-        afegirBoto.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        afegirBoto.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         afegirBoto.setForeground(new java.awt.Color(237, 242, 244));
-        afegirBoto.setText("AFEGIR");
+        afegirBoto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/afegir2.png"))); // NOI18N
+        afegirBoto.setText(" AFEGIR");
         afegirBoto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 afegirBotoActionPerformed(evt);
@@ -514,9 +641,10 @@ public class ProducteV extends javax.swing.JPanel {
         });
 
         eliminarBoto.setBackground(new java.awt.Color(43, 45, 66));
-        eliminarBoto.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        eliminarBoto.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         eliminarBoto.setForeground(new java.awt.Color(237, 242, 244));
-        eliminarBoto.setText("ELIMINAR");
+        eliminarBoto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/eliminar2.png"))); // NOI18N
+        eliminarBoto.setText(" ELIMINAR");
         eliminarBoto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 eliminarBotoActionPerformed(evt);
@@ -528,18 +656,18 @@ public class ProducteV extends javax.swing.JPanel {
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(29, Short.MAX_VALUE)
+                .addContainerGap(32, Short.MAX_VALUE)
                 .addComponent(editarBoto, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(afegirBoto, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(eliminarBoto)
-                .addContainerGap())
+                .addGap(14, 14, 14))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
+                .addGap(23, 23, 23)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(editarBoto, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(afegirBoto, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -557,7 +685,7 @@ public class ProducteV extends javax.swing.JPanel {
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 58, Short.MAX_VALUE)
+            .addGap(0, 46, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -571,12 +699,13 @@ public class ProducteV extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(48, 48, 48))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(infoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())))
         );
         layout.setVerticalGroup(
@@ -600,35 +729,48 @@ public class ProducteV extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_descripcioTextActionPerformed
 
-    private void proveidorTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proveidorTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_proveidorTextActionPerformed
-
     private void afegirBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afegirBotoActionPerformed
 
-    try {
-        int proveidor_id = Integer.parseInt(proveidorText.getText());
-        String nom = nomText.getText();
-        String descripcio = descripcioText.getText();
-        double preu = Double.parseDouble(preuText.getText());
-        String codiean = eanText.getText();
-        int estoc = Integer.parseInt(estocText.getText());
+        try {
+            // Comprova si el ComboBox de proveïdor està buit
+            if (proveidorComboBox.getItemCount() == 0) {
+                // Gestionar l'error quan no hi ha proveïdors disponibles
+                GestorErrors.displayError("No hi ha proveïdors disponibles.");
+            } else {
+                int proveidor_id = getKeyByValue(proveidorComboBox.getSelectedItem().toString());
+                String nom = nomText.getText();
+                String descripcio = descripcioText.getText();
+                String preuTextValue = preuText.getText();
+                String eanTextValue = eanText.getText();
+                String estocTextValue = estocText.getText();
 
-        // Create a ProducteCreateDTO object with the form data
-        nouProducteM nouproducte = new nouProducteM();
-        nouproducte.setProveidor_id(proveidor_id);
-        nouproducte.setNom(nom);
-        nouproducte.setDescripcio(descripcio);
-        nouproducte.setPreu(preu);
-        nouproducte.setCodiBarres(codiean);
-        nouproducte.setEstoc(estoc);
+                // Comprova si hi ha algun camp buit
+                if (nom.isEmpty() || descripcio.isEmpty() || preuTextValue.isEmpty() || eanTextValue.isEmpty() || estocTextValue.isEmpty()) {
+                    // Gestionar l'error quan algun camp està buit
+                    GestorErrors.displayError("Cal omplir tots els camps abans d'afegir un nou producte.");
+                } else {
+                    double preu = Double.parseDouble(preuTextValue);
+                    String codiean = eanTextValue;
+                    int estoc = Integer.parseInt(estocTextValue);
 
-        // Call the addProduct method in ProducteC
-        producteC.afegeixProducte(nouproducte);
-    } catch (NumberFormatException e) {
-        // Handle the case where the text is not a valid number
-        GestorErrors.displayError("Invalid input for numeric values");
-    }
+                    // Crea un objecte nouProducteM amb les dades del formulari
+                    nouProducteM nouproducte = new nouProducteM();
+                    nouproducte.setProveidor_id(proveidor_id);
+                    nouproducte.setNom(nom);
+                    nouproducte.setDescripcio(descripcio);
+                    nouproducte.setPreu(preu);
+                    nouproducte.setCodiBarres(codiean);
+                    nouproducte.setEstoc(estoc);
+
+                    // Crida al mètode afegeixProducte a ProducteC
+                    producteC.afegeixProducte(nouproducte);
+                }
+            }
+        } catch (NumberFormatException e) {
+            // Gestiona l'error en cas de que no sigui un valor numèric
+            GestorErrors.displayError("Entrada no vàlida per a valors numèrics");
+        }
+
     }//GEN-LAST:event_afegirBotoActionPerformed
 
     private void netejaBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_netejaBotoActionPerformed
@@ -638,10 +780,80 @@ public class ProducteV extends javax.swing.JPanel {
     }//GEN-LAST:event_netejaBotoActionPerformed
 
     private void eliminarBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarBotoActionPerformed
+        // Obtenir l'índex de la fila seleccionada
+        int filaSeleccionada = taulaProductes.getSelectedRow();
 
+        // Comprovar si s'ha seleccionat una fila
+        if (filaSeleccionada != -1) {
+            // Obtenir l'ID del producte de la fila seleccionada
+            int idProducte = (int) taulaProductes.getValueAt(filaSeleccionada, 0);
+
+            // Cridar al mètode eliminarProducte a ProducteC amb aquest ID
+            producteC.eliminarProducte(idProducte);
+
+            // Actualitzar la taula després de l'eliminació
+            actualitzaModelDeTaula();
+        } else {
+            // Si no s'ha seleccionat cap fila, mostrar un missatge d'error
+            GestorErrors.displayError("Cal seleccionar un producte per eliminar-lo.");
+        }
     }//GEN-LAST:event_eliminarBotoActionPerformed
 
     private void editarBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarBotoActionPerformed
+        try {
+            // Obté l'índex de la fila seleccionada
+            int filaSeleccionada = taulaProductes.getSelectedRow();
+
+            // Comprova si s'ha seleccionat una fila
+            if (filaSeleccionada != -1) {
+                // Extreu les dades de la fila seleccionada
+                int idProducte = (int) taulaProductes.getValueAt(filaSeleccionada, 0);
+
+                // Comprova si el ComboBox de proveïdor està buit
+                if (proveidorComboBox.getItemCount() == 0) {
+                    // Gestiona l'error quan no hi ha proveïdors disponibles
+                    GestorErrors.displayError("No hi ha proveïdors disponibles.");
+                } else {
+                    int proveidor_id = getKeyByValue(proveidorComboBox.getSelectedItem().toString());
+                    String nom = nomText.getText();
+                    String descripcio = descripcioText.getText();
+                    String preuTextValue = preuText.getText();
+                    String eanTextValue = eanText.getText();
+                    String estocTextValue = estocText.getText();
+
+                    // Comprova si hi ha algun camp buit
+                    if (nom.isEmpty() || descripcio.isEmpty() || preuTextValue.isEmpty() || eanTextValue.isEmpty() || estocTextValue.isEmpty()) {
+                        // Gestionar l'error quan algun camp està buit
+                        GestorErrors.displayError("Cal omplir tots els camps abans d'editar un producte.");
+                    } else {
+                        double preu = Double.parseDouble(preuTextValue);
+                        String codiean = eanTextValue;
+                        int estoc = Integer.parseInt(estocTextValue);
+
+                        // Crea un objecte nouProducteM amb la informació actualitzada
+                        nouProducteM producteEditat = new nouProducteM();
+                        producteEditat.setProveidor_id(proveidor_id);
+                        producteEditat.setNom(nom);
+                        producteEditat.setDescripcio(descripcio);
+                        producteEditat.setPreu(preu);
+                        producteEditat.setCodiBarres(codiean);
+                        producteEditat.setEstoc(estoc);
+
+                        // Crida al mètode editarProducte a ProducteC
+                        producteC.editarProducte(idProducte, producteEditat);
+
+                        // Actualitza la taula després de l'edició
+                        actualitzaModelDeTaula();
+                    }
+                }
+            } else {
+                // Si no s'ha seleccionat cap fila, mostra un missatge d'error
+                GestorErrors.displayError("Cal seleccionar un producte per editar-lo.");
+            }
+        } catch (NumberFormatException e) {
+            // Gestionar el cas en què el text no sigui un número vàlid
+            GestorErrors.displayError("Entrada no vàlida per a valors numèrics");
+        }
 
     }//GEN-LAST:event_editarBotoActionPerformed
 
@@ -650,23 +862,21 @@ public class ProducteV extends javax.swing.JPanel {
     }//GEN-LAST:event_jScrollPane1MouseClicked
 
     private void taulaProductesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taulaProductesMouseClicked
-
         // Omplir el formulari
         int fila = taulaProductes.getSelectedRow();
 
-        String codi = taulaProductes.getValueAt(fila, 0).toString();
         String nom = taulaProductes.getValueAt(fila, 1).toString();
         String ean = taulaProductes.getValueAt(fila, 2).toString();
         String preu = taulaProductes.getValueAt(fila, 3).toString();
         String quantitat = taulaProductes.getValueAt(fila, 4).toString();
-        String proveidor = taulaProductes.getValueAt(fila, 5).toString();
+        String nomproveidor = taulaProductes.getValueAt(fila, 5).toString();
 
-        nomText.setText(codi);
+        nomText.setText(nom);
         descripcioText.setText(nom);
         eanText.setText(ean);
         preuText.setText(preu);
         estocText.setText(quantitat);
-        proveidorText.setText(proveidor);
+        proveidorComboBox.setSelectedItem(nomproveidor);
     }//GEN-LAST:event_taulaProductesMouseClicked
 
     private void buscadorProductesKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buscadorProductesKeyReleased
@@ -679,7 +889,7 @@ public class ProducteV extends javax.swing.JPanel {
 
     private void buscadorProductesFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_buscadorProductesFocusLost
         if (buscadorProductes.getText().isEmpty()) {
-            buscadorProductes.setText("Buscador de productes");
+            buscadorProductes.setText(missatgeBuscador);
         }
     }//GEN-LAST:event_buscadorProductesFocusLost
 
@@ -688,9 +898,38 @@ public class ProducteV extends javax.swing.JPanel {
     }//GEN-LAST:event_buscadorProductesFocusGained
 
     private void botoBuscaProducteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBuscaProducteActionPerformed
-        ProducteM actualProducteM = producteC.getProductes();
-        actualitzaModelDeTaula(actualProducteM);
+        // Obtenir el text del camp de text BuscadorProductes
+        String idProducteText = buscadorProductes.getText();
+
+        // Comprovar si el text no és buit 
+        if (!idProducteText.isEmpty()) {
+            try {
+                // Intenta analitzar el text per obtenir la identificació del producte
+                int idProducte = Integer.parseInt(idProducteText);
+
+                // Crida al mètode per mostrar el producte individual a la taula
+                mostrarProducte(idProducte);
+            } catch (NumberFormatException e) {
+                // Gestionar el cas en què idProducteText no sigui un enter vàlid
+                System.out.println("Format d'ID de producte no vàlid. Mostrant tots els productes en lloc d'això.");
+
+                // Mostra tots els productes
+                actualitzaModelDeTaula();
+            }
+        } else {
+            // Si el text és buit, obtenir tots els productes i omplir la taula
+            actualitzaModelDeTaula();
+        }
+
     }//GEN-LAST:event_botoBuscaProducteActionPerformed
+
+    private void botoNetejaBuscadorProducteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoNetejaBuscadorProducteActionPerformed
+
+        buscadorProductes.setText("");
+        proveidorComboBox.removeAllItems();
+        buidaTaula();
+
+    }//GEN-LAST:event_botoNetejaBuscadorProducteActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -723,8 +962,8 @@ public class ProducteV extends javax.swing.JPanel {
     private javax.swing.JTextField nomText;
     private javax.swing.JLabel preuLabel;
     private javax.swing.JTextField preuText;
+    private javax.swing.JComboBox<String> proveidorComboBox;
     private javax.swing.JLabel proveidorLabel;
-    private javax.swing.JTextField proveidorText;
     private javax.swing.JLabel separadorLabel;
     private javax.swing.JTable taulaProductes;
     // End of variables declaration//GEN-END:variables

@@ -64,16 +64,12 @@ public class ClientsV extends javax.swing.JPanel {
         jLabel14 = new javax.swing.JLabel();
         dniText = new javax.swing.JTextField();
         separadorLabel = new javax.swing.JLabel();
-        netejaBoto = new javax.swing.JButton();
         nomText = new javax.swing.JTextField();
         cognomsText = new javax.swing.JTextField();
         telefonText = new javax.swing.JTextField();
         emailText = new javax.swing.JTextField();
         puntsText = new javax.swing.JTextField();
         jPanel4 = new javax.swing.JPanel();
-        editarBoto = new javax.swing.JButton();
-        afegirBoto = new javax.swing.JButton();
-        eliminarBoto = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
 
         setBackground(new java.awt.Color(217, 4, 41));
@@ -324,16 +320,6 @@ public class ClientsV extends javax.swing.JPanel {
         separadorLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         separadorLabel.setText("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
 
-        netejaBoto.setBackground(new java.awt.Color(43, 45, 66));
-        netejaBoto.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
-        netejaBoto.setForeground(new java.awt.Color(237, 242, 244));
-        netejaBoto.setText("NETEJA");
-        netejaBoto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                netejaBotoActionPerformed(evt);
-            }
-        });
-
         nomText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         nomText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
 
@@ -370,13 +356,8 @@ public class ClientsV extends javax.swing.JPanel {
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(infoPanelLayout.createSequentialGroup()
                                 .addComponent(puntsLabel)
-                                .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(infoPanelLayout.createSequentialGroup()
-                                        .addGap(34, 34, 34)
-                                        .addComponent(netejaBoto))
-                                    .addGroup(infoPanelLayout.createSequentialGroup()
-                                        .addGap(81, 81, 81)
-                                        .addComponent(puntsText))))
+                                .addGap(81, 81, 81)
+                                .addComponent(puntsText))
                             .addGroup(infoPanelLayout.createSequentialGroup()
                                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))
@@ -444,65 +425,20 @@ public class ClientsV extends javax.swing.JPanel {
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(puntsLabel)
                             .addComponent(puntsText, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
-                        .addComponent(netejaBoto)
-                        .addContainerGap())))
+                        .addContainerGap(60, Short.MAX_VALUE))))
         );
 
         jPanel4.setBackground(new java.awt.Color(217, 4, 41));
-
-        editarBoto.setBackground(new java.awt.Color(43, 45, 66));
-        editarBoto.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
-        editarBoto.setForeground(new java.awt.Color(237, 242, 244));
-        editarBoto.setText("EDITAR");
-        editarBoto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editarBotoActionPerformed(evt);
-            }
-        });
-
-        afegirBoto.setBackground(new java.awt.Color(43, 45, 66));
-        afegirBoto.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
-        afegirBoto.setForeground(new java.awt.Color(237, 242, 244));
-        afegirBoto.setText("AFEGIR");
-        afegirBoto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                afegirBotoActionPerformed(evt);
-            }
-        });
-
-        eliminarBoto.setBackground(new java.awt.Color(43, 45, 66));
-        eliminarBoto.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
-        eliminarBoto.setForeground(new java.awt.Color(237, 242, 244));
-        eliminarBoto.setText("ELIMINAR");
-        eliminarBoto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                eliminarBotoActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(29, Short.MAX_VALUE)
-                .addComponent(editarBoto, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(afegirBoto, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(eliminarBoto)
-                .addContainerGap())
+            .addGap(0, 489, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(editarBoto, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(afegirBoto, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(eliminarBoto, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGap(0, 136, Short.MAX_VALUE)
         );
 
         jPanel5.setBackground(new java.awt.Color(217, 4, 41));
@@ -593,22 +529,6 @@ public class ClientsV extends javax.swing.JPanel {
      
     }//GEN-LAST:event_puntsTextActionPerformed
 
-    private void afegirBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afegirBotoActionPerformed
-
-    }//GEN-LAST:event_afegirBotoActionPerformed
-
-    private void netejaBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_netejaBotoActionPerformed
-
-    }//GEN-LAST:event_netejaBotoActionPerformed
-
-    private void eliminarBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarBotoActionPerformed
-
-    }//GEN-LAST:event_eliminarBotoActionPerformed
-
-    private void editarBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarBotoActionPerformed
-
-    }//GEN-LAST:event_editarBotoActionPerformed
-
     private void buscadorTextMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buscadorTextMouseClicked
 
     }//GEN-LAST:event_buscadorTextMouseClicked
@@ -619,7 +539,6 @@ public class ClientsV extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton afegirBoto;
     private javax.swing.JButton botoBuscaClient;
     private javax.swing.JButton botoNetejaBuscadorClient;
     private javax.swing.JPanel buscadorPanel;
@@ -628,8 +547,6 @@ public class ClientsV extends javax.swing.JPanel {
     private javax.swing.JTextField cognomsText;
     private javax.swing.JLabel dniLabel;
     private javax.swing.JTextField dniText;
-    private javax.swing.JButton editarBoto;
-    private javax.swing.JButton eliminarBoto;
     private javax.swing.JLabel emailLabel;
     private javax.swing.JTextField emailText;
     private javax.swing.JPanel infoPanel;
@@ -643,7 +560,6 @@ public class ClientsV extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JButton netejaBoto;
     private javax.swing.JLabel nomLabel;
     private javax.swing.JTextField nomText;
     private javax.swing.JLabel puntsLabel;
