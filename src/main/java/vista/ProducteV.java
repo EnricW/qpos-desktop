@@ -6,14 +6,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import model.ProducteM;
 import model.nouProducteM;
 import util.GestorErrors;
 
 /**
  * Classe que representa la pantalla de productes
+ *
  * @author Enric
  */
 public class ProducteV extends javax.swing.JPanel {
@@ -32,39 +31,33 @@ public class ProducteV extends javax.swing.JPanel {
      * Set per a detectar proveidors únics
      */
     private Set<String> nomsProveidorUnics;
-
-    /**
-     * Missatge que es mostra a la barra de cerca
-     */
+    
     private String missatgeBuscador = "Busca tots els productes o busca per ID";
-
+    
     /**
      * Constructor sense paràmetres
      */
     public ProducteV() {
         initComponents();
-        inicialitzaModelDeTaula();
+        inicialitzaProveidorMap();
     }
 
     /**
      * Constructor amb paràmetres
+     *
      * @param producteM
      * @param producteC
      */
     public ProducteV(ProducteM producteM, ProducteC producteC) {
         this(); // Truca al constructor sense paràmetres
         this.producteC = producteC;
-        inicialitzaModelDeTaula();
+        inicialitzaProveidorMap();
     }
 
     /**
-     * Mètode per inicialitzar el model de la taula
+     * Mètode per inicialitzar el Map de proveidors
      */
-    private void inicialitzaModelDeTaula() {
-        String[] nomsColumnes = {"ID", "Nom", "Codi de Barres", "Preu", "Estoc", "Proveidor"};
-        DefaultTableModel modelDeTaula = new DefaultTableModel(nomsColumnes, 0);
-        taulaProductes.setModel(modelDeTaula);
-
+    private void inicialitzaProveidorMap() {
         // Inicialitza el proveidorMap i nomsProveidorUnics
         proveidorMap = new HashMap<>();
         nomsProveidorUnics = new HashSet<>();
@@ -112,8 +105,7 @@ public class ProducteV extends javax.swing.JPanel {
                 };
                 modelDeTaula.addRow(dadesFila);
             }
-            // Actualitza l'amplada de les columnes
-            setColumnWidths();
+
         } else {
             GestorErrors.displayError("Error en recuperar les dades del producte.");
         }
@@ -121,6 +113,7 @@ public class ProducteV extends javax.swing.JPanel {
 
     /**
      * Mètode per obtenir i mostrar un producte específic a la taula
+     *
      * @param idProducte
      */
     private void mostrarProducte(int idProducte) {
@@ -159,34 +152,9 @@ public class ProducteV extends javax.swing.JPanel {
             };
             modelDeTaula.addRow(dadesFila);
 
-            // Estableix l'amplada de les columnes
-            setColumnWidths();
         } else {
             GestorErrors.displayError("Error en recuperar les dades del producte amb ID: " + idProducte);
         }
-    }
-
-    /**
-     * Mètode per determinar l'amplada de les columnes a la taula
-     */
-    private void setColumnWidths() {
-        TableColumnModel columnModel = taulaProductes.getColumnModel();
-
-        // Columnes de la taula
-        TableColumn idColumn = columnModel.getColumn(0);
-        TableColumn nomColumn = columnModel.getColumn(1);
-        TableColumn codiBarresColumn = columnModel.getColumn(2);
-        TableColumn preuColumn = columnModel.getColumn(3);
-        TableColumn estocColumn = columnModel.getColumn(4);
-        TableColumn proveidorColumn = columnModel.getColumn(5);
-
-        // Ajusta amplada de les columnes
-        idColumn.setPreferredWidth(4);
-        nomColumn.setPreferredWidth(280);
-        codiBarresColumn.setPreferredWidth(110);
-        preuColumn.setPreferredWidth(30);
-        estocColumn.setPreferredWidth(10);
-        proveidorColumn.setPreferredWidth(160);
     }
 
     /**
@@ -212,6 +180,7 @@ public class ProducteV extends javax.swing.JPanel {
 
     /**
      * Mètode per retornar el valor Integer en el Map per els proveidors
+     *
      * @param value
      * @return La id del proveidor
      */
@@ -283,24 +252,9 @@ public class ProducteV extends javax.swing.JPanel {
                 buscadorProductesFocusLost(evt);
             }
         });
-        buscadorProductes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buscadorProductesActionPerformed(evt);
-            }
-        });
-        buscadorProductes.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                buscadorProductesKeyReleased(evt);
-            }
-        });
 
         jScrollPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jScrollPane1.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
-        jScrollPane1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jScrollPane1MouseClicked(evt);
-            }
-        });
 
         taulaProductes.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         taulaProductes.setModel(new javax.swing.table.DefaultTableModel(
@@ -308,7 +262,7 @@ public class ProducteV extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Codi", "Nom", "EAN", "Preu", "Quantitat", "Proveidor"
+                "Codi", "Nom", "Codi de barres", "Preu", "Estoc", "Proveidor"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -328,24 +282,18 @@ public class ProducteV extends javax.swing.JPanel {
         jScrollPane1.setViewportView(taulaProductes);
         taulaProductes.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         if (taulaProductes.getColumnModel().getColumnCount() > 0) {
-            taulaProductes.getColumnModel().getColumn(0).setMinWidth(2);
-            taulaProductes.getColumnModel().getColumn(0).setPreferredWidth(2);
-            taulaProductes.getColumnModel().getColumn(0).setMaxWidth(2);
-            taulaProductes.getColumnModel().getColumn(1).setMinWidth(300);
-            taulaProductes.getColumnModel().getColumn(1).setPreferredWidth(300);
-            taulaProductes.getColumnModel().getColumn(1).setMaxWidth(300);
-            taulaProductes.getColumnModel().getColumn(2).setMinWidth(35);
-            taulaProductes.getColumnModel().getColumn(2).setPreferredWidth(35);
-            taulaProductes.getColumnModel().getColumn(2).setMaxWidth(35);
-            taulaProductes.getColumnModel().getColumn(3).setMinWidth(3);
-            taulaProductes.getColumnModel().getColumn(3).setPreferredWidth(3);
-            taulaProductes.getColumnModel().getColumn(3).setMaxWidth(3);
-            taulaProductes.getColumnModel().getColumn(4).setMinWidth(3);
-            taulaProductes.getColumnModel().getColumn(4).setPreferredWidth(3);
-            taulaProductes.getColumnModel().getColumn(4).setMaxWidth(3);
-            taulaProductes.getColumnModel().getColumn(5).setMinWidth(40);
-            taulaProductes.getColumnModel().getColumn(5).setPreferredWidth(40);
-            taulaProductes.getColumnModel().getColumn(5).setMaxWidth(40);
+            taulaProductes.getColumnModel().getColumn(0).setResizable(false);
+            taulaProductes.getColumnModel().getColumn(0).setPreferredWidth(4);
+            taulaProductes.getColumnModel().getColumn(1).setResizable(false);
+            taulaProductes.getColumnModel().getColumn(1).setPreferredWidth(280);
+            taulaProductes.getColumnModel().getColumn(2).setResizable(false);
+            taulaProductes.getColumnModel().getColumn(2).setPreferredWidth(110);
+            taulaProductes.getColumnModel().getColumn(3).setResizable(false);
+            taulaProductes.getColumnModel().getColumn(3).setPreferredWidth(30);
+            taulaProductes.getColumnModel().getColumn(4).setResizable(false);
+            taulaProductes.getColumnModel().getColumn(4).setPreferredWidth(10);
+            taulaProductes.getColumnModel().getColumn(5).setResizable(false);
+            taulaProductes.getColumnModel().getColumn(5).setPreferredWidth(160);
         }
         taulaProductes.setRowHeight(30);
 
@@ -428,7 +376,7 @@ public class ProducteV extends javax.swing.JPanel {
                                 .addComponent(buscadorProductes)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(botoNetejaBuscadorProducte, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE))
+                            .addComponent(jScrollPane1))
                         .addGap(18, 18, 18)))
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -551,11 +499,6 @@ public class ProducteV extends javax.swing.JPanel {
 
         descripcioText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         descripcioText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
-        descripcioText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                descripcioTextActionPerformed(evt);
-            }
-        });
 
         preuText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         preuText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
@@ -759,12 +702,7 @@ public class ProducteV extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void descripcioTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_descripcioTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_descripcioTextActionPerformed
-
     private void afegirBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afegirBotoActionPerformed
-
         try {
             // Comprova si el ComboBox de proveïdor està buit
             if (proveidorComboBox.getItemCount() == 0) {
@@ -804,13 +742,10 @@ public class ProducteV extends javax.swing.JPanel {
             // Gestiona l'error en cas de que no sigui un valor numèric
             GestorErrors.displayError("Entrada no vàlida per a valors numèrics");
         }
-
     }//GEN-LAST:event_afegirBotoActionPerformed
 
     private void netejaBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_netejaBotoActionPerformed
-
         buidaFormulari();
-
     }//GEN-LAST:event_netejaBotoActionPerformed
 
     private void eliminarBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarBotoActionPerformed
@@ -888,12 +823,7 @@ public class ProducteV extends javax.swing.JPanel {
             // Gestionar el cas en què el text no sigui un número vàlid
             GestorErrors.displayError("Entrada no vàlida per a valors numèrics");
         }
-
     }//GEN-LAST:event_editarBotoActionPerformed
-
-    private void jScrollPane1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jScrollPane1MouseClicked
-
-    }//GEN-LAST:event_jScrollPane1MouseClicked
 
     private void taulaProductesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taulaProductesMouseClicked
         // Omplir el formulari
@@ -912,14 +842,6 @@ public class ProducteV extends javax.swing.JPanel {
         estocText.setText(quantitat);
         proveidorComboBox.setSelectedItem(nomproveidor);
     }//GEN-LAST:event_taulaProductesMouseClicked
-
-    private void buscadorProductesKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buscadorProductesKeyReleased
-
-    }//GEN-LAST:event_buscadorProductesKeyReleased
-
-    private void buscadorProductesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscadorProductesActionPerformed
-
-    }//GEN-LAST:event_buscadorProductesActionPerformed
 
     private void buscadorProductesFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_buscadorProductesFocusLost
         if (buscadorProductes.getText().isEmpty()) {
@@ -954,15 +876,13 @@ public class ProducteV extends javax.swing.JPanel {
             // Si el text és buit, obtenir tots els productes i omplir la taula
             actualitzaModelDeTaula();
         }
-
     }//GEN-LAST:event_botoBuscaProducteActionPerformed
 
     private void botoNetejaBuscadorProducteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoNetejaBuscadorProducteActionPerformed
-
-        buscadorProductes.setText("");
+        buscadorProductes.setText(missatgeBuscador);
         proveidorComboBox.removeAllItems();
+        buidaFormulari();
         buidaTaula();
-
     }//GEN-LAST:event_botoNetejaBuscadorProducteActionPerformed
 
 

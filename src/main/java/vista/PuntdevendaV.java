@@ -14,6 +14,8 @@ public class PuntdevendaV extends javax.swing.JPanel {
     public PuntdevendaV() {
         initComponents();
     }
+    
+    
 
     /**
      * Mètode que actualitza l'import total
@@ -111,11 +113,11 @@ public class PuntdevendaV extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Codi", "Nom", "EAN", "Preu", "Quantitat", "Proveidor"
+                "Codi", "Nom", "EAN", "Preu"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -142,11 +144,6 @@ public class PuntdevendaV extends javax.swing.JPanel {
             taulaProductes.getColumnModel().getColumn(3).setMinWidth(70);
             taulaProductes.getColumnModel().getColumn(3).setPreferredWidth(70);
             taulaProductes.getColumnModel().getColumn(3).setMaxWidth(70);
-            taulaProductes.getColumnModel().getColumn(4).setMinWidth(50);
-            taulaProductes.getColumnModel().getColumn(4).setPreferredWidth(50);
-            taulaProductes.getColumnModel().getColumn(4).setMaxWidth(50);
-            taulaProductes.getColumnModel().getColumn(5).setResizable(false);
-            taulaProductes.getColumnModel().getColumn(5).setPreferredWidth(200);
         }
         taulaProductes.setRowHeight(30);
 

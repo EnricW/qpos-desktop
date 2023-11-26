@@ -151,8 +151,6 @@
           <Events>
             <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="buscadorProductesFocusGained"/>
             <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="buscadorProductesFocusLost"/>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buscadorProductesActionPerformed"/>
-            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="buscadorProductesKeyReleased"/>
           </Events>
         </Component>
         <Container class="javax.swing.JScrollPane" name="jScrollPane1">
@@ -166,9 +164,6 @@
               <Font name="DejaVu Sans Condensed" size="18" style="1"/>
             </Property>
           </Properties>
-          <Events>
-            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jScrollPane1MouseClicked"/>
-          </Events>
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
           <SubComponents>
@@ -181,40 +176,40 @@
                   <Table columnCount="6" rowCount="0">
                     <Column editable="false" title="Codi" type="java.lang.Object"/>
                     <Column editable="false" title="Nom" type="java.lang.Object"/>
-                    <Column editable="false" title="EAN" type="java.lang.Object"/>
+                    <Column editable="false" title="Codi de barres" type="java.lang.Object"/>
                     <Column editable="false" title="Preu" type="java.lang.Object"/>
-                    <Column editable="false" title="Quantitat" type="java.lang.Object"/>
+                    <Column editable="false" title="Estoc" type="java.lang.Object"/>
                     <Column editable="false" title="Proveidor" type="java.lang.Object"/>
                   </Table>
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor" postCode="taulaProductes.setRowHeight(30);">
                   <TableColumnModel selectionModel="1">
-                    <Column maxWidth="2" minWidth="2" prefWidth="2" resizable="true">
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="4" resizable="false">
                       <Title/>
                       <Editor/>
                       <Renderer/>
                     </Column>
-                    <Column maxWidth="300" minWidth="300" prefWidth="300" resizable="true">
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="280" resizable="false">
                       <Title/>
                       <Editor/>
                       <Renderer/>
                     </Column>
-                    <Column maxWidth="35" minWidth="35" prefWidth="35" resizable="true">
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="110" resizable="false">
                       <Title/>
                       <Editor/>
                       <Renderer/>
                     </Column>
-                    <Column maxWidth="3" minWidth="3" prefWidth="3" resizable="true">
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="30" resizable="false">
                       <Title/>
                       <Editor/>
                       <Renderer/>
                     </Column>
-                    <Column maxWidth="3" minWidth="3" prefWidth="3" resizable="true">
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="10" resizable="false">
                       <Title/>
                       <Editor/>
                       <Renderer/>
                     </Column>
-                    <Column maxWidth="40" minWidth="40" prefWidth="40" resizable="true">
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="160" resizable="false">
                       <Title/>
                       <Editor/>
                       <Renderer/>
@@ -635,9 +630,6 @@
             </Property>
             <Property name="horizontalAlignment" type="int" value="11"/>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="descripcioTextActionPerformed"/>
-          </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="preuText">
           <Properties>

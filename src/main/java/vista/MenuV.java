@@ -148,7 +148,7 @@ public class MenuV extends javax.swing.JFrame {
                 JPLoader.jPanelLoader(pantalla, pdv);
                 break;
             case CLIENTS:
-                ClientsV cli = new ClientsV();
+                ClientV cli = new ClientV();
                 JPLoader.jPanelLoader(pantalla, cli);
                 break;
             case MAGATZEM:
@@ -160,7 +160,7 @@ public class MenuV extends javax.swing.JFrame {
                 JPLoader.jPanelLoader(pantalla, pdvVendes);
                 break;
             case ESDEVENIMENTS:
-                EsdevenimentsV esdeveniments = new EsdevenimentsV();
+                EsdevenimentV esdeveniments = new EsdevenimentV();
                 JPLoader.jPanelLoader(pantalla, esdeveniments);
                 break;
         }

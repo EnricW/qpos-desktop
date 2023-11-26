@@ -148,13 +148,11 @@
                   <Font name="DejaVu Sans Condensed" size="18" style="1"/>
                 </Property>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="6" rowCount="0">
+                  <Table columnCount="4" rowCount="0">
                     <Column editable="false" title="Codi" type="java.lang.Object"/>
                     <Column editable="false" title="Nom" type="java.lang.Object"/>
                     <Column editable="false" title="EAN" type="java.lang.Object"/>
                     <Column editable="false" title="Preu" type="java.lang.Object"/>
-                    <Column editable="false" title="Quantitat" type="java.lang.Object"/>
-                    <Column editable="false" title="Proveidor" type="java.lang.Object"/>
                   </Table>
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -175,16 +173,6 @@
                       <Renderer/>
                     </Column>
                     <Column maxWidth="70" minWidth="70" prefWidth="70" resizable="true">
-                      <Title/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
-                    <Column maxWidth="50" minWidth="50" prefWidth="50" resizable="true">
-                      <Title/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="200" resizable="false">
                       <Title/>
                       <Editor/>
                       <Renderer/>

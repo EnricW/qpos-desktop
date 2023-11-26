@@ -15,13 +15,16 @@ import model.nouProducteM;
 import util.GestorErrors;
 
 /**
- * Classe encarregada de gestionar les operacions relacionades amb els productes mitjançant crides a l'API
+ * Classe encarregada de gestionar les operacions relacionades amb els productes
+ * mitjançant crides a l'API
+ *
  * @author Enric
  */
 public class ProducteC {
 
     /**
      * Mètode per obtenir els productes mitjançant una crida GET a l'API
+     *
      * @return
      */
     public ProducteM getProductes() {
@@ -78,6 +81,7 @@ public class ProducteC {
 
     /**
      * Mètode per afegir un producte mitjançant una crida POST a l'API
+     *
      * @param producte
      */
     public void afegeixProducte(nouProducteM producte) {
@@ -123,6 +127,7 @@ public class ProducteC {
 
     /**
      * Mètode per eliminar un producte mitjançant una crida DELETE a l'API
+     *
      * @param idProducte
      */
     public void eliminarProducte(int idProducte) {
@@ -158,6 +163,7 @@ public class ProducteC {
 
     /**
      * Mètode per editar un producte mitjançant una crida PUT a l'API
+     *
      * @param idProducte
      * @param producte
      */
@@ -204,7 +210,9 @@ public class ProducteC {
     }
 
     /**
-     * Mètode per obtenir un producte mitjançant una crida GET a l'API amb un identificador específic
+     * Mètode per obtenir un producte mitjançant una crida GET a l'API amb un
+     * identificador específic
+     *
      * @param idproducte
      * @return
      */
@@ -256,4 +264,3 @@ public class ProducteC {
         return null;
     }
 }
-

@@ -1,31 +1,100 @@
 package vista;
 
+import controlador.ClientC;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import model.ClientM;
+
 /**
  * Classe per representar la pantalla de clients
+ *
  * @author Enric
  */
-public class ClientsV extends javax.swing.JPanel {
+public class ClientV extends javax.swing.JPanel {
+
+    private ClientC clientC = new ClientC();
+    private List<ClientM> clientList; // Store Client objects here
+    private String missatgeBuscador = "Busca tots els clients o busca per DNI";
 
     /**
      * Constructor ClientsV
      */
-    public ClientsV() {
+    public ClientV() {
         initComponents();
-
     }
 
-    /**
-     * Mètode per omplir taula
-     */
-    public void omplirTaula() {
+    public void actualitzaModelDeTaula() {
+        DefaultTableModel tableModel = (DefaultTableModel) taulaClients.getModel();
+        tableModel.setRowCount(0); // Clear existing data.
 
+        // Call the getClients method in ClientC to get the latest client data.
+        ClientM clients = clientC.getClients();
+
+        if (clients != null) {
+            // Store the Client objects in the list
+            clientList = Arrays.asList(clients.getClients());
+
+            // Populate the table with client data.
+            for (ClientM client : clients.getClients()) {
+                Object[] rowData = {
+                    client.getId(),
+                    client.getDni(),
+                    client.getNom(),
+                    client.getCognoms(),
+                    client.getTelefon(),
+                    client.getEmail()
+                };
+                tableModel.addRow(rowData);
+            }
+
+        } else {
+            // Handle the case where the client data retrieval fails.
+            JOptionPane.showMessageDialog(this, "Error retrieving client data.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void mostrarClient(String dni) {
+        ClientM client = clientC.getClientByDNI(dni);
+
+        DefaultTableModel tableModel = (DefaultTableModel) taulaClients.getModel();
+        tableModel.setRowCount(0); // Clear existing data.
+
+        if (client != null) {
+            // Update the clientList with the single client from the search
+            clientList = Collections.singletonList(client);
+
+            // Populate the table with client data.
+            Object[] rowData = {
+                client.getId(),
+                client.getDni(),
+                client.getNom(),
+                client.getCognoms(),
+                client.getTelefon(),
+                client.getEmail()
+            };
+            tableModel.addRow(rowData);
+
+        } else {
+            // Handle the case where the client data retrieval fails.
+            JOptionPane.showMessageDialog(this, "Error retrieving client data.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    /**
+     * Mètode per buidar la taula
+     */
+    public void buidaTaula() {
+        DefaultTableModel modelDeTaula = (DefaultTableModel) taulaClients.getModel();
+        modelDeTaula.setRowCount(0);
     }
 
     /**
      * Mètode per buidar formulari
      */
     public void buidaFormulari() {
-
         taulaClients.clearSelection();
 
         dniText.setText("");
@@ -33,8 +102,7 @@ public class ClientsV extends javax.swing.JPanel {
         cognomsText.setText("");
         telefonText.setText("");
         emailText.setText("");
-        puntsText.setText("");
-
+        dataNaixementText.setText("");
     }
 
     /**
@@ -47,7 +115,7 @@ public class ClientsV extends javax.swing.JPanel {
     private void initComponents() {
 
         buscadorPanel = new javax.swing.JPanel();
-        buscadorText = new javax.swing.JTextField();
+        buscadorClients = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         taulaClients = new javax.swing.JTable();
         jPanel6 = new javax.swing.JPanel();
@@ -64,7 +132,7 @@ public class ClientsV extends javax.swing.JPanel {
         cognomsLabel = new javax.swing.JLabel();
         telefonLabel = new javax.swing.JLabel();
         emailLabel = new javax.swing.JLabel();
-        puntsLabel = new javax.swing.JLabel();
+        dataNaixementLabel = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         dniText = new javax.swing.JTextField();
         separadorLabel = new javax.swing.JLabel();
@@ -72,7 +140,11 @@ public class ClientsV extends javax.swing.JPanel {
         cognomsText = new javax.swing.JTextField();
         telefonText = new javax.swing.JTextField();
         emailText = new javax.swing.JTextField();
+        dataNaixementText = new javax.swing.JTextField();
+        bioText = new javax.swing.JTextField();
+        bioLabel = new javax.swing.JLabel();
         puntsText = new javax.swing.JTextField();
+        puntsLabel = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
 
@@ -80,32 +152,21 @@ public class ClientsV extends javax.swing.JPanel {
 
         buscadorPanel.setBackground(new java.awt.Color(217, 4, 41));
 
-        buscadorText.setBackground(new java.awt.Color(237, 242, 244));
-        buscadorText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
-        buscadorText.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        buscadorText.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                buscadorTextMouseClicked(evt);
+        buscadorClients.setBackground(new java.awt.Color(237, 242, 244));
+        buscadorClients.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
+        buscadorClients.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        buscadorClients.setText("Busca tots els clients o busca per DNI");
+        buscadorClients.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                buscadorClientsFocusGained(evt);
             }
-        });
-        buscadorText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buscadorTextActionPerformed(evt);
-            }
-        });
-        buscadorText.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                buscadorTextKeyReleased(evt);
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                buscadorClientsFocusLost(evt);
             }
         });
 
         jScrollPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jScrollPane1.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
-        jScrollPane1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jScrollPane1MouseClicked(evt);
-            }
-        });
 
         taulaClients.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         taulaClients.setModel(new javax.swing.table.DefaultTableModel(
@@ -113,7 +174,7 @@ public class ClientsV extends javax.swing.JPanel {
 
             },
             new String [] {
-                "DNI", "Nom", "Cognoms", "Telèfon", "E-mail", "Punts"
+                "ID", "DNI", "Nom", "Cognoms", "Telèfon", "E-mail"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -134,17 +195,17 @@ public class ClientsV extends javax.swing.JPanel {
         taulaClients.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         if (taulaClients.getColumnModel().getColumnCount() > 0) {
             taulaClients.getColumnModel().getColumn(0).setResizable(false);
-            taulaClients.getColumnModel().getColumn(0).setPreferredWidth(120);
+            taulaClients.getColumnModel().getColumn(0).setPreferredWidth(20);
             taulaClients.getColumnModel().getColumn(1).setResizable(false);
-            taulaClients.getColumnModel().getColumn(1).setPreferredWidth(120);
+            taulaClients.getColumnModel().getColumn(1).setPreferredWidth(100);
             taulaClients.getColumnModel().getColumn(2).setResizable(false);
-            taulaClients.getColumnModel().getColumn(2).setPreferredWidth(200);
+            taulaClients.getColumnModel().getColumn(2).setPreferredWidth(90);
             taulaClients.getColumnModel().getColumn(3).setResizable(false);
-            taulaClients.getColumnModel().getColumn(3).setPreferredWidth(100);
+            taulaClients.getColumnModel().getColumn(3).setPreferredWidth(180);
             taulaClients.getColumnModel().getColumn(4).setResizable(false);
-            taulaClients.getColumnModel().getColumn(4).setPreferredWidth(250);
+            taulaClients.getColumnModel().getColumn(4).setPreferredWidth(100);
             taulaClients.getColumnModel().getColumn(5).setResizable(false);
-            taulaClients.getColumnModel().getColumn(5).setPreferredWidth(25);
+            taulaClients.getColumnModel().getColumn(5).setPreferredWidth(300);
         }
         taulaClients.setRowHeight(30);
 
@@ -191,11 +252,21 @@ public class ClientsV extends javax.swing.JPanel {
         botoBuscaClient.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/lupaB.png"))); // NOI18N
         botoBuscaClient.setBorder(null);
         botoBuscaClient.setBorderPainted(false);
+        botoBuscaClient.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botoBuscaClientActionPerformed(evt);
+            }
+        });
 
         botoNetejaBuscadorClient.setBackground(new java.awt.Color(43, 45, 66));
         botoNetejaBuscadorClient.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/XB.png"))); // NOI18N
         botoNetejaBuscadorClient.setBorder(null);
         botoNetejaBuscadorClient.setBorderPainted(false);
+        botoNetejaBuscadorClient.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botoNetejaBuscadorClientActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout buscadorPanelLayout = new javax.swing.GroupLayout(buscadorPanel);
         buscadorPanel.setLayout(buscadorPanelLayout);
@@ -214,7 +285,7 @@ public class ClientsV extends javax.swing.JPanel {
                             .addGroup(buscadorPanelLayout.createSequentialGroup()
                                 .addComponent(botoBuscaClient, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(buscadorText)
+                                .addComponent(buscadorClients)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(botoNetejaBuscadorClient, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE))
@@ -231,7 +302,7 @@ public class ClientsV extends javax.swing.JPanel {
                     .addGroup(buscadorPanelLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(buscadorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(buscadorText, javax.swing.GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
+                            .addComponent(buscadorClients, javax.swing.GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
                             .addComponent(botoBuscaClient, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(botoNetejaBuscadorClient, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -308,9 +379,9 @@ public class ClientsV extends javax.swing.JPanel {
         emailLabel.setForeground(new java.awt.Color(237, 242, 244));
         emailLabel.setText("E-mail");
 
-        puntsLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
-        puntsLabel.setForeground(new java.awt.Color(237, 242, 244));
-        puntsLabel.setText("Punts");
+        dataNaixementLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        dataNaixementLabel.setForeground(new java.awt.Color(237, 242, 244));
+        dataNaixementLabel.setText("Data");
 
         jLabel14.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
         jLabel14.setForeground(new java.awt.Color(237, 242, 244));
@@ -329,11 +400,6 @@ public class ClientsV extends javax.swing.JPanel {
 
         cognomsText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         cognomsText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
-        cognomsText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cognomsTextActionPerformed(evt);
-            }
-        });
 
         telefonText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         telefonText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
@@ -341,13 +407,22 @@ public class ClientsV extends javax.swing.JPanel {
         emailText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         emailText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
 
+        dataNaixementText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
+        dataNaixementText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+
+        bioText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
+        bioText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+
+        bioLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        bioLabel.setForeground(new java.awt.Color(237, 242, 244));
+        bioLabel.setText("Bio");
+
         puntsText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         puntsText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
-        puntsText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                puntsTextActionPerformed(evt);
-            }
-        });
+
+        puntsLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        puntsLabel.setForeground(new java.awt.Color(237, 242, 244));
+        puntsLabel.setText("Punts");
 
         javax.swing.GroupLayout infoPanelLayout = new javax.swing.GroupLayout(infoPanel);
         infoPanel.setLayout(infoPanelLayout);
@@ -358,13 +433,6 @@ public class ClientsV extends javax.swing.JPanel {
                     .addGroup(infoPanelLayout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(infoPanelLayout.createSequentialGroup()
-                                .addComponent(puntsLabel)
-                                .addGap(81, 81, 81)
-                                .addComponent(puntsText))
-                            .addGroup(infoPanelLayout.createSequentialGroup()
-                                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(infoPanelLayout.createSequentialGroup()
                                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(dniLabel)
@@ -378,7 +446,23 @@ public class ClientsV extends javax.swing.JPanel {
                                     .addComponent(telefonText)
                                     .addComponent(cognomsText)
                                     .addComponent(nomText)
-                                    .addComponent(dniText))))
+                                    .addComponent(dniText)))
+                            .addGroup(infoPanelLayout.createSequentialGroup()
+                                .addComponent(puntsLabel)
+                                .addGap(81, 81, 81)
+                                .addComponent(puntsText))
+                            .addGroup(infoPanelLayout.createSequentialGroup()
+                                .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(infoPanelLayout.createSequentialGroup()
+                                        .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(dataNaixementLabel)
+                                            .addComponent(bioLabel))
+                                        .addGap(92, 92, 92)
+                                        .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(bioText, javax.swing.GroupLayout.DEFAULT_SIZE, 290, Short.MAX_VALUE)
+                                            .addComponent(dataNaixementText))))
+                                .addGap(0, 0, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(infoPanelLayout.createSequentialGroup()
@@ -427,9 +511,17 @@ public class ClientsV extends javax.swing.JPanel {
                             .addComponent(emailLabel, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addGap(18, 18, 18)
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(dataNaixementLabel)
+                            .addComponent(dataNaixementText, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(bioLabel)
+                            .addComponent(bioText, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(puntsLabel)
                             .addComponent(puntsText, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(60, Short.MAX_VALUE))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         jPanel4.setBackground(new java.awt.Color(217, 4, 41));
@@ -442,7 +534,7 @@ public class ClientsV extends javax.swing.JPanel {
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 136, Short.MAX_VALUE)
+            .addGap(0, 55, Short.MAX_VALUE)
         );
 
         jPanel5.setBackground(new java.awt.Color(217, 4, 41));
@@ -483,9 +575,9 @@ public class ClientsV extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(buscadorPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(infoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(infoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -494,61 +586,75 @@ public class ClientsV extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void buscadorTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscadorTextActionPerformed
-
-    }//GEN-LAST:event_buscadorTextActionPerformed
-
-    private void jScrollPane1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jScrollPane1MouseClicked
-
-
-    }//GEN-LAST:event_jScrollPane1MouseClicked
-
     private void taulaClientsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taulaClientsMouseClicked
-
-        // Omple el formulari
-        
+        // Omple el formulari amb les dades del Client seleccionat
         int fila = taulaClients.getSelectedRow();
 
-        String dni = taulaClients.getValueAt(fila, 0).toString();
-        String nom = taulaClients.getValueAt(fila, 1).toString();
-        String cognoms = taulaClients.getValueAt(fila, 2).toString();
-        String telefon = taulaClients.getValueAt(fila, 3).toString();
-        String email = taulaClients.getValueAt(fila, 4).toString();
-        String punts = taulaClients.getValueAt(fila, 5).toString();
+        if (fila != -1 && clientList != null && fila < clientList.size()) {
+            ClientM selectedClient = clientList.get(fila);
 
-        dniText.setText(dni);
-        nomText.setText(nom);
-        cognomsText.setText(cognoms);
-        telefonText.setText(telefon);
-        emailText.setText(email);
-        puntsText.setText(punts);
-
+            // Fill the form with the selected Client's data
+            dniText.setText(selectedClient.getDni());
+            nomText.setText(selectedClient.getNom());
+            cognomsText.setText(selectedClient.getCognoms());
+            telefonText.setText(selectedClient.getTelefon());
+            emailText.setText(selectedClient.getEmail());
+            dataNaixementText.setText(selectedClient.getDataNaixement());
+            bioText.setText(selectedClient.getBio());
+            puntsText.setText("0");
+        }
     }//GEN-LAST:event_taulaClientsMouseClicked
 
-    private void cognomsTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cognomsTextActionPerformed
- 
-    }//GEN-LAST:event_cognomsTextActionPerformed
+    private void botoBuscaClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBuscaClientActionPerformed
+        // Obtenir el text del camp de text BuscadorClient
+        String dniClient = buscadorClients.getText();
 
-    private void puntsTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_puntsTextActionPerformed
-     
-    }//GEN-LAST:event_puntsTextActionPerformed
+        // Comprovar si el text no és buit 
+        if (!dniClient.isEmpty() && !dniClient.equals(missatgeBuscador)) {
+            try {
+                // Crida al mètode per mostrar el client individual a la taula
+                mostrarClient(dniClient);
+            } catch (NumberFormatException e) {
+                // Gestionar el cas en què dniClient no sigui una entrada vàlida
+                System.out.println("Format de dniClient no vàlid. Mostrant tots els clients en lloc d'això.");
 
-    private void buscadorTextMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buscadorTextMouseClicked
+                // Mostra tots els clients
+                actualitzaModelDeTaula();
+            }
+        } else {
+            // Si el text és buit, obtenir tots els clients i omplir la taula
+            actualitzaModelDeTaula();
+        }
+    }//GEN-LAST:event_botoBuscaClientActionPerformed
 
-    }//GEN-LAST:event_buscadorTextMouseClicked
+    private void botoNetejaBuscadorClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoNetejaBuscadorClientActionPerformed
+        buscadorClients.setText(missatgeBuscador);
+        buidaFormulari();
+        buidaTaula();
+    }//GEN-LAST:event_botoNetejaBuscadorClientActionPerformed
 
-    private void buscadorTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buscadorTextKeyReleased
+    private void buscadorClientsFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_buscadorClientsFocusGained
+        buscadorClients.setText("");
+    }//GEN-LAST:event_buscadorClientsFocusGained
 
-    }//GEN-LAST:event_buscadorTextKeyReleased
+    private void buscadorClientsFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_buscadorClientsFocusLost
+        if (buscadorClients.getText().isEmpty()) {
+            buscadorClients.setText(missatgeBuscador);
+        }
+    }//GEN-LAST:event_buscadorClientsFocusLost
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel bioLabel;
+    private javax.swing.JTextField bioText;
     private javax.swing.JButton botoBuscaClient;
     private javax.swing.JButton botoNetejaBuscadorClient;
+    private javax.swing.JTextField buscadorClients;
     private javax.swing.JPanel buscadorPanel;
-    private javax.swing.JTextField buscadorText;
     private javax.swing.JLabel cognomsLabel;
     private javax.swing.JTextField cognomsText;
+    private javax.swing.JLabel dataNaixementLabel;
+    private javax.swing.JTextField dataNaixementText;
     private javax.swing.JLabel dniLabel;
     private javax.swing.JTextField dniText;
     private javax.swing.JLabel emailLabel;
