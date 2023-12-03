@@ -37,7 +37,7 @@ public class ProducteC {
             String token = authInstance.getToken();
 
             // Fes una crida GET per obtenir l'array de Producte a través de l'API
-            String apiUrl = "https://qpos.onrender.com/api/productes/";
+            String apiUrl = "https://qpos.onrender.com/api/productes?ordering=id";
             URL urlProductes = new URL(apiUrl);
             HttpURLConnection conn = (HttpURLConnection) urlProductes.openConnection();
             conn.setRequestMethod("GET");

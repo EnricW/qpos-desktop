@@ -1,8 +1,11 @@
 package vista;
 
 import controlador.ProducteC;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.table.DefaultTableModel;
@@ -31,15 +34,18 @@ public class ProducteV extends javax.swing.JPanel {
      * Set per a detectar proveidors únics
      */
     private Set<String> nomsProveidorUnics;
-    
+
+    private List<ProducteM> producteList; // New List to store products
+
     private String missatgeBuscador = "Busca tots els productes o busca per ID";
-    
+
     /**
      * Constructor sense paràmetres
      */
     public ProducteV() {
         initComponents();
         inicialitzaProveidorMap();
+        producteList = new ArrayList<>(); // Initialize the producteList
     }
 
     /**
@@ -91,6 +97,8 @@ public class ProducteV extends javax.swing.JPanel {
                     proveidorComboBox.addItem(proveidorNom);
                 }
             }
+
+            producteList = Arrays.asList(producteM.getProductes()); // Convert array to List
 
             // Omple el model de la taula amb les dades de l'array de ProducteM
             for (ProducteM producte : producteM.getProductes()) {
@@ -152,6 +160,9 @@ public class ProducteV extends javax.swing.JPanel {
             };
             modelDeTaula.addRow(dadesFila);
 
+            // Store the single product in the list
+            producteList = new ArrayList<>(Arrays.asList(producte));
+            producteList.add(producte);
         } else {
             GestorErrors.displayError("Error en recuperar les dades del producte amb ID: " + idProducte);
         }
@@ -176,6 +187,10 @@ public class ProducteV extends javax.swing.JPanel {
     public void buidaTaula() {
         DefaultTableModel modelDeTaula = (DefaultTableModel) taulaProductes.getModel();
         modelDeTaula.setRowCount(0);
+
+        // Clear the product list
+        producteList = new ArrayList<>(producteList);
+        producteList.clear();
     }
 
     /**
@@ -736,6 +751,9 @@ public class ProducteV extends javax.swing.JPanel {
 
                     // Crida al mètode afegeixProducte a ProducteC
                     producteC.afegeixProducte(nouproducte);
+                    
+                    // Actualitzar la taula després de l'eliminació
+                    actualitzaModelDeTaula();
                 }
             }
         } catch (NumberFormatException e) {
@@ -753,15 +771,16 @@ public class ProducteV extends javax.swing.JPanel {
         int filaSeleccionada = taulaProductes.getSelectedRow();
 
         // Comprovar si s'ha seleccionat una fila
-        if (filaSeleccionada != -1) {
+        if (filaSeleccionada != -1 && filaSeleccionada < producteList.size()) {
             // Obtenir l'ID del producte de la fila seleccionada
-            int idProducte = (int) taulaProductes.getValueAt(filaSeleccionada, 0);
+            int idProducte = producteList.get(filaSeleccionada).getId();
 
             // Cridar al mètode eliminarProducte a ProducteC amb aquest ID
             producteC.eliminarProducte(idProducte);
 
-            // Actualitzar la taula després de l'eliminació
+            // Actualitzar la taula després de l'eliminació i buida formulari
             actualitzaModelDeTaula();
+            buidaFormulari();
         } else {
             // Si no s'ha seleccionat cap fila, mostrar un missatge d'error
             GestorErrors.displayError("Cal seleccionar un producte per eliminar-lo.");
@@ -775,8 +794,8 @@ public class ProducteV extends javax.swing.JPanel {
 
             // Comprova si s'ha seleccionat una fila
             if (filaSeleccionada != -1) {
-                // Extreu les dades de la fila seleccionada
-                int idProducte = (int) taulaProductes.getValueAt(filaSeleccionada, 0);
+                // Obté l'objecte ProducteM de la llista
+                ProducteM selectedProduct = producteList.get(filaSeleccionada);
 
                 // Comprova si el ComboBox de proveïdor està buit
                 if (proveidorComboBox.getItemCount() == 0) {
@@ -809,7 +828,7 @@ public class ProducteV extends javax.swing.JPanel {
                         producteEditat.setEstoc(estoc);
 
                         // Crida al mètode editarProducte a ProducteC
-                        producteC.editarProducte(idProducte, producteEditat);
+                        producteC.editarProducte(selectedProduct.getId(), producteEditat);
 
                         // Actualitza la taula després de l'edició
                         actualitzaModelDeTaula();
@@ -829,18 +848,16 @@ public class ProducteV extends javax.swing.JPanel {
         // Omplir el formulari
         int fila = taulaProductes.getSelectedRow();
 
-        String nom = taulaProductes.getValueAt(fila, 1).toString();
-        String ean = taulaProductes.getValueAt(fila, 2).toString();
-        String preu = taulaProductes.getValueAt(fila, 3).toString();
-        String quantitat = taulaProductes.getValueAt(fila, 4).toString();
-        String nomproveidor = taulaProductes.getValueAt(fila, 5).toString();
+        if (fila != -1 && fila < producteList.size()) {
+            ProducteM selectedProduct = producteList.get(fila);
 
-        nomText.setText(nom);
-        descripcioText.setText(nom);
-        eanText.setText(ean);
-        preuText.setText(preu);
-        estocText.setText(quantitat);
-        proveidorComboBox.setSelectedItem(nomproveidor);
+            nomText.setText(selectedProduct.getNom());
+            descripcioText.setText(selectedProduct.getDescripcio());
+            eanText.setText(selectedProduct.getCodiBarres());
+            preuText.setText(String.valueOf(selectedProduct.getPreu()));
+            estocText.setText(String.valueOf(selectedProduct.getEstoc()));
+            proveidorComboBox.setSelectedItem(proveidorMap.get(selectedProduct.getProveidor().getId()));
+        }
     }//GEN-LAST:event_taulaProductesMouseClicked
 
     private void buscadorProductesFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_buscadorProductesFocusLost

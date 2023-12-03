@@ -62,7 +62,7 @@ public class MenuV extends javax.swing.JFrame {
         botoPuntDeVenda.setBackground(new Color(217, 4, 41));
 
         // Carregar el panell inicial
-        PuntdevendaV pdv = new PuntdevendaV();
+        PuntDeVendaV pdv = new PuntDeVendaV();
         JPLoader.jPanelLoader(pantalla, pdv);
 
     }
@@ -144,7 +144,7 @@ public class MenuV extends javax.swing.JFrame {
         ButtonAction action = getButtonAction(button);
         switch (action) {
             case PUNT_DE_VENDA:
-                PuntdevendaV pdv = new PuntdevendaV();
+                PuntDeVendaV pdv = new PuntDeVendaV();
                 JPLoader.jPanelLoader(pantalla, pdv);
                 break;
             case CLIENTS:
