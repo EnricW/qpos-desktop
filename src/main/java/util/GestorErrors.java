@@ -34,6 +34,14 @@ public class GestorErrors {
     }
     
     /**
+     * Mostra un missatge a través d'una finestra emergent.
+     * @param message El missatge d'error a mostrar.
+     */
+    public static void mostraMissatge(String message) {
+        JOptionPane.showMessageDialog(null, message);
+    }
+    
+    /**
      * Gestiona errors HTTP a partir d'una connexió HttpURLConnection proporcionada.
      * Mostra un missatge d'error amb el codi de resposta HTTP.
      * @param conn La connexió HttpURLConnection amb l'error HTTP.

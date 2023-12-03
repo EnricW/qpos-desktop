@@ -1,6 +1,6 @@
 package vista;
 
-import controlador.UserC;
+import controlador.LoginC;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -15,14 +15,14 @@ public class LoginV extends javax.swing.JFrame {
     /**
      * Instància del controlador d'usuari
      */
-    private final UserC userC;
+    private final LoginC userC;
     
     /**
      * Constructor de la classe
      */
     public LoginV() {
         initComponents();
-        this.userC = new UserC();
+        this.userC = new LoginC();
     }
     
     /**
@@ -41,6 +41,7 @@ public class LoginV extends javax.swing.JFrame {
         passwordText = new javax.swing.JPasswordField();
         botoLogin = new javax.swing.JButton();
         isAdminRadioButton = new javax.swing.JRadioButton();
+        botoRegistrarse = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(43, 45, 66));
@@ -104,15 +105,23 @@ public class LoginV extends javax.swing.JFrame {
         isAdminRadioButton.setForeground(new java.awt.Color(141, 153, 174));
         isAdminRadioButton.setText("Sóc admin!");
 
+        botoRegistrarse.setBackground(new java.awt.Color(255, 153, 153));
+        botoRegistrarse.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        botoRegistrarse.setForeground(new java.awt.Color(43, 45, 66));
+        botoRegistrarse.setText("REGISTRAR-SE");
+        botoRegistrarse.setActionCommand("");
+        botoRegistrarse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botoRegistrarseActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout loginPanelLayout = new javax.swing.GroupLayout(loginPanel);
         loginPanel.setLayout(loginPanelLayout);
         loginPanelLayout.setHorizontalGroup(
             loginPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(loginPanelLayout.createSequentialGroup()
                 .addGroup(loginPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(loginPanelLayout.createSequentialGroup()
-                        .addGap(159, 159, 159)
-                        .addComponent(botoLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(loginPanelLayout.createSequentialGroup()
                         .addGap(23, 23, 23)
                         .addGroup(loginPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
@@ -125,8 +134,13 @@ public class LoginV extends javax.swing.JFrame {
                             .addComponent(isAdminRadioButton, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(loginPanelLayout.createSequentialGroup()
                         .addGap(108, 108, 108)
-                        .addComponent(iconoUsuari2, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(31, Short.MAX_VALUE))
+                        .addComponent(iconoUsuari2, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(loginPanelLayout.createSequentialGroup()
+                        .addGap(27, 27, 27)
+                        .addComponent(botoLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(botoRegistrarse, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
         loginPanelLayout.setVerticalGroup(
             loginPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -145,9 +159,11 @@ public class LoginV extends javax.swing.JFrame {
                         .addComponent(usuariText, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(isAdminRadioButton, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(44, 44, 44)
-                .addComponent(botoLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(67, 67, 67))
+                .addGap(43, 43, 43)
+                .addGroup(loginPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(botoLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(botoRegistrarse, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(68, 68, 68))
         );
 
         javax.swing.GroupLayout PantallaLayout = new javax.swing.GroupLayout(Pantalla);
@@ -230,9 +246,16 @@ public class LoginV extends javax.swing.JFrame {
         usuariText.setText("");
     }//GEN-LAST:event_usuariTextFocusGained
 
+    private void botoRegistrarseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoRegistrarseActionPerformed
+        RegistreV pantallaRegistre = new RegistreV();
+        pantallaRegistre.setLocationRelativeTo(null);
+        pantallaRegistre.setVisible(true);
+    }//GEN-LAST:event_botoRegistrarseActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Pantalla;
     private javax.swing.JButton botoLogin;
+    private javax.swing.JButton botoRegistrarse;
     private javax.swing.JLabel iconoPassword;
     private javax.swing.JLabel iconoUsuari;
     private javax.swing.JLabel iconoUsuari2;

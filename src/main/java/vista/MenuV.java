@@ -62,7 +62,7 @@ public class MenuV extends javax.swing.JFrame {
         botoPuntDeVenda.setBackground(new Color(217, 4, 41));
 
         // Carregar el panell inicial
-        PuntdevendaV pdv = new PuntdevendaV();
+        PuntDeVendaV pdv = new PuntDeVendaV();
         JPLoader.jPanelLoader(pantalla, pdv);
 
     }
@@ -144,7 +144,7 @@ public class MenuV extends javax.swing.JFrame {
         ButtonAction action = getButtonAction(button);
         switch (action) {
             case PUNT_DE_VENDA:
-                PuntdevendaV pdv = new PuntdevendaV();
+                PuntDeVendaV pdv = new PuntDeVendaV();
                 JPLoader.jPanelLoader(pantalla, pdv);
                 break;
             case CLIENTS:
@@ -195,7 +195,7 @@ public class MenuV extends javax.swing.JFrame {
         menuLateral = new javax.swing.JPanel();
         infoUsuari = new javax.swing.JPanel();
         usuariText = new javax.swing.JLabel();
-        botoUsuari = new javax.swing.JToggleButton();
+        botoCanviUsuari = new javax.swing.JToggleButton();
         botoPuntDeVenda = new javax.swing.JToggleButton();
         botoClients = new javax.swing.JToggleButton();
         botoMagatzem = new javax.swing.JToggleButton();
@@ -215,18 +215,23 @@ public class MenuV extends javax.swing.JFrame {
         usuariText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 20)); // NOI18N
         usuariText.setForeground(new java.awt.Color(249, 249, 249));
         usuariText.setText("USUARI");
+        usuariText.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                usuariTextMouseClicked(evt);
+            }
+        });
 
-        botoUsuari.setBackground(new java.awt.Color(43, 45, 66));
-        botoUsuari.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 16)); // NOI18N
-        botoUsuari.setForeground(new java.awt.Color(141, 153, 174));
-        botoUsuari.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/usuariout_1.png"))); // NOI18N
-        botoUsuari.setContentAreaFilled(false);
-        botoUsuari.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        botoUsuari.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-        botoUsuari.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        botoUsuari.addActionListener(new java.awt.event.ActionListener() {
+        botoCanviUsuari.setBackground(new java.awt.Color(43, 45, 66));
+        botoCanviUsuari.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 16)); // NOI18N
+        botoCanviUsuari.setForeground(new java.awt.Color(141, 153, 174));
+        botoCanviUsuari.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/retrocedir3.png"))); // NOI18N
+        botoCanviUsuari.setContentAreaFilled(false);
+        botoCanviUsuari.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        botoCanviUsuari.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+        botoCanviUsuari.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        botoCanviUsuari.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botoUsuariActionPerformed(evt);
+                botoCanviUsuariActionPerformed(evt);
             }
         });
 
@@ -234,21 +239,21 @@ public class MenuV extends javax.swing.JFrame {
         infoUsuari.setLayout(infoUsuariLayout);
         infoUsuariLayout.setHorizontalGroup(
             infoUsuariLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, infoUsuariLayout.createSequentialGroup()
+            .addGroup(infoUsuariLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(botoUsuari)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(botoCanviUsuari)
+                .addGap(10, 10, 10)
                 .addComponent(usuariText)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         infoUsuariLayout.setVerticalGroup(
             infoUsuariLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(infoUsuariLayout.createSequentialGroup()
-                .addGap(10, 10, 10)
+                .addContainerGap()
                 .addGroup(infoUsuariLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(usuariText)
-                    .addComponent(botoUsuari))
-                .addGap(10, 10, 10))
+                    .addComponent(botoCanviUsuari))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         botoPuntDeVenda.setBackground(new java.awt.Color(43, 45, 66));
@@ -306,30 +311,32 @@ public class MenuV extends javax.swing.JFrame {
         menuLateralLayout.setHorizontalGroup(
             menuLateralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(menuLateralLayout.createSequentialGroup()
-                .addGap(40, 40, 40)
+                .addGap(30, 30, 30)
                 .addGroup(menuLateralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(botoPuntDeVenda, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(botoClients, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(botoMagatzem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(botoVendes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(infoUsuari, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(botoEsdeveniments, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE))
-                .addGap(40, 40, 40))
+                    .addComponent(botoEsdeveniments, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
+                    .addGroup(menuLateralLayout.createSequentialGroup()
+                        .addGap(5, 5, 5)
+                        .addComponent(infoUsuari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(30, 30, 30))
         );
         menuLateralLayout.setVerticalGroup(
             menuLateralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(menuLateralLayout.createSequentialGroup()
-                .addGap(15, 15, 15)
+                .addContainerGap()
                 .addComponent(infoUsuari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5)
+                .addGap(20, 20, 20)
                 .addComponent(botoPuntDeVenda, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(15, 15, 15)
+                .addGap(5, 5, 5)
                 .addComponent(botoClients, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(15, 15, 15)
+                .addGap(5, 5, 5)
                 .addComponent(botoMagatzem, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(15, 15, 15)
+                .addGap(5, 5, 5)
                 .addComponent(botoVendes, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(15, 15, 15)
+                .addGap(5, 5, 5)
                 .addComponent(botoEsdeveniments, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -338,7 +345,7 @@ public class MenuV extends javax.swing.JFrame {
         pantalla.setLayout(pantallaLayout);
         pantallaLayout.setHorizontalGroup(
             pantallaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 903, Short.MAX_VALUE)
+            .addGap(0, 883, Short.MAX_VALUE)
         );
         pantallaLayout.setVerticalGroup(
             pantallaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -367,7 +374,7 @@ public class MenuV extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void botoUsuariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoUsuariActionPerformed
+    private void botoCanviUsuariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoCanviUsuariActionPerformed
         // Tancar
         dispose();
 
@@ -375,7 +382,14 @@ public class MenuV extends javax.swing.JFrame {
         LoginV login = new LoginV();
         login.setLocationRelativeTo(null);
         login.setVisible(true);
-    }//GEN-LAST:event_botoUsuariActionPerformed
+    }//GEN-LAST:event_botoCanviUsuariActionPerformed
+
+    private void usuariTextMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_usuariTextMouseClicked
+        // Obrir de nou el Login
+        RegistreV registre = new RegistreV();
+        registre.setLocationRelativeTo(null);
+        registre.setVisible(true);
+    }//GEN-LAST:event_usuariTextMouseClicked
 
     /**
      * @param args the command line arguments
@@ -420,11 +434,11 @@ public class MenuV extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JToggleButton botoCanviUsuari;
     private javax.swing.JToggleButton botoClients;
     private javax.swing.JToggleButton botoEsdeveniments;
     private javax.swing.JToggleButton botoMagatzem;
     private javax.swing.JToggleButton botoPuntDeVenda;
-    private javax.swing.JToggleButton botoUsuari;
     private javax.swing.JToggleButton botoVendes;
     private javax.swing.JPanel infoUsuari;
     private javax.swing.JPanel menuLateral;

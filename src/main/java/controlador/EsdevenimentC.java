@@ -5,17 +5,14 @@
 package controlador;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import model.AssistenciaM;
@@ -24,8 +21,6 @@ import model.ClientM;
 import model.CreadorM;
 import model.EsdevenimentM;
 import model.nouEsdevenimentM;
-import model.nouProducteM;
-import util.CustomDateDeserializer;
 import util.GestorErrors;
 
 /**
@@ -67,17 +62,6 @@ public class EsdevenimentC {
 
                     ObjectMapper objMapper = new ObjectMapper();
 
-                    // Configuració de l'ObjectMapper
-                    objMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                    objMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-                    objMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
-                    objMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
-                    // Creació i configuració del mòdul amb el deserialitzador personalitzat
-                    SimpleModule module = new SimpleModule();
-                    module.addDeserializer(Date.class, new CustomDateDeserializer());
-                    objMapper.registerModule(module);
-                    
                     List<EsdevenimentM> esdeveniments = objMapper.readValue(sb.toString(), new TypeReference<List<EsdevenimentM>>() {
                     });
 
@@ -111,7 +95,7 @@ public class EsdevenimentC {
             String token = authInstance.getToken();
 
             // Preparem URL per la petició POST
-            URL urlProductes = new URL("https://qpos.onrender.com/api/productes/");
+            URL urlProductes = new URL("https://qpos.onrender.com/api/esdeveniments/");
             HttpURLConnection conn = (HttpURLConnection) urlProductes.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
@@ -122,7 +106,7 @@ public class EsdevenimentC {
             conn.setRequestProperty("User-Agent", "Mozilla/5.0");
             conn.setRequestProperty("Accept", "application/json");
 
-            // Converteix el objecte Producte a JSON
+            // Converteix el objecte Esdeveniment a JSON
             ObjectMapper objectMapper = new ObjectMapper();
             String producteJson = objectMapper.writeValueAsString(esdeveniment);
 
@@ -134,7 +118,7 @@ public class EsdevenimentC {
             int responseCode = conn.getResponseCode();
 
             if (responseCode == HttpURLConnection.HTTP_CREATED) {
-                System.out.println("Producte afegit correctament");
+                System.out.println("Esdeveniment afegit correctament");
             } else {
                 GestorErrors.handleHttpError(conn);
             }
@@ -205,6 +189,54 @@ public class EsdevenimentC {
 
             if (responseCode == HttpURLConnection.HTTP_NO_CONTENT) {
                 System.out.println("Esdeveniment eliminat correctament");
+            } else {
+                GestorErrors.handleHttpError(conn);
+            }
+        } catch (IOException e) {
+            GestorErrors.handleIOException(e);
+        }
+    }
+    
+    /**
+     * Mètode per editar un esdeveniment mitjançant una crida PUT a l'API
+     *
+     * @param idEsdeveniment
+     * @param esdeveniment
+     */
+    public void editarEsdeveniment(int idEsdeveniment, nouEsdevenimentM esdeveniment) {
+        try {
+            // Obte l'instància de la classe AuthorizationM (gestora de tokens)
+            AuthorizationM authInstance = AuthorizationM.getInstance();
+
+            // Obtinguem el token d'autenticació
+            String token = authInstance.getToken();
+
+            // Prepara la URL per a la petició PUT
+            URL urlEsdeveniment = new URL("https://qpos.onrender.com/api/esdeveniments/" + idEsdeveniment + "/");
+            HttpURLConnection conn = (HttpURLConnection) urlEsdeveniment.openConnection();
+            conn.setRequestMethod("PUT");
+            conn.setDoOutput(true);
+
+            // Estableix l'autorització mitjançant el token obtingut
+            conn.setRequestProperty("Authorization", "Token " + token);
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0");
+            conn.setRequestProperty("Accept", "application/json");
+
+            // Converteix l'objecte Esdeveniment a JSON
+            ObjectMapper objectMapper = new ObjectMapper();
+            String esdevenimentJson = objectMapper.writeValueAsString(esdeveniment);
+
+            // Escriu les dades JSON al flux de sortida
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = esdevenimentJson.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = conn.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                System.out.println("Esdeveniment editat correctament");
             } else {
                 GestorErrors.handleHttpError(conn);
             }
