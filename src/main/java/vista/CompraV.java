@@ -1,26 +1,108 @@
 package vista;
 
+import controlador.ClientC;
+import controlador.CompraC;
+import controlador.ProducteC;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.swing.table.DefaultTableModel;
+import model.AuthorizationM;
+import model.ClientM;
+import model.CompraM;
+import model.LiniaCompraM;
+import model.ProducteM;
+import util.GestorErrors;
 
 /**
  * Classe que representa la pantalla del punt de venda
+ *
  * @author Enric
  */
-public class PuntdevendaV extends javax.swing.JPanel {
+public class CompraV extends javax.swing.JPanel {
+
+    private String missatgeBuscadorProductes = "Busca productes o busca per ID";
+    private String missatgeBuscadorClient = "Busca client per DNI";
+
+    private ClientC clientC = new ClientC();
+    private ClientM clientM = new ClientM();
+
+    ProducteC producteC = new ProducteC();
+    private List<ProducteM> producteList;
 
     /**
      * Constructor
      */
-    public PuntdevendaV() {
+    public CompraV() {
         initComponents();
     }
-    
-    
+
+    /**
+     * Mètode per mostrar productes a la taula
+     */
+    public void actualitzaModelDeTaula() {
+        DefaultTableModel modelDeTaula = (DefaultTableModel) taulaProductes.getModel();
+        modelDeTaula.setRowCount(0); // Esborra les dades existents
+
+        // Crida el mètode getProductes a ProducteC per obtenir les dades actualitzades del producte
+        ProducteM producteM = producteC.getProductes();
+
+        if (producteM != null && producteM.getProductes() != null) {
+
+            producteList = Arrays.asList(producteM.getProductes()); // Convert array to List
+
+            // Omple el model de la taula amb les dades de l'array de ProducteM
+            for (ProducteM producte : producteM.getProductes()) {
+                Object[] dadesFila = {
+                    producte.getId(),
+                    producte.getNom(),
+                    producte.getPreu()
+                };
+                modelDeTaula.addRow(dadesFila);
+            }
+
+        } else {
+            GestorErrors.displayError("Error en recuperar les dades del producte.");
+        }
+    }
+
+    /**
+     * Mètode per obtenir i mostrar un producte específic a la taula
+     *
+     * @param idProducte
+     */
+    private void mostrarProducte(int idProducte) {
+        // Obté el producte utilitzant el mètode getProducte a ProducteC
+        ProducteM producte = producteC.getProducte(idProducte);
+
+        // Comprova si el producte no és nul
+        if (producte != null) {
+
+            // Esborra el model de la taula
+            DefaultTableModel modelDeTaula = (DefaultTableModel) taulaProductes.getModel();
+            modelDeTaula.setRowCount(0);
+
+            // Omple la taula amb les dades del producte individual
+            Object[] dadesFila = {
+                producte.getId(),
+                producte.getNom(),
+                producte.getPreu()
+            };
+            modelDeTaula.addRow(dadesFila);
+
+            // Store the single product in the list
+            producteList = new ArrayList<>(Arrays.asList(producte));
+            producteList.add(producte);
+        } else {
+            GestorErrors.displayError("Error en recuperar les dades del producte amb ID: " + idProducte);
+        }
+    }
 
     /**
      * Mètode que actualitza l'import total
      */
-
     private void actualitzaTotal() {
         DefaultTableModel model = (DefaultTableModel) taulaProductesTicket.getModel();
 
@@ -63,7 +145,7 @@ public class PuntdevendaV extends javax.swing.JPanel {
         botoBuscaProducte = new javax.swing.JButton();
         operacionsPanel = new javax.swing.JPanel();
         clientPanel = new javax.swing.JPanel();
-        buscadorClients = new javax.swing.JTextField();
+        buscadorClient = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         taulaProductesTicket = new javax.swing.JTable();
         separador4 = new javax.swing.JPanel();
@@ -92,7 +174,7 @@ public class PuntdevendaV extends javax.swing.JPanel {
         buscadorProductes.setBackground(new java.awt.Color(237, 242, 244));
         buscadorProductes.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         buscadorProductes.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        buscadorProductes.setText("Busca producte per nom o codi EAN");
+        buscadorProductes.setText("Busca productes o busca per ID");
         buscadorProductes.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 buscadorProductesFocusGained(evt);
@@ -113,11 +195,11 @@ public class PuntdevendaV extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Codi", "Nom", "EAN", "Preu"
+                "Codi", "Nom", "Preu"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -132,18 +214,9 @@ public class PuntdevendaV extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(taulaProductes);
         if (taulaProductes.getColumnModel().getColumnCount() > 0) {
-            taulaProductes.getColumnModel().getColumn(0).setMinWidth(70);
-            taulaProductes.getColumnModel().getColumn(0).setPreferredWidth(70);
-            taulaProductes.getColumnModel().getColumn(0).setMaxWidth(70);
-            taulaProductes.getColumnModel().getColumn(1).setMinWidth(400);
-            taulaProductes.getColumnModel().getColumn(1).setPreferredWidth(400);
-            taulaProductes.getColumnModel().getColumn(1).setMaxWidth(400);
-            taulaProductes.getColumnModel().getColumn(2).setMinWidth(120);
-            taulaProductes.getColumnModel().getColumn(2).setPreferredWidth(120);
-            taulaProductes.getColumnModel().getColumn(2).setMaxWidth(120);
-            taulaProductes.getColumnModel().getColumn(3).setMinWidth(70);
-            taulaProductes.getColumnModel().getColumn(3).setPreferredWidth(70);
-            taulaProductes.getColumnModel().getColumn(3).setMaxWidth(70);
+            taulaProductes.getColumnModel().getColumn(0).setPreferredWidth(20);
+            taulaProductes.getColumnModel().getColumn(1).setPreferredWidth(500);
+            taulaProductes.getColumnModel().getColumn(2).setPreferredWidth(40);
         }
         taulaProductes.setRowHeight(30);
 
@@ -195,6 +268,11 @@ public class PuntdevendaV extends javax.swing.JPanel {
         botoBuscaProducte.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/lupaB.png"))); // NOI18N
         botoBuscaProducte.setBorder(null);
         botoBuscaProducte.setBorderPainted(false);
+        botoBuscaProducte.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botoBuscaProducteActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout productePanelLayout = new javax.swing.GroupLayout(productePanel);
         productePanel.setLayout(productePanelLayout);
@@ -257,21 +335,21 @@ public class PuntdevendaV extends javax.swing.JPanel {
 
         clientPanel.setBackground(new java.awt.Color(217, 4, 41));
 
-        buscadorClients.setBackground(new java.awt.Color(237, 242, 244));
-        buscadorClients.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
-        buscadorClients.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        buscadorClients.setText("Busca client per DNI");
-        buscadorClients.addFocusListener(new java.awt.event.FocusAdapter() {
+        buscadorClient.setBackground(new java.awt.Color(237, 242, 244));
+        buscadorClient.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
+        buscadorClient.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        buscadorClient.setText("Busca client per DNI");
+        buscadorClient.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
-                buscadorClientsFocusGained(evt);
+                buscadorClientFocusGained(evt);
             }
             public void focusLost(java.awt.event.FocusEvent evt) {
-                buscadorClientsFocusLost(evt);
+                buscadorClientFocusLost(evt);
             }
         });
-        buscadorClients.addKeyListener(new java.awt.event.KeyAdapter() {
+        buscadorClient.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                buscadorClientsKeyReleased(evt);
+                buscadorClientKeyReleased(evt);
             }
         });
 
@@ -300,13 +378,12 @@ public class PuntdevendaV extends javax.swing.JPanel {
         });
         jScrollPane2.setViewportView(taulaProductesTicket);
         if (taulaProductesTicket.getColumnModel().getColumnCount() > 0) {
-            taulaProductesTicket.getColumnModel().getColumn(0).setMinWidth(40);
-            taulaProductesTicket.getColumnModel().getColumn(0).setPreferredWidth(40);
-            taulaProductesTicket.getColumnModel().getColumn(0).setMaxWidth(40);
+            taulaProductesTicket.getColumnModel().getColumn(0).setResizable(false);
+            taulaProductesTicket.getColumnModel().getColumn(0).setPreferredWidth(3);
             taulaProductesTicket.getColumnModel().getColumn(1).setResizable(false);
-            taulaProductesTicket.getColumnModel().getColumn(2).setMinWidth(70);
-            taulaProductesTicket.getColumnModel().getColumn(2).setPreferredWidth(70);
-            taulaProductesTicket.getColumnModel().getColumn(2).setMaxWidth(70);
+            taulaProductesTicket.getColumnModel().getColumn(1).setPreferredWidth(250);
+            taulaProductesTicket.getColumnModel().getColumn(2).setResizable(false);
+            taulaProductesTicket.getColumnModel().getColumn(2).setPreferredWidth(20);
         }
         taulaProductesTicket.setRowHeight(30);
 
@@ -340,11 +417,21 @@ public class PuntdevendaV extends javax.swing.JPanel {
         botoBuscaClient.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/lupaB.png"))); // NOI18N
         botoBuscaClient.setBorder(null);
         botoBuscaClient.setBorderPainted(false);
+        botoBuscaClient.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botoBuscaClientActionPerformed(evt);
+            }
+        });
 
         botoNetejaBuscadorClient.setBackground(new java.awt.Color(43, 45, 66));
         botoNetejaBuscadorClient.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/XB.png"))); // NOI18N
         botoNetejaBuscadorClient.setBorder(null);
         botoNetejaBuscadorClient.setBorderPainted(false);
+        botoNetejaBuscadorClient.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botoNetejaBuscadorClientActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout clientPanelLayout = new javax.swing.GroupLayout(clientPanel);
         clientPanel.setLayout(clientPanelLayout);
@@ -358,7 +445,7 @@ public class PuntdevendaV extends javax.swing.JPanel {
                     .addGroup(clientPanelLayout.createSequentialGroup()
                         .addComponent(botoBuscaClient, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(buscadorClients)
+                        .addComponent(buscadorClient)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(botoNetejaBuscadorClient, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -374,7 +461,7 @@ public class PuntdevendaV extends javax.swing.JPanel {
                     .addGroup(clientPanelLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(clientPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(buscadorClients, javax.swing.GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
+                            .addComponent(buscadorClient, javax.swing.GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
                             .addComponent(botoBuscaClient, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(botoNetejaBuscadorClient, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -504,6 +591,11 @@ public class PuntdevendaV extends javax.swing.JPanel {
         jButton1.setForeground(new java.awt.Color(237, 242, 244));
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/efectiu_1.png"))); // NOI18N
         jButton1.setText("EFECTIU");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setBackground(new java.awt.Color(43, 45, 66));
         jButton2.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
@@ -560,17 +652,17 @@ public class PuntdevendaV extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void buscadorClientsFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_buscadorClientsFocusGained
-        if (buscadorClients.getText().matches("Busca client per DNI")) {
-            buscadorClients.setText("");
+    private void buscadorClientFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_buscadorClientFocusGained
+        if (buscadorClient.getText().matches(missatgeBuscadorClient)) {
+            buscadorClient.setText("");
         }
-    }//GEN-LAST:event_buscadorClientsFocusGained
+    }//GEN-LAST:event_buscadorClientFocusGained
 
-    private void buscadorClientsFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_buscadorClientsFocusLost
-        if (buscadorClients.getText().isEmpty()) {
-            buscadorClients.setText("Busca client per DNI");
+    private void buscadorClientFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_buscadorClientFocusLost
+        if (buscadorClient.getText().isEmpty()) {
+            buscadorClient.setText(missatgeBuscadorClient);
         }
-    }//GEN-LAST:event_buscadorClientsFocusLost
+    }//GEN-LAST:event_buscadorClientFocusLost
 
     private void buscadorProductesFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_buscadorProductesFocusGained
         buscadorProductes.setText("");
@@ -578,7 +670,7 @@ public class PuntdevendaV extends javax.swing.JPanel {
 
     private void buscadorProductesFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_buscadorProductesFocusLost
         if (buscadorProductes.getText().isEmpty()) {
-            buscadorProductes.setText("Busca producte per nom o codi EAN");
+            buscadorProductes.setText(missatgeBuscadorProductes);
         }
 
     }//GEN-LAST:event_buscadorProductesFocusLost
@@ -586,7 +678,6 @@ public class PuntdevendaV extends javax.swing.JPanel {
     private void taulaProductesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taulaProductesMouseClicked
 
         // Afegeix el producte a la taula ticket
-        
         int filaSeleccionada = taulaProductes.getSelectedRow();
 
         if (filaSeleccionada != -1) {
@@ -596,7 +687,7 @@ public class PuntdevendaV extends javax.swing.JPanel {
             Object[] dadesFila = new Object[3];
             dadesFila[0] = sourceTableModel.getValueAt(filaSeleccionada, 0);
             dadesFila[1] = sourceTableModel.getValueAt(filaSeleccionada, 1);
-            dadesFila[2] = sourceTableModel.getValueAt(filaSeleccionada, 3);
+            dadesFila[2] = sourceTableModel.getValueAt(filaSeleccionada, 2);
 
             destinationTableModel.addRow(dadesFila);
         }
@@ -607,12 +698,12 @@ public class PuntdevendaV extends javax.swing.JPanel {
 
     }//GEN-LAST:event_buscadorProductesKeyReleased
 
-    private void buscadorClientsKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buscadorClientsKeyReleased
-        
-    }//GEN-LAST:event_buscadorClientsKeyReleased
+    private void buscadorClientKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buscadorClientKeyReleased
+
+    }//GEN-LAST:event_buscadorClientKeyReleased
 
     private void taulaProductesTicketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taulaProductesTicketMouseClicked
-        
+
         // Eliminar el producte del ticket        
         int filaSeleccionada = taulaProductesTicket.getSelectedRow();
 
@@ -624,13 +715,100 @@ public class PuntdevendaV extends javax.swing.JPanel {
         actualitzaTotal();
     }//GEN-LAST:event_taulaProductesTicketMouseClicked
 
+    private void botoBuscaClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBuscaClientActionPerformed
+        // Obtenir el text del camp de text BuscadorClient
+        String dniClient = buscadorClient.getText();
+
+        // Comprovar si el text no és buit 
+        if (!dniClient.isEmpty() && !dniClient.equals(missatgeBuscadorClient)) {
+            try {
+                // Crida al mètode per mostrar el client individual al buscador
+                clientM = clientC.getClientByDNI(dniClient);
+                // Mostra el nom i cognoms si el client no és null
+                if (clientM != null) {
+                    buscadorClient.setText(clientM.getNom() + " " + clientM.getCognoms());
+                } else {
+                    // Si el client és null, deixa el buscadorClient en blanc
+                    buscadorClient.setText(missatgeBuscadorClient);
+                    GestorErrors.displayError("Client no trobat a la base de dades.");
+                }
+            } catch (NumberFormatException e) {
+                // Gestionar el cas en què dniClient no sigui una entrada vàlida
+                System.out.println("Format de dniClient no vàlid.");
+            }
+        }
+    }//GEN-LAST:event_botoBuscaClientActionPerformed
+
+    private void botoNetejaBuscadorClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoNetejaBuscadorClientActionPerformed
+        buscadorClient.setText(missatgeBuscadorClient);
+        clientM = null;
+        System.out.println("La ID del usuari es: " + AuthorizationM.getInstance().getId());
+    }//GEN-LAST:event_botoNetejaBuscadorClientActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // Create a map to store product IDs and their quantities
+        HashMap<Integer, Integer> productQuantities = new HashMap<>();
+
+        // Iterate through the rows of taulaProductesTicket
+        DefaultTableModel model = (DefaultTableModel) taulaProductesTicket.getModel();
+        for (int row = 0; row < model.getRowCount(); row++) {
+            int idProducte = (int) model.getValueAt(row, 0);
+
+            // Update the quantity in the map
+            productQuantities.put(idProducte, productQuantities.getOrDefault(idProducte, 0) + 1);
+        }
+
+        // Create a list of LiniaCompraM objects using the map
+        List<LiniaCompraM> linies = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry : productQuantities.entrySet()) {
+            int idProducte = entry.getKey();
+            int quantitat = entry.getValue();
+            linies.add(new LiniaCompraM(idProducte, quantitat));
+        }
+
+        // Create a sample CompraM object
+        int client_id = clientM.getId();
+        int treballador_id = AuthorizationM.getInstance().getId();
+
+        CompraM compra = new CompraM(client_id, treballador_id, linies);
+
+        // Create an instance of CompraC and make the API request
+        CompraC compraController = new CompraC();
+        compraController.creaCompra(compra);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void botoBuscaProducteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBuscaProducteActionPerformed
+        // Obtenir el text del camp de text BuscadorProductes
+        String idProducteText = buscadorProductes.getText();
+
+        // Comprovar si el text no és buit 
+        if (!idProducteText.isEmpty()) {
+            try {
+                // Intenta analitzar el text per obtenir la identificació del producte
+                int idProducte = Integer.parseInt(idProducteText);
+
+                // Crida al mètode per mostrar el producte individual a la taula
+                mostrarProducte(idProducte);
+            } catch (NumberFormatException e) {
+                // Gestionar el cas en què idProducteText no sigui un enter vàlid
+                System.out.println("Format d'ID de producte no vàlid. Mostrant tots els productes en lloc d'això.");
+
+                // Mostra tots els productes
+                actualitzaModelDeTaula();
+            }
+        } else {
+            // Si el text és buit, obtenir tots els productes i omplir la taula
+            actualitzaModelDeTaula();
+        }
+    }//GEN-LAST:event_botoBuscaProducteActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botoBuscaClient;
     private javax.swing.JButton botoBuscaProducte;
     private javax.swing.JButton botoNetejaBuscadorClient;
     private javax.swing.JButton botoNetejaBuscadorProducte;
-    private javax.swing.JTextField buscadorClients;
+    private javax.swing.JTextField buscadorClient;
     private javax.swing.JTextField buscadorProductes;
     private javax.swing.JPanel calculsPanel;
     private javax.swing.JPanel clientPanel;

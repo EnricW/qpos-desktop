@@ -130,7 +130,7 @@
               <Font name="DejaVu Sans Condensed" size="18" style="1"/>
             </Property>
             <Property name="horizontalAlignment" type="int" value="0"/>
-            <Property name="text" type="java.lang.String" value="Busca producte per nom o codi EAN"/>
+            <Property name="text" type="java.lang.String" value="Busca productes o busca per ID"/>
           </Properties>
           <Events>
             <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="buscadorProductesFocusGained"/>
@@ -148,31 +148,25 @@
                   <Font name="DejaVu Sans Condensed" size="18" style="1"/>
                 </Property>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="4" rowCount="0">
+                  <Table columnCount="3" rowCount="0">
                     <Column editable="false" title="Codi" type="java.lang.Object"/>
                     <Column editable="false" title="Nom" type="java.lang.Object"/>
-                    <Column editable="false" title="EAN" type="java.lang.Object"/>
                     <Column editable="false" title="Preu" type="java.lang.Object"/>
                   </Table>
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                   <TableColumnModel selectionModel="0">
-                    <Column maxWidth="70" minWidth="70" prefWidth="70" resizable="true">
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="20" resizable="true">
                       <Title/>
                       <Editor/>
                       <Renderer/>
                     </Column>
-                    <Column maxWidth="400" minWidth="400" prefWidth="400" resizable="true">
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="500" resizable="true">
                       <Title/>
                       <Editor/>
                       <Renderer/>
                     </Column>
-                    <Column maxWidth="120" minWidth="120" prefWidth="120" resizable="true">
-                      <Title/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
-                    <Column maxWidth="70" minWidth="70" prefWidth="70" resizable="true">
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="40" resizable="true">
                       <Title/>
                       <Editor/>
                       <Renderer/>
@@ -279,6 +273,9 @@
             </Property>
             <Property name="borderPainted" type="boolean" value="false"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="botoBuscaProducteActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -320,7 +317,7 @@
                       <Group type="102" alignment="1" attributes="0">
                           <Component id="botoBuscaClient" min="-2" pref="47" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="buscadorClients" max="32767" attributes="0"/>
+                          <Component id="buscadorClient" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="botoNetejaBuscadorClient" min="-2" pref="47" max="-2" attributes="0"/>
                       </Group>
@@ -340,7 +337,7 @@
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="buscadorClients" pref="47" max="32767" attributes="0"/>
+                              <Component id="buscadorClient" pref="47" max="32767" attributes="0"/>
                               <Component id="botoBuscaClient" max="32767" attributes="0"/>
                               <Component id="botoNetejaBuscadorClient" max="32767" attributes="0"/>
                           </Group>
@@ -359,7 +356,7 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JTextField" name="buscadorClients">
+        <Component class="javax.swing.JTextField" name="buscadorClient">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="f4" green="f2" red="ed" type="rgb"/>
@@ -371,9 +368,9 @@
             <Property name="text" type="java.lang.String" value="Busca client per DNI"/>
           </Properties>
           <Events>
-            <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="buscadorClientsFocusGained"/>
-            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="buscadorClientsFocusLost"/>
-            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="buscadorClientsKeyReleased"/>
+            <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="buscadorClientFocusGained"/>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="buscadorClientFocusLost"/>
+            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="buscadorClientKeyReleased"/>
           </Events>
         </Component>
         <Container class="javax.swing.JScrollPane" name="jScrollPane2">
@@ -394,17 +391,17 @@
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                   <TableColumnModel selectionModel="0">
-                    <Column maxWidth="40" minWidth="40" prefWidth="40" resizable="true">
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="3" resizable="false">
                       <Title/>
                       <Editor/>
                       <Renderer/>
                     </Column>
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="false">
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="250" resizable="false">
                       <Title/>
                       <Editor/>
                       <Renderer/>
                     </Column>
-                    <Column maxWidth="70" minWidth="70" prefWidth="70" resizable="true">
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="20" resizable="false">
                       <Title/>
                       <Editor/>
                       <Renderer/>
@@ -477,6 +474,9 @@
             </Property>
             <Property name="borderPainted" type="boolean" value="false"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="botoBuscaClientActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="botoNetejaBuscadorClient">
           <Properties>
@@ -491,6 +491,9 @@
             </Property>
             <Property name="borderPainted" type="boolean" value="false"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="botoNetejaBuscadorClientActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -745,6 +748,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value="EFECTIU"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="jButton2">
           <Properties>
