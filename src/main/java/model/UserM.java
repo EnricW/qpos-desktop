@@ -4,7 +4,7 @@ package model;
  * Classe que representa un usuari
  * @author Enric
  */
-public class UsuariM {
+public class UserM {
 
     /**
      * Atributs de la classe que representen les dades del usuari
@@ -19,7 +19,7 @@ public class UsuariM {
      * @param username
      * @param password
      */
-    public UsuariM(String username, String password) {
+    public UserM(String username, String password) {
         this.username = username;
         this.password = password;
     }
@@ -28,7 +28,7 @@ public class UsuariM {
      * Constructor buit per a la deserialització JSON
      * Pot ser utilitzat pel mapeig de les respostes del servidor a aquest objecte 
      */
-    public UsuariM() {
+    public UserM() {
     }
 
     /**

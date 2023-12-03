@@ -12,7 +12,7 @@ public class nouEsdevenimentM {
     private String nom;
     private String descripcio;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private Date data;
 
     private int aforament;

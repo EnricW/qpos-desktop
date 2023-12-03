@@ -18,13 +18,9 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import javax.swing.table.DefaultTableModel;
 import model.AssistenciaM;
-import model.AuthorizationM;
 import model.ClientM;
 import model.EsdevenimentM;
-import model.ProducteM;
 import model.nouEsdevenimentM;
-import model.nouProducteM;
-import util.DateUtils;
 import util.GestorErrors;
 
 /**
@@ -60,12 +56,10 @@ public class EsdevenimentV extends javax.swing.JPanel {
         if (esdeveniments != null) {
             // Populate the table with esdeveniment data.
             for (EsdevenimentM esdeveniment : esdeveniments) {
-                String formattedDate = DateUtils.format(esdeveniment.getData());
-
                 Object[] rowData = {
                     esdeveniment.getId(),
                     esdeveniment.getNom(),
-                    formattedDate,
+                    esdeveniment.getData(),
                     esdeveniment.getAforament(),
                     esdeveniment.getDurada(),
                     esdeveniment.getUbicacio()
@@ -265,7 +259,7 @@ public class EsdevenimentV extends javax.swing.JPanel {
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 632, Short.MAX_VALUE)
+            .addGap(0, 449, Short.MAX_VALUE)
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -338,7 +332,7 @@ public class EsdevenimentV extends javax.swing.JPanel {
                                 .addComponent(buscadorEsdeveniment)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(botoNetejaBuscadorClient, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 670, Short.MAX_VALUE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE))
                         .addGap(18, 18, 18)))
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -426,7 +420,6 @@ public class EsdevenimentV extends javax.swing.JPanel {
 
         nomText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         nomText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
-        nomText.setPreferredSize(new java.awt.Dimension(300, 28));
 
         separadorLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         separadorLabel.setForeground(new java.awt.Color(237, 242, 244));
@@ -435,23 +428,18 @@ public class EsdevenimentV extends javax.swing.JPanel {
 
         descripcioText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         descripcioText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
-        descripcioText.setPreferredSize(new java.awt.Dimension(300, 28));
 
         ubicacioText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         ubicacioText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
-        ubicacioText.setPreferredSize(new java.awt.Dimension(300, 28));
 
         aforamentText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         aforamentText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
-        aforamentText.setPreferredSize(new java.awt.Dimension(300, 28));
 
         duradaText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         duradaText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
-        duradaText.setPreferredSize(new java.awt.Dimension(300, 28));
 
         dataText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         dataText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
-        dataText.setPreferredSize(new java.awt.Dimension(300, 28));
 
         // Custom editor to format minutes as "00"
         JSpinner.DateEditor de = new JSpinner.DateEditor(horaSpinner, "HH:mm");
@@ -521,14 +509,14 @@ public class EsdevenimentV extends javax.swing.JPanel {
                                     .addComponent(duradaLabel))
                                 .addGap(38, 38, 38)
                                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(duradaText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(aforamentText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(ubicacioText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(descripcioText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(nomText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(duradaText)
+                                    .addComponent(aforamentText)
+                                    .addComponent(ubicacioText)
+                                    .addComponent(descripcioText)
+                                    .addComponent(nomText)))
                             .addGroup(infoPanelLayout.createSequentialGroup()
                                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
+                                .addGap(0, 1, Short.MAX_VALUE))
                             .addComponent(jCalendar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(infoPanelLayout.createSequentialGroup()
                                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -537,7 +525,7 @@ public class EsdevenimentV extends javax.swing.JPanel {
                                 .addGap(110, 110, 110)
                                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(horaSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(dataText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(dataText))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(infoPanelLayout.createSequentialGroup()
@@ -566,28 +554,28 @@ public class EsdevenimentV extends javax.swing.JPanel {
                     .addGroup(infoPanelLayout.createSequentialGroup()
                         .addGap(41, 41, 41)
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(nomText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(nomText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(nomLabel, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addGap(18, 18, 18)
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(descripcioText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(descripcioText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(descripcioLabel, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addGap(18, 18, 18)
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(ubicacioText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ubicacioText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(ubicacioLabel, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addGap(18, 18, 18)
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(aforamentText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(aforamentText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(aforamentLabel, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addGap(18, 18, 18)
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(duradaText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(duradaText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(duradaLabel, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addGap(18, 18, 18)
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(dataLabel)
-                            .addComponent(dataText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(dataText, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addComponent(jCalendar2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -707,6 +695,8 @@ public class EsdevenimentV extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
+        taulaAssistents.setCellSelectionEnabled(false);
+        taulaAssistents.setRowSelectionAllowed(true);
         taulaAssistents.getTableHeader().setReorderingAllowed(false);
         taulaAssistents.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -764,7 +754,7 @@ public class EsdevenimentV extends javax.swing.JPanel {
                 .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(31, 31, 31)
                 .addGroup(buscadorPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 670, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
                     .addGroup(buscadorPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel15)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -839,37 +829,17 @@ public class EsdevenimentV extends javax.swing.JPanel {
             String ubicacio = selectedEsdeveniment.getUbicacio();
             int aforament = selectedEsdeveniment.getAforament();
             String durada = selectedEsdeveniment.getDurada();
-            String data = DateUtils.format(selectedEsdeveniment.getData());
+            Date data = selectedEsdeveniment.getData();
 
             nomText.setText(nom);
             descripcioText.setText(descripcio);
             ubicacioText.setText(ubicacio);
             aforamentText.setText(String.valueOf(aforament));
             duradaText.setText(durada);
-            dataText.setText(data.substring(0, 8));
+            dataText.setText(String.valueOf(data));
 
-            try {
-                // Parse the string to obtain a Date object
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-                Date date = dateFormat.parse(data);
-
-                // Set up the SpinnerDateModel with the parsed date
-                SpinnerDateModel model = new SpinnerDateModel(date, null, null, java.util.Calendar.HOUR_OF_DAY);
-
-                // Update the existing horaSpinner with the new model
-                horaSpinner.setModel(model);
-
-                // Parse the HH:mm part from the data string and set it as the value of horaSpinner
-                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-                Date time = timeFormat.parse(data.substring(9, 14));
-                horaSpinner.setValue(time);
-
-            } catch (ParseException ex) {
-                Logger.getLogger(EsdevenimentV.class.getName()).log(Level.SEVERE, null, ex);
-            }
             actualitzaTaulaAssistents();
         }
-
     }//GEN-LAST:event_taulaEsdevenimentsMouseClicked
 
     private void botoBuscaClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBuscaClientActionPerformed
@@ -883,66 +853,7 @@ public class EsdevenimentV extends javax.swing.JPanel {
     }//GEN-LAST:event_netejaBotoActionPerformed
 
     private void editarBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarBotoActionPerformed
-        try {
-            // Obté l'índex de la fila seleccionada
-            int filaSeleccionada = taulaEsdeveniments.getSelectedRow();
 
-            // Comprova si s'ha seleccionat una fila
-            if (filaSeleccionada != -1) {
-                // Obté l'objecte EsdevenimentM de la llista
-                EsdevenimentM selectedEsdeveniment = esdeveniments.get(filaSeleccionada);
-
-                String nom = nomText.getText();
-                String descripcio = descripcioText.getText();
-                String ubicacio = ubicacioText.getText();
-                int aforament = Integer.parseInt(aforamentText.getText());
-                String durada = duradaText.getText();
-
-                String timeFormat = "HH:mm:ss";
-                String dateFormat = "dd/MM/yy HH:mm:ss";
-
-                SimpleDateFormat sdfTime = new SimpleDateFormat(timeFormat);
-                SimpleDateFormat sdfFinalDate = new SimpleDateFormat(dateFormat);
-
-                String dia = dataText.getText();
-                String hora = sdfTime.format(horaSpinner.getValue());
-                String dataSenseFormat = dia + " " + hora;
-
-                Date data = sdfFinalDate.parse(dataSenseFormat);  // Use parse instead of format
-
-                // Comprova si hi ha algun camp buit
-                if (nom.isEmpty() || descripcio.isEmpty() || ubicacio.isEmpty() || durada.isEmpty()) {
-                    // Gestionar l'error quan algun camp està buit
-                    GestorErrors.displayError("Cal omplir tots els camps abans d'editar un producte.");
-                } else {
-
-                    // Crea un objecte nouEsdevenimentM amb la informació actualitzada
-                    nouEsdevenimentM esdevenimentEditat = new nouEsdevenimentM();
-                    esdevenimentEditat.setNom(nom);
-                    esdevenimentEditat.setDescripcio(descripcio);
-                    esdevenimentEditat.setData(data);
-                    esdevenimentEditat.setUbicacio(ubicacio);
-                    esdevenimentEditat.setAforament(aforament);
-                    esdevenimentEditat.setDurada(durada);
-                    esdevenimentEditat.setCreador_id(AuthorizationM.getInstance().getId());
-
-                    // Crida al mètode editarEsdeveniment a EsdevenimentC
-                    esdevenimentC.editarEsdeveniment(selectedEsdeveniment.getId(), esdevenimentEditat);
-
-                    // Actualitza la taula després de l'edició
-                    actualitzaModelDeTaula();
-
-                }
-            } else {
-                // Si no s'ha seleccionat cap fila, mostra un missatge d'error
-                GestorErrors.displayError("Cal seleccionar un esdeveniment per editar-lo.");
-            }
-        } catch (NumberFormatException e) {
-            // Gestionar el cas en què el text no sigui un número vàlid
-            GestorErrors.displayError("Entrada no vàlida per a valors numèrics");
-        } catch (ParseException ex) {
-            Logger.getLogger(EsdevenimentV.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }//GEN-LAST:event_editarBotoActionPerformed
 
     private void afegirBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afegirBotoActionPerformed
@@ -953,17 +864,10 @@ public class EsdevenimentV extends javax.swing.JPanel {
             int aforament = Integer.parseInt(aforamentText.getText());
             String durada = duradaText.getText();
 
-            String timeFormat = "HH:mm:ss";
-            String dateFormat = "dd/MM/yy HH:mm:ss";
+            String dateFormat = "yyyy-MM-dd'T'HH:mm";
+            SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
 
-            SimpleDateFormat sdfTime = new SimpleDateFormat(timeFormat);
-            SimpleDateFormat sdfFinalDate = new SimpleDateFormat(dateFormat);
-
-            String dia = dataText.getText();
-            String hora = sdfTime.format(horaSpinner.getValue());
-            String dataSenseFormat = dia + " " + hora;
-
-            Date data = sdfFinalDate.parse(dataSenseFormat);  // Use parse instead of format
+            Date data = sdf.parse(dataText.getText());
 
             // Comprova si hi ha algun camp buit
             if (nom.isEmpty() || descripcio.isEmpty() || ubicacio.isEmpty() || durada.isEmpty()) {
@@ -979,7 +883,8 @@ public class EsdevenimentV extends javax.swing.JPanel {
                 nouesdeveniment.setAforament(aforament);
                 nouesdeveniment.setDurada(durada);
                 nouesdeveniment.setUbicacio(ubicacio);
-                nouesdeveniment.setCreador_id(AuthorizationM.getInstance().getId());
+                // Get user id per desenvolupar!
+                nouesdeveniment.setCreador_id(4);
 
                 // Crida al mètode afegeixEsdeveniment a EsdevenimentC
                 esdevenimentC.afegeixEsdeveniment(nouesdeveniment);
