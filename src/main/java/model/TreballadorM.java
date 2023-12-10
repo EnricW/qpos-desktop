@@ -1,14 +1,17 @@
 package model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.Date;
 
 /**
  *
  * @author Enric
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TreballadorM {
 
+    private int id;
     private String user;
     private String username;
     private String password;
@@ -21,6 +24,7 @@ public class TreballadorM {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dataNaixement;
+    
 
     private String telefon;
     private String imatge;
@@ -46,6 +50,15 @@ public class TreballadorM {
     }
 
     // Add getters and setters for each field
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    
     public String getUser() {
         return user;
     }

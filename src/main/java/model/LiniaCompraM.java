@@ -1,28 +1,39 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package model;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  *
- * @author Enric
+ * @author sardineta_fresca
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LiniaCompraM {
 
-    private int producte;
+    private int id;
+    private ProducteM producte;
     private int quantitat;
-
-    public LiniaCompraM(int producte, int quantitat) {
-        this.producte = producte;
-        this.quantitat = quantitat;
-    }
+    private int compra;
 
     public LiniaCompraM() {
-
     }
 
-    public int getProducte() {
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public ProducteM getProducte() {
         return producte;
     }
 
-    public void setProducte(int producte) {
+    public void setProducte(ProducteM producte) {
         this.producte = producte;
     }
 
@@ -34,4 +45,11 @@ public class LiniaCompraM {
         this.quantitat = quantitat;
     }
 
+    public int getCompra() {
+        return compra;
+    }
+
+    public void setCompra(int compra) {
+        this.compra = compra;
+    }
 }

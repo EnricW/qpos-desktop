@@ -152,11 +152,11 @@ public class MenuV extends javax.swing.JFrame {
                 JPLoader.jPanelLoader(pantalla, cli);
                 break;
             case MAGATZEM:
-                ProducteV mag = new ProducteV();
+                MagatzemV mag = new MagatzemV();
                 JPLoader.jPanelLoader(pantalla, mag);
                 break;
             case VENDES:
-                VendesV pdvVendes = new VendesV();
+                TicketsV pdvVendes = new TicketsV();
                 JPLoader.jPanelLoader(pantalla, pdvVendes);
                 break;
             case ESDEVENIMENTS:
@@ -386,9 +386,9 @@ public class MenuV extends javax.swing.JFrame {
 
     private void usuariTextMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_usuariTextMouseClicked
         // Obrir de nou el Login
-        RegistreV registre = new RegistreV();
-        registre.setLocationRelativeTo(null);
-        registre.setVisible(true);
+        TreballadorV treb = new TreballadorV();
+        treb.setLocationRelativeTo(null);
+        treb.setVisible(true);
     }//GEN-LAST:event_usuariTextMouseClicked
 
     /**

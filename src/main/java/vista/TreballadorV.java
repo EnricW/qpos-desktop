@@ -1,39 +1,46 @@
 package vista;
 
 import controlador.TreballadorC;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import model.AuthorizationM;
 import model.TreballadorM;
 import util.GestorErrors;
-import javax.xml.bind.DatatypeConverter;
 
 /**
  *
  * @author Enric
  */
-public class RegistreV extends javax.swing.JFrame {
+public class TreballadorV extends javax.swing.JFrame {
 
     TreballadorC treballadorC = new TreballadorC();
 
-    public RegistreV() {
+    public TreballadorV() {
         initComponents();
+        mostrarTreballador();
     }
 
-    private void buidarFormulari() {
-        usuariRText.setText("DNI");
-        mailRText.setText("CORREU ELECTRÒNIC");
-        telefonRText.setText("TELÉFON");
-        dataRText.setText("DATA NAIXEMENT YYYY-MM-DD");
-        cognomsRText.setText("COGNOMS");
-        nomRText.setText("NOM");
-        passwordRText.setText("Password");
-        password2RText.setText("Password");
+    private void mostrarTreballador() {
+        TreballadorM treballador = treballadorC.getTreballador(AuthorizationM.getInstance().getId());
+        usuariRText.setText(treballador.getDni());
+        nomRText.setText(treballador.getNom());
+        cognomsRText.setText(treballador.getCognoms());
+
+        // Format the date of birth
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            String formattedDate = dateFormat.format(treballador.getDataNaixement());
+            dataRText.setText(formattedDate);
+        } catch (Exception e) {
+            // Handle the exception if needed
+            e.printStackTrace();
+        }
+
+        telefonRText.setText(treballador.getTelefon());
+        mailRText.setText(treballador.getEmail());
+
+        //System.out.println("Token de " + treballador.getUser() + ": " + AuthorizationM.getInstance().getToken());
     }
 
     private boolean isValidDateFormat(String date) {
@@ -45,13 +52,6 @@ public class RegistreV extends javax.swing.JFrame {
         } catch (ParseException e) {
             return false;
         }
-    }
-    
-    // Mètode per xifrar la contrasenya amb SHA-256
-    private String hashPassword(String password) throws NoSuchAlgorithmException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] hashedBytes = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-        return DatatypeConverter.printHexBinary(hashedBytes);
     }
 
     @SuppressWarnings("unchecked")
@@ -75,8 +75,8 @@ public class RegistreV extends javax.swing.JFrame {
         password2RText = new javax.swing.JPasswordField();
         iconoPassword2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        botoBuidarFormulari = new javax.swing.JButton();
-        botoRegistrarse1 = new javax.swing.JButton();
+        botoDesferCanvis = new javax.swing.JButton();
+        botoDesarCanvis = new javax.swing.JButton();
         botoRetrocedir = new javax.swing.JToggleButton();
         dataRText = new javax.swing.JTextField();
         iconoData = new javax.swing.JLabel();
@@ -92,14 +92,6 @@ public class RegistreV extends javax.swing.JFrame {
         usuariRText.setForeground(new java.awt.Color(141, 153, 174));
         usuariRText.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         usuariRText.setText("DNI");
-        usuariRText.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                usuariRTextFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                usuariRTextFocusLost(evt);
-            }
-        });
 
         iconoUsuari1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/usuari.png"))); // NOI18N
 
@@ -109,32 +101,11 @@ public class RegistreV extends javax.swing.JFrame {
         nomRText.setForeground(new java.awt.Color(141, 153, 174));
         nomRText.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         nomRText.setText("NOM");
-        nomRText.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                nomRTextFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                nomRTextFocusLost(evt);
-            }
-        });
-        nomRText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nomRTextActionPerformed(evt);
-            }
-        });
 
         cognomsRText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         cognomsRText.setForeground(new java.awt.Color(141, 153, 174));
         cognomsRText.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         cognomsRText.setText("COGNOMS");
-        cognomsRText.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                cognomsRTextFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                cognomsRTextFocusLost(evt);
-            }
-        });
 
         iconoCognoms.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/cognoms.png"))); // NOI18N
 
@@ -144,28 +115,12 @@ public class RegistreV extends javax.swing.JFrame {
         telefonRText.setForeground(new java.awt.Color(141, 153, 174));
         telefonRText.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         telefonRText.setText("TELÈFON");
-        telefonRText.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                telefonRTextFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                telefonRTextFocusLost(evt);
-            }
-        });
 
         mailRText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         mailRText.setForeground(new java.awt.Color(141, 153, 174));
         mailRText.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         mailRText.setText("CORREU ELECTRÒNIC");
         mailRText.setToolTipText("");
-        mailRText.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                mailRTextFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                mailRTextFocusLost(evt);
-            }
-        });
 
         iconoMail.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/mail.png"))); // NOI18N
 
@@ -175,53 +130,37 @@ public class RegistreV extends javax.swing.JFrame {
         passwordRText.setForeground(new java.awt.Color(141, 157, 174));
         passwordRText.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         passwordRText.setText("Password");
-        passwordRText.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                passwordRTextFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                passwordRTextFocusLost(evt);
-            }
-        });
 
         password2RText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         password2RText.setForeground(new java.awt.Color(141, 157, 174));
         password2RText.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         password2RText.setText("Password");
-        password2RText.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                password2RTextFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                password2RTextFocusLost(evt);
-            }
-        });
 
         iconoPassword2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/password.png"))); // NOI18N
 
         jLabel1.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(141, 153, 174));
-        jLabel1.setText("DADES USUARI");
+        jLabel1.setText("DADES D'USUARI");
 
-        botoBuidarFormulari.setBackground(new java.awt.Color(255, 153, 153));
-        botoBuidarFormulari.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
-        botoBuidarFormulari.setForeground(new java.awt.Color(43, 45, 66));
-        botoBuidarFormulari.setText("BUIDAR");
-        botoBuidarFormulari.setActionCommand("");
-        botoBuidarFormulari.addActionListener(new java.awt.event.ActionListener() {
+        botoDesferCanvis.setBackground(new java.awt.Color(255, 153, 153));
+        botoDesferCanvis.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        botoDesferCanvis.setForeground(new java.awt.Color(43, 45, 66));
+        botoDesferCanvis.setText("DESFER CANVIS");
+        botoDesferCanvis.setActionCommand("");
+        botoDesferCanvis.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botoBuidarFormulariActionPerformed(evt);
+                botoDesferCanvisActionPerformed(evt);
             }
         });
 
-        botoRegistrarse1.setBackground(new java.awt.Color(153, 255, 153));
-        botoRegistrarse1.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
-        botoRegistrarse1.setForeground(new java.awt.Color(43, 45, 66));
-        botoRegistrarse1.setText("REGISTRAR-SE");
-        botoRegistrarse1.setActionCommand("");
-        botoRegistrarse1.addActionListener(new java.awt.event.ActionListener() {
+        botoDesarCanvis.setBackground(new java.awt.Color(153, 255, 153));
+        botoDesarCanvis.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        botoDesarCanvis.setForeground(new java.awt.Color(43, 45, 66));
+        botoDesarCanvis.setText("DESAR CANVIS");
+        botoDesarCanvis.setActionCommand("");
+        botoDesarCanvis.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botoRegistrarse1ActionPerformed(evt);
+                botoDesarCanvisActionPerformed(evt);
             }
         });
 
@@ -243,14 +182,6 @@ public class RegistreV extends javax.swing.JFrame {
         dataRText.setForeground(new java.awt.Color(141, 153, 174));
         dataRText.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         dataRText.setText("DATA NAIXEMENT YYYY-MM-DD");
-        dataRText.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                dataRTextFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                dataRTextFocusLost(evt);
-            }
-        });
 
         iconoData.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/data.png"))); // NOI18N
 
@@ -293,14 +224,14 @@ public class RegistreV extends javax.swing.JFrame {
                                         .addComponent(cognomsRText, javax.swing.GroupLayout.PREFERRED_SIZE, 403, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(usuariRText, javax.swing.GroupLayout.PREFERRED_SIZE, 403, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addGroup(registrePanelLayout.createSequentialGroup()
-                                    .addGap(74, 74, 74)
+                                    .addGap(53, 53, 53)
                                     .addComponent(jLabel1))))
                         .addComponent(dataRText, javax.swing.GroupLayout.PREFERRED_SIZE, 403, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(registrePanelLayout.createSequentialGroup()
                         .addGap(76, 76, 76)
-                        .addComponent(botoBuidarFormulari, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(botoDesferCanvis, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(botoRegistrarse1, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(botoDesarCanvis, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(83, Short.MAX_VALUE))
         );
         registrePanelLayout.setVerticalGroup(
@@ -311,9 +242,9 @@ public class RegistreV extends javax.swing.JFrame {
                         .addGap(14, 14, 14)
                         .addComponent(botoRetrocedir))
                     .addGroup(registrePanelLayout.createSequentialGroup()
-                        .addGap(37, 37, 37)
+                        .addGap(39, 39, 39)
                         .addComponent(jLabel1)))
-                .addGap(40, 40, 40)
+                .addGap(38, 38, 38)
                 .addGroup(registrePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(iconoUsuari1)
                     .addComponent(usuariRText, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -347,8 +278,8 @@ public class RegistreV extends javax.swing.JFrame {
                     .addComponent(password2RText, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(44, 44, 44)
                 .addGroup(registrePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(botoBuidarFormulari, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(botoRegistrarse1, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(botoDesferCanvis, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(botoDesarCanvis, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(39, 39, 39))
         );
 
@@ -387,164 +318,70 @@ public class RegistreV extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void password2RTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_password2RTextFocusLost
-        if (passwordRText.getText().isEmpty()) {
-            passwordRText.setText("Password");
+    private void botoDesferCanvisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoDesferCanvisActionPerformed
+        mostrarTreballador();
+    }//GEN-LAST:event_botoDesferCanvisActionPerformed
+
+    private void botoDesarCanvisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoDesarCanvisActionPerformed
+        // Get values from the form
+        String dni = usuariRText.getText();
+        String nom = nomRText.getText();
+        String cognoms = cognomsRText.getText();
+        String dataNaixement = dataRText.getText();
+        String telefon = telefonRText.getText();
+        String email = mailRText.getText();
+        String password = String.valueOf(passwordRText.getPassword());
+        String password2 = String.valueOf(password2RText.getPassword());
+
+        // Check if the date format is valid
+        if (!isValidDateFormat(dataNaixement)) {
+            GestorErrors.displayError(email);
+            System.out.println("Format de data no vàlida. Fes servir YYYY-MM-DD.");
+            return;
         }
-    }//GEN-LAST:event_password2RTextFocusLost
 
-    private void password2RTextFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_password2RTextFocusGained
-        password2RText.setText("");
-    }//GEN-LAST:event_password2RTextFocusGained
-
-    private void passwordRTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_passwordRTextFocusLost
-        if (password2RText.getText().isEmpty()) {
-            password2RText.setText("Password");
+        // Check if passwords match
+        if (!password.equals(password2)) {
+            GestorErrors.displayError("Les contrasenyes no coincideixen.");
+            return;
         }
-    }//GEN-LAST:event_passwordRTextFocusLost
 
-    private void passwordRTextFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_passwordRTextFocusGained
-        passwordRText.setText("");
-    }//GEN-LAST:event_passwordRTextFocusGained
+        // Create a TreballadorM object with the updated values
+        TreballadorM treballador = new TreballadorM();
+        treballador.setDni(dni);
+        treballador.setNom(nom);
+        treballador.setCognoms(cognoms);
 
-    private void mailRTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_mailRTextFocusLost
-        if (mailRText.getText().isEmpty()) {
-            mailRText.setText("CORREU ELECTRÒNIC");
-        }
-    }//GEN-LAST:event_mailRTextFocusLost
-
-    private void mailRTextFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_mailRTextFocusGained
-        mailRText.setText("");
-    }//GEN-LAST:event_mailRTextFocusGained
-
-    private void telefonRTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_telefonRTextFocusLost
-        if (telefonRText.getText().isEmpty()) {
-            telefonRText.setText("TELÉFON");
-        }
-    }//GEN-LAST:event_telefonRTextFocusLost
-
-    private void telefonRTextFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_telefonRTextFocusGained
-        telefonRText.setText("");
-    }//GEN-LAST:event_telefonRTextFocusGained
-
-    private void cognomsRTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cognomsRTextFocusLost
-        if (cognomsRText.getText().isEmpty()) {
-            cognomsRText.setText("COGNOMS");
-        }
-    }//GEN-LAST:event_cognomsRTextFocusLost
-
-    private void cognomsRTextFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cognomsRTextFocusGained
-        cognomsRText.setText("");
-    }//GEN-LAST:event_cognomsRTextFocusGained
-
-    private void nomRTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nomRTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nomRTextActionPerformed
-
-    private void nomRTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nomRTextFocusLost
-        if (nomRText.getText().isEmpty()) {
-            nomRText.setText("NOM");
-        }
-    }//GEN-LAST:event_nomRTextFocusLost
-
-    private void nomRTextFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nomRTextFocusGained
-        nomRText.setText("");
-    }//GEN-LAST:event_nomRTextFocusGained
-
-    private void usuariRTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_usuariRTextFocusLost
-        if (usuariRText.getText().isEmpty()) {
-            usuariRText.setText("DNI");
-        }
-    }//GEN-LAST:event_usuariRTextFocusLost
-
-    private void usuariRTextFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_usuariRTextFocusGained
-        usuariRText.setText("");
-    }//GEN-LAST:event_usuariRTextFocusGained
-
-    private void botoBuidarFormulariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBuidarFormulariActionPerformed
-        buidarFormulari();
-    }//GEN-LAST:event_botoBuidarFormulariActionPerformed
-
-    private void botoRegistrarse1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoRegistrarse1ActionPerformed
         try {
-            String dni = usuariRText.getText();
-            String nom = nomRText.getText();
-            String cognoms = cognomsRText.getText();
-            String dataNaixement = dataRText.getText();
-            String telefon = telefonRText.getText();
-            String mail = mailRText.getText();
-            String password = String.valueOf(passwordRText.getPassword());
-            String password2 = String.valueOf(password2RText.getPassword());
-
-            String user = nom + cognoms.substring(0, 1);
-
-            if ("DNI".equals(dni) || "NOM".equals(nom) || "COGNOMS".equals(cognoms)
-                    || "TELÉFON".equals(telefon) || "CORREU ELECTRÒNIC".equals(mail)
-                    || "Password".equals(password) || "Password".equals(password2)
-                    || "DATA NAIXEMENT YYYY-MM-DD".equals(dataNaixement)
-                    || !isValidDateFormat(dataNaixement)) {
-                // Gestionar l'error quan algun camp està buit o té el valor per defecte
-                GestorErrors.displayError("Cal omplir tots els camps correctament abans d'afegir un treballador.");
-            } else if (!password.equals(password2)) {
-                // Gestionar l'error quan les contrasenyes no coincideixen
-                GestorErrors.displayError("Les contrasenyes han de coincidir.");
-            } else {
-                // Parse dataNaixement to a Date object
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                Date parsedDate = dateFormat.parse(dataNaixement);
-
-                // Crea un objecte TreballadorM amb les dades del formulari
-                TreballadorM nouTreballador = new TreballadorM();
-                nouTreballador.setUser(user);
-                nouTreballador.setUsername(user);
-                nouTreballador.setNom(nom);
-                nouTreballador.setCognoms(cognoms);
-                nouTreballador.setDataNaixement(parsedDate);
-                nouTreballador.setDni(dni);
-                nouTreballador.setTelefon(telefon);
-                nouTreballador.setEmail(mail);
-
-                 // Xifra les contrasenyes abans d'enviar-les
-                nouTreballador.setPassword(hashPassword(password));
-                nouTreballador.setPassword2(hashPassword(password2));
-                
-                // Crida al mètode afegeixTreballador a TreballadorC
-                treballadorC.afegeixTreballador(nouTreballador);
-
-                GestorErrors.mostraMissatge("Treballador amb nom d'usuari "+user+" afegit correctament.");
-                System.out.println("Contrasenya xifrada: password es "+nouTreballador.getPassword());
-                System.out.println("Contrasenya xifrada: password2 es "+nouTreballador.getPassword2());
-                dispose();
-            }
-        } catch (NumberFormatException e) {
-            // Gestiona l'error en cas de que no sigui un valor numèric
-            GestorErrors.displayError("Entrada no vàlida per a valors numèrics");
+            // Parse the date string to a Date object
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = dateFormat.parse(dataNaixement);
+            treballador.setDataNaixement(date);
         } catch (ParseException e) {
-            // Handle the error if parsing of date fails
-            GestorErrors.displayError("Format de data incorrecte. Utilitza el format YYYY-MM-DD.");
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(RegistreV.class.getName()).log(Level.SEVERE, null, ex);
+            // Handle parsing exception if needed
+            e.printStackTrace();
+            return;
         }
-    }//GEN-LAST:event_botoRegistrarse1ActionPerformed
+
+        treballador.setTelefon(telefon);
+        treballador.setEmail(email);
+        treballador.setPassword(password);
+
+        // Call the method in TreballadorC to edit the Treballador
+        treballadorC.editaTreballador(AuthorizationM.getInstance().getId(), treballador);
+
+        // Optionally, update the form with the edited values
+        mostrarTreballador();
+    }//GEN-LAST:event_botoDesarCanvisActionPerformed
 
     private void botoRetrocedirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoRetrocedirActionPerformed
         dispose();
     }//GEN-LAST:event_botoRetrocedirActionPerformed
 
-    private void dataRTextFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_dataRTextFocusGained
-        dataRText.setText("");
-    }//GEN-LAST:event_dataRTextFocusGained
-
-    private void dataRTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_dataRTextFocusLost
-        if (usuariRText.getText().isEmpty()) {
-            usuariRText.setText("DATA NAIXEMENT YYYY-MM-DD");
-        }
-    }//GEN-LAST:event_dataRTextFocusLost
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Pantalla;
-    private javax.swing.JButton botoBuidarFormulari;
-    private javax.swing.JButton botoRegistrarse1;
+    private javax.swing.JButton botoDesarCanvis;
+    private javax.swing.JButton botoDesferCanvis;
     private javax.swing.JToggleButton botoRetrocedir;
     private javax.swing.JTextField cognomsRText;
     private javax.swing.JTextField dataRText;

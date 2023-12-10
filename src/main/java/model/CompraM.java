@@ -1,45 +1,112 @@
 package model;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.Date;
 
 /**
  *
  * @author Enric
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CompraM {
 
-    private int client_id;
-    private int treballador_id;
-    private List<LiniaCompraM> linies;
+    private int id;
 
-    public CompraM(int client_id, int treballador_id, List<LiniaCompraM> linies) {
-        this.client_id = client_id;
-        this.treballador_id = treballador_id;
-        this.linies = linies;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yy HH:mm:ss")
+    private Date data;
+
+    private ClientM client;
+    private TreballadorM treballador;
+    private LiniaCompraM[] liniesCompra;
+
+    private double importFinal;
+    private String metodePagament;
+    private double dinersEntregats;
+    private double dinersCanvi;
+    private double descompte;
+
+    public CompraM() {
     }
 
-    public int getClient_id() {
-        return client_id;
+    public int getId() {
+        return id;
     }
 
-    public void setClient_id(int client_id) {
-        this.client_id = client_id;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public int getTreballador_id() {
-        return treballador_id;
+    public Date getData() {
+        return data;
     }
 
-    public void setTreballador_id(int treballador_id) {
-        this.treballador_id = treballador_id;
+    public void setData(Date data) {
+        this.data = data;
     }
 
-    public List<LiniaCompraM> getLinies() {
-        return linies;
+    public ClientM getClient() {
+        return client;
     }
 
-    public void setLinies(List<LiniaCompraM> linies) {
-        this.linies = linies;
+    public void setClient(ClientM client) {
+        this.client = client;
     }
 
+    public TreballadorM getTreballador() {
+        return treballador;
+    }
+
+    public void setTreballador(TreballadorM treballador) {
+        this.treballador = treballador;
+    }
+
+    public LiniaCompraM[] getLiniesCompra() {
+        return liniesCompra;
+    }
+
+    public void setLiniesCompra(LiniaCompraM[] liniesCompra) {
+        this.liniesCompra = liniesCompra;
+    }
+
+    public double getImportFinal() {
+        return importFinal;
+    }
+
+    public void setImportFinal(double importFinal) {
+        this.importFinal = importFinal;
+    }
+
+    public String getMetodePagament() {
+        return metodePagament;
+    }
+
+    public void setMetodePagament(String metodePagament) {
+        this.metodePagament = metodePagament;
+    }
+
+    public double getDinersEntregats() {
+        return dinersEntregats;
+    }
+
+    public void setDinersEntregats(double dinersEntregats) {
+        this.dinersEntregats = dinersEntregats;
+    }
+
+    public double getDinersCanvi() {
+        return dinersCanvi;
+    }
+
+    public void setDinersCanvi(double dinersCanvi) {
+        this.dinersCanvi = dinersCanvi;
+    }
+
+    public double getDescompte() {
+        return descompte;
+    }
+
+    public void setDescompte(double descompte) {
+        this.descompte = descompte;
+    }
 }
+

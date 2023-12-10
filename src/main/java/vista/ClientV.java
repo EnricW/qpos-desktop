@@ -207,7 +207,7 @@ public class ClientV extends javax.swing.JPanel {
             taulaClients.getColumnModel().getColumn(5).setResizable(false);
             taulaClients.getColumnModel().getColumn(5).setPreferredWidth(300);
         }
-        taulaClients.setRowHeight(30);
+        taulaClients.setRowHeight(40);
 
         jPanel6.setBackground(new java.awt.Color(217, 4, 41));
 

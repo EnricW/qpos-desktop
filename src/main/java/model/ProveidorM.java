@@ -88,4 +88,27 @@ public class ProveidorM {
     public String toString() {
         return "Proveidor [id=" + id + ", nom=" + nom + ", descripcio=" + descripcio + "]";
     }
+    
+    /**
+     * Atribut per emmagatzemar una llista de proveidors
+     */
+    private ProveidorM[] proveidors;
+
+    /**
+     * Constructor que rep una llista de proveidors
+     *
+     * @param proveidors
+     */
+    public ProveidorM(ProveidorM[] proveidors) {
+        this.proveidors = proveidors;
+    }
+
+    /**
+     * Mètode per obtenir la llista de proveidors
+     *
+     * @return
+     */
+    public ProveidorM[] getProveidors() {
+        return proveidors;
+    }
 }

@@ -3,16 +3,22 @@ package vista;
 import controlador.ClientC;
 import controlador.CompraC;
 import controlador.ProducteC;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import model.AuthorizationM;
 import model.ClientM;
-import model.CompraM;
-import model.LiniaCompraM;
+import model.novaCompraM;
+import model.novaLiniaCompraM;
 import model.ProducteM;
 import util.GestorErrors;
 
@@ -108,6 +114,9 @@ public class CompraV extends javax.swing.JPanel {
 
         double total = 0.0;
 
+        // Use DecimalFormat for consistent formatting
+        DecimalFormat decimalFormat = new DecimalFormat("0.00");
+
         for (int row = 0; row < model.getRowCount(); row++) {
             Object preuProducte = model.getValueAt(row, 2);
 
@@ -115,14 +124,40 @@ public class CompraV extends javax.swing.JPanel {
                 total += ((Number) preuProducte).doubleValue();
             } else if (preuProducte instanceof String) {
                 try {
-                    total += Double.parseDouble((String) preuProducte);
+                    // Replace commas with dots and add to total
+                    total += Double.parseDouble(((String) preuProducte).replace(",", "."));
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
             }
         }
 
-        subtotalQuantitat.setText(String.format("%.2f", total));
+        // Update subtotalQuantitat with dot formatting
+        subtotalQuantitat.setText(decimalFormat.format(total).replace(",", "."));
+
+        // Update totalQuantitat (subtotalQuantitat minus cupoQuantitat) with dot formatting
+        try {
+            double cupoQuantitat = Double.parseDouble(cupoText.getText().replace(",", "."));
+            double totalQuantitatImport = total - cupoQuantitat;
+            totalQuantitat.setText(decimalFormat.format(totalQuantitatImport).replace(",", "."));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void formatEntregatText() {
+        String text = entregatText.getText().trim(); // Trim leading/trailing spaces
+
+        if (text.isEmpty()) {
+            entregatText.setText("0.00"); // Set a default value if the field is empty
+        } else {
+            try {
+                double value = Double.parseDouble(text.replace(",", ".")); // Replace commas with dots
+                entregatText.setText(String.format("%.2f", value)); // Format to two decimal places
+            } catch (NumberFormatException ex) {
+                entregatText.setText("0.00"); // Set a default value or handle the error as needed
+            }
+        }
     }
 
     /**
@@ -149,7 +184,6 @@ public class CompraV extends javax.swing.JPanel {
         jScrollPane2 = new javax.swing.JScrollPane();
         taulaProductesTicket = new javax.swing.JTable();
         separador4 = new javax.swing.JPanel();
-        separador5 = new javax.swing.JPanel();
         botoBuscaClient = new javax.swing.JButton();
         botoNetejaBuscadorClient = new javax.swing.JButton();
         calculsPanel = new javax.swing.JPanel();
@@ -164,8 +198,10 @@ public class CompraV extends javax.swing.JPanel {
         cupoEur = new javax.swing.JLabel();
         totalEur = new javax.swing.JLabel();
         pagamentPanel = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        pagamentEfectiu = new javax.swing.JButton();
+        pagamentTargeta = new javax.swing.JButton();
+        entregatEur = new javax.swing.JLabel();
+        entregatText = new javax.swing.JTextField();
 
         setBackground(new java.awt.Color(217, 4, 41));
 
@@ -181,11 +217,6 @@ public class CompraV extends javax.swing.JPanel {
             }
             public void focusLost(java.awt.event.FocusEvent evt) {
                 buscadorProductesFocusLost(evt);
-            }
-        });
-        buscadorProductes.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                buscadorProductesKeyReleased(evt);
             }
         });
 
@@ -218,7 +249,7 @@ public class CompraV extends javax.swing.JPanel {
             taulaProductes.getColumnModel().getColumn(1).setPreferredWidth(500);
             taulaProductes.getColumnModel().getColumn(2).setPreferredWidth(40);
         }
-        taulaProductes.setRowHeight(30);
+        taulaProductes.setRowHeight(40);
 
         separador1.setBackground(new java.awt.Color(217, 4, 41));
 
@@ -330,10 +361,11 @@ public class CompraV extends javax.swing.JPanel {
         );
         operacionsPanelLayout.setVerticalGroup(
             operacionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+            .addGap(0, 112, Short.MAX_VALUE)
         );
 
         clientPanel.setBackground(new java.awt.Color(217, 4, 41));
+        clientPanel.setPreferredSize(new java.awt.Dimension(544, 425));
 
         buscadorClient.setBackground(new java.awt.Color(237, 242, 244));
         buscadorClient.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
@@ -347,9 +379,9 @@ public class CompraV extends javax.swing.JPanel {
                 buscadorClientFocusLost(evt);
             }
         });
-        buscadorClient.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                buscadorClientKeyReleased(evt);
+        buscadorClient.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buscadorClientActionPerformed(evt);
             }
         });
 
@@ -385,7 +417,7 @@ public class CompraV extends javax.swing.JPanel {
             taulaProductesTicket.getColumnModel().getColumn(2).setResizable(false);
             taulaProductesTicket.getColumnModel().getColumn(2).setPreferredWidth(20);
         }
-        taulaProductesTicket.setRowHeight(30);
+        taulaProductesTicket.setRowHeight(40);
 
         separador4.setBackground(new java.awt.Color(217, 4, 41));
 
@@ -398,19 +430,6 @@ public class CompraV extends javax.swing.JPanel {
         separador4Layout.setVerticalGroup(
             separador4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 29, Short.MAX_VALUE)
-        );
-
-        separador5.setBackground(new java.awt.Color(217, 4, 41));
-
-        javax.swing.GroupLayout separador5Layout = new javax.swing.GroupLayout(separador5);
-        separador5.setLayout(separador5Layout);
-        separador5Layout.setHorizontalGroup(
-            separador5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 68, Short.MAX_VALUE)
-        );
-        separador5Layout.setVerticalGroup(
-            separador5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
         );
 
         botoBuscaClient.setBackground(new java.awt.Color(43, 45, 66));
@@ -433,57 +452,17 @@ public class CompraV extends javax.swing.JPanel {
             }
         });
 
-        javax.swing.GroupLayout clientPanelLayout = new javax.swing.GroupLayout(clientPanel);
-        clientPanel.setLayout(clientPanelLayout);
-        clientPanelLayout.setHorizontalGroup(
-            clientPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(clientPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(clientPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(separador4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2)
-                    .addGroup(clientPanelLayout.createSequentialGroup()
-                        .addComponent(botoBuscaClient, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(buscadorClient)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(botoNetejaBuscadorClient, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(separador5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        clientPanelLayout.setVerticalGroup(
-            clientPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(clientPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(separador4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(clientPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(clientPanelLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(clientPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(buscadorClient, javax.swing.GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
-                            .addComponent(botoBuscaClient, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(botoNetejaBuscadorClient, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, clientPanelLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(separador5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(165, 165, 165))))
-        );
-
         calculsPanel.setBackground(new java.awt.Color(217, 4, 41));
 
         subtotalQuantitat.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         subtotalQuantitat.setForeground(new java.awt.Color(237, 242, 244));
         subtotalQuantitat.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         subtotalQuantitat.setText("0");
+        subtotalQuantitat.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
 
         cupoText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
-        cupoText.setForeground(new java.awt.Color(141, 153, 174));
         cupoText.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        cupoText.setText("VALIDA CUPÓ");
+        cupoText.setText("0.00");
         cupoText.setToolTipText("VALIDA CUPÓ");
 
         subtotalLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
@@ -494,6 +473,7 @@ public class CompraV extends javax.swing.JPanel {
         cupoQuantitat.setForeground(new java.awt.Color(237, 242, 244));
         cupoQuantitat.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         cupoQuantitat.setText("0");
+        cupoQuantitat.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
 
         liniesDiscontinues.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         liniesDiscontinues.setForeground(new java.awt.Color(237, 242, 244));
@@ -512,11 +492,13 @@ public class CompraV extends javax.swing.JPanel {
         subtotalEur.setForeground(new java.awt.Color(237, 242, 244));
         subtotalEur.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         subtotalEur.setText("€");
+        subtotalEur.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
 
         cupoEur.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         cupoEur.setForeground(new java.awt.Color(237, 242, 244));
         cupoEur.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         cupoEur.setText("€");
+        cupoEur.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
 
         totalEur.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
         totalEur.setForeground(new java.awt.Color(237, 242, 244));
@@ -530,33 +512,29 @@ public class CompraV extends javax.swing.JPanel {
                 .addComponent(liniesDiscontinues, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, calculsPanelLayout.createSequentialGroup()
+                .addGap(33, 33, 33)
                 .addGroup(calculsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(calculsPanelLayout.createSequentialGroup()
-                        .addGap(112, 112, 112)
+                        .addGap(21, 21, 21)
                         .addComponent(subtotalLabel))
-                    .addGroup(calculsPanelLayout.createSequentialGroup()
-                        .addGap(91, 91, 91)
-                        .addComponent(cupoText, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(cupoText, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(calculsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(subtotalQuantitat)
+                .addGroup(calculsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(subtotalQuantitat, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(cupoQuantitat, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(calculsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(subtotalEur)
-                    .addComponent(cupoEur))
-                .addGap(27, 27, 27))
+                .addGroup(calculsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cupoEur, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(subtotalEur, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGap(43, 43, 43))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, calculsPanelLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(totalText)
+                .addGap(99, 99, 99)
                 .addComponent(totalQuantitat)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(totalEur)
-                .addGap(26, 26, 26))
-            .addGroup(calculsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(calculsPanelLayout.createSequentialGroup()
-                    .addGap(122, 122, 122)
-                    .addComponent(totalText)
-                    .addContainerGap(302, Short.MAX_VALUE)))
+                .addGap(38, 38, 38))
         );
         calculsPanelLayout.setVerticalGroup(
             calculsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -573,52 +551,120 @@ public class CompraV extends javax.swing.JPanel {
                     .addComponent(cupoEur))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(liniesDiscontinues)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
                 .addGroup(calculsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(totalQuantitat)
-                    .addComponent(totalEur)))
-            .addGroup(calculsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, calculsPanelLayout.createSequentialGroup()
-                    .addContainerGap(101, Short.MAX_VALUE)
-                    .addComponent(totalText)
-                    .addGap(1, 1, 1)))
+                    .addComponent(totalEur)
+                    .addComponent(totalText)))
+        );
+
+        javax.swing.GroupLayout clientPanelLayout = new javax.swing.GroupLayout(clientPanel);
+        clientPanel.setLayout(clientPanelLayout);
+        clientPanelLayout.setHorizontalGroup(
+            clientPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(clientPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(clientPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(clientPanelLayout.createSequentialGroup()
+                        .addGroup(clientPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(separador4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2)
+                            .addGroup(clientPanelLayout.createSequentialGroup()
+                                .addComponent(botoBuscaClient, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(buscadorClient)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(botoNetejaBuscadorClient, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(86, 86, 86))
+                    .addGroup(clientPanelLayout.createSequentialGroup()
+                        .addComponent(calculsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+        );
+        clientPanelLayout.setVerticalGroup(
+            clientPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(clientPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(separador4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(clientPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(buscadorClient, javax.swing.GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
+                    .addComponent(botoBuscaClient, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(botoNetejaBuscadorClient, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(calculsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pagamentPanel.setBackground(new java.awt.Color(217, 4, 41));
 
-        jButton1.setBackground(new java.awt.Color(43, 45, 66));
-        jButton1.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(237, 242, 244));
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/efectiu_1.png"))); // NOI18N
-        jButton1.setText("EFECTIU");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        pagamentEfectiu.setBackground(new java.awt.Color(43, 45, 66));
+        pagamentEfectiu.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        pagamentEfectiu.setForeground(new java.awt.Color(237, 242, 244));
+        pagamentEfectiu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/efectiu_1.png"))); // NOI18N
+        pagamentEfectiu.setText("EFECTIU");
+        pagamentEfectiu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                pagamentEfectiuActionPerformed(evt);
             }
         });
 
-        jButton2.setBackground(new java.awt.Color(43, 45, 66));
-        jButton2.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(237, 242, 244));
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/tarjeta_1.png"))); // NOI18N
-        jButton2.setText("TARJETA");
+        pagamentTargeta.setBackground(new java.awt.Color(43, 45, 66));
+        pagamentTargeta.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        pagamentTargeta.setForeground(new java.awt.Color(237, 242, 244));
+        pagamentTargeta.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/tarjeta_1.png"))); // NOI18N
+        pagamentTargeta.setText("TARGETA");
+        pagamentTargeta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pagamentTargetaActionPerformed(evt);
+            }
+        });
+
+        entregatEur.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 36)); // NOI18N
+        entregatEur.setForeground(new java.awt.Color(237, 242, 244));
+        entregatEur.setText("€");
+
+        entregatText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
+        entregatText.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        entregatText.setText("ENTREGAT");
+        entregatText.setToolTipText("Efectiu entregat pel client");
+        entregatText.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                entregatTextFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                entregatTextFocusLost(evt);
+            }
+        });
 
         javax.swing.GroupLayout pagamentPanelLayout = new javax.swing.GroupLayout(pagamentPanel);
         pagamentPanel.setLayout(pagamentPanelLayout);
         pagamentPanelLayout.setHorizontalGroup(
             pagamentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pagamentPanelLayout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27)
+                .addGroup(pagamentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(pagamentPanelLayout.createSequentialGroup()
+                        .addComponent(entregatText)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(entregatEur))
+                    .addComponent(pagamentEfectiu, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(35, 35, 35)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(pagamentTargeta, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pagamentPanelLayout.setVerticalGroup(
             pagamentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pagamentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pagamentPanelLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(pagamentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(entregatText, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(entregatEur))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(pagamentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(pagamentEfectiu, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pagamentTargeta, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -632,8 +678,7 @@ public class CompraV extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(clientPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pagamentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(calculsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(pagamentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -641,13 +686,11 @@ public class CompraV extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(productePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(clientPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(calculsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(operacionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pagamentPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(clientPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 732, Short.MAX_VALUE)
+                        .addGap(10, 10, 10)
+                        .addComponent(pagamentPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(operacionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -694,16 +737,7 @@ public class CompraV extends javax.swing.JPanel {
         actualitzaTotal();
     }//GEN-LAST:event_taulaProductesMouseClicked
 
-    private void buscadorProductesKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buscadorProductesKeyReleased
-
-    }//GEN-LAST:event_buscadorProductesKeyReleased
-
-    private void buscadorClientKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buscadorClientKeyReleased
-
-    }//GEN-LAST:event_buscadorClientKeyReleased
-
     private void taulaProductesTicketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taulaProductesTicketMouseClicked
-
         // Eliminar el producte del ticket        
         int filaSeleccionada = taulaProductesTicket.getSelectedRow();
 
@@ -745,37 +779,84 @@ public class CompraV extends javax.swing.JPanel {
         System.out.println("La ID del usuari es: " + AuthorizationM.getInstance().getId());
     }//GEN-LAST:event_botoNetejaBuscadorClientActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // Create a map to store product IDs and their quantities
-        HashMap<Integer, Integer> productQuantities = new HashMap<>();
+    private void pagamentEfectiuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pagamentEfectiuActionPerformed
+        try {
+            // Check if entregatText and cupoText are not empty and are valid double values
+            if (entregatText.getText().isEmpty() || cupoText.getText().isEmpty()) {
+                // Show dialog for empty fields
+                JOptionPane.showMessageDialog(this, "Els camps 'Entregat' i 'Descompte' no poden estar buits.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        // Iterate through the rows of taulaProductesTicket
-        DefaultTableModel model = (DefaultTableModel) taulaProductesTicket.getModel();
-        for (int row = 0; row < model.getRowCount(); row++) {
-            int idProducte = (int) model.getValueAt(row, 0);
+            // Replace commas with dots in the input strings
+            String entregatTextValue = entregatText.getText().replace(",", ".");
+            String cupoTextValue = cupoText.getText().replace(",", ".");
 
-            // Update the quantity in the map
-            productQuantities.put(idProducte, productQuantities.getOrDefault(idProducte, 0) + 1);
+            // Corrected data types using DecimalFormat with explicit locale
+            DecimalFormat decimalFormat = new DecimalFormat("0.00", DecimalFormatSymbols.getInstance(Locale.US));
+            double entregat = Double.parseDouble(decimalFormat.format(Double.parseDouble(entregatTextValue)));
+            double descompte = Double.parseDouble(decimalFormat.format(Double.parseDouble(cupoTextValue)));
+
+            // Check if entregat is more than importTotal
+            if (entregat <= 0 || descompte < 0) {
+                // Show dialog for invalid values
+                JOptionPane.showMessageDialog(this, "Els camps 'Entregat' i 'Descompte' han de ser valors positius.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Create a map to store product IDs and their quantities
+            HashMap<Integer, Integer> productQuantities = new HashMap<>();
+
+            // Iterate through the rows of taulaProductesTicket
+            DefaultTableModel model = (DefaultTableModel) taulaProductesTicket.getModel();
+            for (int row = 0; row < model.getRowCount(); row++) {
+                int idProducte = (int) model.getValueAt(row, 0);
+
+                // Update the quantity in the map
+                productQuantities.put(idProducte, productQuantities.getOrDefault(idProducte, 0) + 1);
+            }
+
+            // Create a list of novaLiniaCompraM objects using the map
+            List<novaLiniaCompraM> linies = new ArrayList<>();
+            for (Map.Entry<Integer, Integer> entry : productQuantities.entrySet()) {
+                int idProducte = entry.getKey();
+                int quantitat = entry.getValue();
+                linies.add(new novaLiniaCompraM(idProducte, quantitat));
+            }
+
+            // Create a sample novaCompraM object
+            int client_id = clientM.getId();
+            int treballador_id = AuthorizationM.getInstance().getId();
+
+            String metodePagament = "Efectiu";
+
+            // Corrected data types using DecimalFormat
+            double importTotal = Double.parseDouble(decimalFormat.format(Double.parseDouble(totalQuantitat.getText().replace(",", "."))));
+            double canvi = Double.parseDouble(decimalFormat.format(entregat - importTotal));
+
+            // Check if entregat is more than importTotal
+            if (canvi < 0) {
+                // Show dialog for insufficient payment
+                JOptionPane.showMessageDialog(this, "L'import entregat no pot ser menor que l'import total.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            novaCompraM novaCompra = new novaCompraM(client_id, treballador_id, linies, metodePagament,
+                    Double.parseDouble(decimalFormat.format(entregat)),
+                    Double.parseDouble(decimalFormat.format(canvi)),
+                    Double.parseDouble(decimalFormat.format(descompte)));
+
+            // Create an instance of CompraC and make the API request
+            CompraC compraController = new CompraC();
+            compraController.creaCompra(novaCompra);
+
+            // Show success dialog with change information
+            JOptionPane.showMessageDialog(this, String.format("Recorda entregar %.2f al client.", canvi), "Compra realitzada amb èxit", JOptionPane.INFORMATION_MESSAGE);
+        } catch (NumberFormatException e) {
+            // Handle number format exception if needed
+            e.printStackTrace();
         }
-
-        // Create a list of LiniaCompraM objects using the map
-        List<LiniaCompraM> linies = new ArrayList<>();
-        for (Map.Entry<Integer, Integer> entry : productQuantities.entrySet()) {
-            int idProducte = entry.getKey();
-            int quantitat = entry.getValue();
-            linies.add(new LiniaCompraM(idProducte, quantitat));
-        }
-
-        // Create a sample CompraM object
-        int client_id = clientM.getId();
-        int treballador_id = AuthorizationM.getInstance().getId();
-
-        CompraM compra = new CompraM(client_id, treballador_id, linies);
-
-        // Create an instance of CompraC and make the API request
-        CompraC compraController = new CompraC();
-        compraController.creaCompra(compra);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_pagamentEfectiuActionPerformed
 
     private void botoBuscaProducteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBuscaProducteActionPerformed
         // Obtenir el text del camp de text BuscadorProductes
@@ -802,6 +883,91 @@ public class CompraV extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_botoBuscaProducteActionPerformed
 
+    private void buscadorClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscadorClientActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_buscadorClientActionPerformed
+
+    private void entregatTextFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_entregatTextFocusGained
+        if (entregatText.getText().matches("ENTREGAT")) {
+            entregatText.setText("");
+        }
+    }//GEN-LAST:event_entregatTextFocusGained
+
+    private void entregatTextFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_entregatTextFocusLost
+        formatEntregatText();
+    }//GEN-LAST:event_entregatTextFocusLost
+
+    private void pagamentTargetaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pagamentTargetaActionPerformed
+        try {
+            // Check if descompteText is not empty and is a valid double value
+            if (cupoText.getText().isEmpty()) {
+                // Show dialog for empty fields
+                JOptionPane.showMessageDialog(this, "El camp 'Descompte' no pot estar buit.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Replace commas with dots in the input string
+            String cupoTextValue = cupoText.getText().replace(",", ".");
+
+            // Corrected data types using DecimalFormat with explicit locale
+            DecimalFormat decimalFormat = new DecimalFormat("0.00", DecimalFormatSymbols.getInstance(Locale.US));
+            double descompte = Double.parseDouble(decimalFormat.format(Double.parseDouble(cupoTextValue)));
+
+            // Check if descompte is less than 0
+            if (descompte < 0) {
+                // Show dialog for invalid value
+                JOptionPane.showMessageDialog(this, "El camp 'Descompte' ha de ser un valor positiu o zero.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Create a map to store product IDs and their quantities
+            HashMap<Integer, Integer> productQuantities = new HashMap<>();
+
+            // Iterate through the rows of taulaProductesTicket
+            DefaultTableModel model = (DefaultTableModel) taulaProductesTicket.getModel();
+            for (int row = 0; row < model.getRowCount(); row++) {
+                int idProducte = (int) model.getValueAt(row, 0);
+
+                // Update the quantity in the map
+                productQuantities.put(idProducte, productQuantities.getOrDefault(idProducte, 0) + 1);
+            }
+
+            // Create a list of novaLiniaCompraM objects using the map
+            List<novaLiniaCompraM> linies = new ArrayList<>();
+            for (Map.Entry<Integer, Integer> entry : productQuantities.entrySet()) {
+                int idProducte = entry.getKey();
+                int quantitat = entry.getValue();
+                linies.add(new novaLiniaCompraM(idProducte, quantitat));
+            }
+
+            // Create a sample novaCompraM object
+            int client_id = clientM.getId();
+            int treballador_id = AuthorizationM.getInstance().getId();
+
+            String metodePagament = "Targeta";
+
+            // Corrected data types using DecimalFormat
+            double importTotal = Double.parseDouble(decimalFormat.format(Double.parseDouble(totalQuantitat.getText().replace(",", "."))));
+            double entregat = importTotal;
+            double canvi = 0;
+
+            novaCompraM novaCompra = new novaCompraM(client_id, treballador_id, linies, metodePagament,
+                    Double.parseDouble(decimalFormat.format(entregat)),
+                    Double.parseDouble(decimalFormat.format(canvi)),
+                    Double.parseDouble(decimalFormat.format(descompte)));
+
+            // Create an instance of CompraC and make the API request
+            CompraC compraController = new CompraC();
+            compraController.creaCompra(novaCompra);
+
+            // Show success dialog
+            JOptionPane.showMessageDialog(this, "Compra realitzada amb èxit", "Compra realitzada amb èxit", JOptionPane.INFORMATION_MESSAGE);
+        } catch (NumberFormatException e) {
+            // Handle number format exception if needed
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_pagamentTargetaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botoBuscaClient;
@@ -815,19 +981,20 @@ public class CompraV extends javax.swing.JPanel {
     private javax.swing.JLabel cupoEur;
     private javax.swing.JLabel cupoQuantitat;
     private javax.swing.JTextField cupoText;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JLabel entregatEur;
+    private javax.swing.JTextField entregatText;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel liniesDiscontinues;
     private javax.swing.JPanel operacionsPanel;
+    private javax.swing.JButton pagamentEfectiu;
     private javax.swing.JPanel pagamentPanel;
+    private javax.swing.JButton pagamentTargeta;
     private javax.swing.JPanel productePanel;
     private javax.swing.JPanel separador1;
     private javax.swing.JPanel separador2;
     private javax.swing.JPanel separador3;
     private javax.swing.JPanel separador4;
-    private javax.swing.JPanel separador5;
     private javax.swing.JLabel subtotalEur;
     private javax.swing.JLabel subtotalLabel;
     private javax.swing.JLabel subtotalQuantitat;
