@@ -5,8 +5,6 @@ import controlador.CompraC;
 import controlador.ProducteC;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,6 +36,11 @@ public class CompraV extends javax.swing.JPanel {
     ProducteC producteC = new ProducteC();
     private List<ProducteM> producteList;
 
+    List<novaLiniaCompraM> linies;
+
+    // Crea un Map per guardar els ID's del productes i les quantitats
+    HashMap<Integer, Integer> quantitatDeProductes = new HashMap<>();
+
     /**
      * Constructor
      */
@@ -48,7 +51,7 @@ public class CompraV extends javax.swing.JPanel {
     /**
      * Mètode per mostrar productes a la taula
      */
-    public void actualitzaModelDeTaula() {
+    public void actualitzaTaulaAmbProductes() {
         DefaultTableModel modelDeTaula = (DefaultTableModel) taulaProductes.getModel();
         modelDeTaula.setRowCount(0); // Esborra les dades existents
 
@@ -79,7 +82,7 @@ public class CompraV extends javax.swing.JPanel {
      *
      * @param idProducte
      */
-    private void mostrarProducte(int idProducte) {
+    private void actualitzaTaulaAmbProductePerID(int idProducte) {
         // Obté el producte utilitzant el mètode getProducte a ProducteC
         ProducteM producte = producteC.getProducte(idProducte);
 
@@ -98,7 +101,7 @@ public class CompraV extends javax.swing.JPanel {
             };
             modelDeTaula.addRow(dadesFila);
 
-            // Store the single product in the list
+            // Guarda el producte a la llista
             producteList = new ArrayList<>(Arrays.asList(producte));
             producteList.add(producte);
         } else {
@@ -114,7 +117,7 @@ public class CompraV extends javax.swing.JPanel {
 
         double total = 0.0;
 
-        // Use DecimalFormat for consistent formatting
+        // Fem servir DecimalFormat per un format consistent
         DecimalFormat decimalFormat = new DecimalFormat("0.00");
 
         for (int row = 0; row < model.getRowCount(); row++) {
@@ -124,7 +127,7 @@ public class CompraV extends javax.swing.JPanel {
                 total += ((Number) preuProducte).doubleValue();
             } else if (preuProducte instanceof String) {
                 try {
-                    // Replace commas with dots and add to total
+                    // Canvies comes per punts i suma al total
                     total += Double.parseDouble(((String) preuProducte).replace(",", "."));
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
@@ -132,10 +135,10 @@ public class CompraV extends javax.swing.JPanel {
             }
         }
 
-        // Update subtotalQuantitat with dot formatting
+        // Actualitza subtotalQuantitat amb format de punts
         subtotalQuantitat.setText(decimalFormat.format(total).replace(",", "."));
 
-        // Update totalQuantitat (subtotalQuantitat minus cupoQuantitat) with dot formatting
+        // Actualitza totalQuantitat amb format de punts
         try {
             double cupoQuantitat = Double.parseDouble(cupoText.getText().replace(",", "."));
             double totalQuantitatImport = total - cupoQuantitat;
@@ -145,18 +148,253 @@ public class CompraV extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * Mètode que dona format al camp Entregat
+     */
     private void formatEntregatText() {
-        String text = entregatText.getText().trim(); // Trim leading/trailing spaces
+        String text = entregatText.getText().trim();
 
         if (text.isEmpty()) {
-            entregatText.setText("0.00"); // Set a default value if the field is empty
+            entregatText.setText("0.00"); // Si està buit
         } else {
             try {
-                double value = Double.parseDouble(text.replace(",", ".")); // Replace commas with dots
-                entregatText.setText(String.format("%.2f", value)); // Format to two decimal places
+                double value = Double.parseDouble(text.replace(",", ".")); // Canviem comes per punts
+                entregatText.setText(String.format("%.2f", value)); // Format amb dos decimals
             } catch (NumberFormatException ex) {
-                entregatText.setText("0.00"); // Set a default value or handle the error as needed
+                entregatText.setText("0.00"); // Valor per defecte
             }
+        }
+    }
+
+    /**
+     * Mètode que gestiona el pagament segons el mètode de pagament (Efectiu o
+     * Targeta)
+     *
+     * @param metodePagament
+     */
+    private void procesPagament(String metodePagament) {
+        try {
+            // Comprova si clientM no és nul
+            if (clientM == null || clientM.getId() == 0) {
+                JOptionPane.showMessageDialog(this, "Client no trobat. Assegura't de seleccionar un client vàlid.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Comprova si taulaProductesTicket no és buida
+            DefaultTableModel model = (DefaultTableModel) taulaProductesTicket.getModel();
+            if (model.getRowCount() == 0) {
+                JOptionPane.showMessageDialog(this, "El carro de la compra no pot estar buit.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Comprova si cupoText no és buit i és un valor decimal vàlid
+            if (cupoText.getText().isEmpty()) {
+                // Mostra el dialeg per als camps buits
+                JOptionPane.showMessageDialog(this, "El camp 'Descompte' no pot estar buit.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Reemplaça les comes per punts a la cadena d'entrada
+            String cupoTextValue = cupoText.getText().replace(",", ".");
+
+            // Correcció dels tipus de dades utilitzant DecimalFormat
+            DecimalFormat decimalFormat = new DecimalFormat("0.00", DecimalFormatSymbols.getInstance(Locale.US));
+            double descompte = Double.parseDouble(decimalFormat.format(Double.parseDouble(cupoTextValue)));
+
+            // Itera a través de les files de taulaProductesTicket
+            for (int row = 0; row < model.getRowCount(); row++) {
+                int idProducte = (int) model.getValueAt(row, 0);
+
+                // Actualitza la quantitat en el mapa
+                quantitatDeProductes.put(idProducte, quantitatDeProductes.getOrDefault(idProducte, 0) + 1);
+            }
+
+            // Crea una llista d'objectes novaLiniaCompraM utilitzant el mapa
+            linies = new ArrayList<>();
+            for (Map.Entry<Integer, Integer> entry : quantitatDeProductes.entrySet()) {
+                int idProducte = entry.getKey();
+                int quantitat = entry.getValue();
+                linies.add(new novaLiniaCompraM(idProducte, quantitat));
+            }
+
+            // Crea un objecte novaCompraM de mostra
+            int client_id = clientM.getId();
+            int treballador_id = AuthorizationM.getInstance().getId();
+
+            // Inicialitza les variables específiques de cada mètode de pagament
+            double importTotal, entregat, canvi;
+
+            if ("Efectiu".equals(metodePagament)) {
+                try {
+                    // Comprova si entregatText és un número vàlid
+                    entregat = Double.parseDouble(entregatText.getText().replace(",", "."));
+
+                    // Comprova si entregat és més gran que importTotal
+                    importTotal = Double.parseDouble(decimalFormat.format(Double.parseDouble(totalQuantitat.getText().replace(",", "."))));
+                    canvi = Double.parseDouble(decimalFormat.format(entregat - importTotal));
+
+                    if (canvi < 0) {
+                        // Mostra el dialeg per al pagament insuficient
+                        JOptionPane.showMessageDialog(this, "L'import entregat no pot ser menor que l'import total.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    // Mostra el dialeg per al format de número no vàlid
+                    JOptionPane.showMessageDialog(this, "L'import entregat ha de ser un número vàlid.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } else if ("Targeta".equals(metodePagament)) {
+                // Per "Targeta," tot l'import es considera com a pagat
+                importTotal = Double.parseDouble(decimalFormat.format(Double.parseDouble(totalQuantitat.getText().replace(",", "."))));
+                entregat = importTotal;
+                canvi = 0;
+            } else {
+                // Gestionar el mètode de pagament inesperat
+                JOptionPane.showMessageDialog(this, "Mètode de pagament no reconegut.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            novaCompraM novaCompra = new novaCompraM(client_id, treballador_id, linies, metodePagament,
+                    Double.parseDouble(decimalFormat.format(entregat)),
+                    Double.parseDouble(decimalFormat.format(canvi)),
+                    Double.parseDouble(decimalFormat.format(descompte)));
+
+            // Crea una instància de CompraC i realitza la sol·licitud API
+            CompraC compraController = new CompraC();
+            compraController.creaCompra(novaCompra);
+
+            // Mostra el dialeg d'èxit amb la informació del canvi
+            if (canvi > 0) {
+                JOptionPane.showMessageDialog(this, String.format("Recorda entregar %.2f al client.", canvi), "Compra realitzada amb èxit", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Compra realitzada amb èxit", "Compra realitzada amb èxit", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            // Reinicia la pantalla per a una nova compra
+            reiniciaCompra();
+
+        } catch (NumberFormatException e) {
+            // Gestionar l'excepció de format de número si és necessari
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Mètode per reiniciar la pantalla de punt de venda per a una nova compra
+     */
+    private void reiniciaCompra() {
+        // Esborra taulaProductesTicket
+        DefaultTableModel model = (DefaultTableModel) taulaProductesTicket.getModel();
+        model.setRowCount(0);
+
+        // Esborra taulaProductes
+        DefaultTableModel model2 = (DefaultTableModel) taulaProductes.getModel();
+        model2.setRowCount(0);
+
+        clientM = null;
+
+        // Crea una nova instància de l'ArrayList
+        producteList = new ArrayList<>();
+
+        // Crea una nova instància del HashMap
+        quantitatDeProductes = new HashMap<>();
+
+        linies.clear();
+
+        entregatText.setText("ENTREGAT");
+
+        buscadorClient.setText(missatgeBuscadorClient);
+        buscadorProductes.setText(missatgeBuscadorProductes);
+
+        cupoText.setText("0.00");
+
+        actualitzaTotal();
+    }
+
+    public void afegirProducteTaulaTicket() {
+        // Selecciona el producte de la taula
+        int filaSeleccionada = taulaProductes.getSelectedRow();
+
+        if (filaSeleccionada != -1) {
+            DefaultTableModel sourceTableModel = (DefaultTableModel) taulaProductes.getModel();
+            DefaultTableModel destinationTableModel = (DefaultTableModel) taulaProductesTicket.getModel();
+
+            Object[] dadesFila = new Object[3];
+            dadesFila[0] = sourceTableModel.getValueAt(filaSeleccionada, 0);
+            dadesFila[1] = sourceTableModel.getValueAt(filaSeleccionada, 1);
+            dadesFila[2] = sourceTableModel.getValueAt(filaSeleccionada, 2);
+
+            destinationTableModel.addRow(dadesFila);
+        }
+        actualitzaTotal();
+    }
+
+    public void eliminarProducteTaulaTicket() {
+        // Eliminar el producte del ticket        
+        int filaSeleccionada = taulaProductesTicket.getSelectedRow();
+
+        if (filaSeleccionada != -1) {
+            DefaultTableModel destinationTableModel = (DefaultTableModel) taulaProductesTicket.getModel();
+
+            destinationTableModel.removeRow(filaSeleccionada);
+        }
+        actualitzaTotal();
+    }
+
+    /**
+     * Mètode que busca el client per DNI i omple el camp buscadorClient amb el
+     * nom i cognoms
+     */
+    public void buscaClientPerDNI() {
+        // Obtenir el text del camp de text BuscadorClient
+        String dniClient = buscadorClient.getText();
+
+        // Comprovar si el text no és buit 
+        if (!dniClient.isEmpty() && !dniClient.equals(missatgeBuscadorClient)) {
+            try {
+                // Crida al mètode per mostrar el client individual al buscador
+                clientM = clientC.getClientPerDNI(dniClient);
+                // Mostra el nom i cognoms si el client no és null
+                if (clientM != null) {
+                    buscadorClient.setText(clientM.getNom() + " " + clientM.getCognoms());
+                } else {
+                    // Si el client és null, deixa el buscadorClient en blanc
+                    buscadorClient.setText(missatgeBuscadorClient);
+                    GestorErrors.displayError("Client no trobat a la base de dades.");
+                }
+            } catch (NumberFormatException e) {
+                // Gestionar el cas en què dniClient no sigui una entrada vàlida
+                System.out.println("Format de dniClient no vàlid.");
+            }
+        }
+    }
+
+    /**
+     * Mètode per determinar si omplim la taula amb tots els productes o amb un
+     * producte segons el text a buscadorProductes
+     */
+    public void buscaProductes() {
+        // Obtenir el text del camp de text BuscadorProductes
+        String idProducteText = buscadorProductes.getText();
+
+        // Comprovar si el text no és buit 
+        if (!idProducteText.isEmpty()) {
+            try {
+                // Intenta analitzar el text per obtenir la identificació del producte
+                int idProducte = Integer.parseInt(idProducteText);
+
+                // Crida al mètode per mostrar el producte individual a la taula
+                actualitzaTaulaAmbProductePerID(idProducte);
+            } catch (NumberFormatException e) {
+                // Gestionar el cas en què idProducteText no sigui un enter vàlid
+                System.out.println("Format d'ID de producte no vàlid. Mostrant tots els productes en lloc d'això.");
+
+                // Mostra tots els productes
+                actualitzaTaulaAmbProductes();
+            }
+        } else {
+            // Si el text és buit, obtenir tots els productes i omplir la taula
+            actualitzaTaulaAmbProductes();
         }
     }
 
@@ -377,11 +615,6 @@ public class CompraV extends javax.swing.JPanel {
             }
             public void focusLost(java.awt.event.FocusEvent evt) {
                 buscadorClientFocusLost(evt);
-            }
-        });
-        buscadorClient.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buscadorClientActionPerformed(evt);
             }
         });
 
@@ -715,62 +948,18 @@ public class CompraV extends javax.swing.JPanel {
         if (buscadorProductes.getText().isEmpty()) {
             buscadorProductes.setText(missatgeBuscadorProductes);
         }
-
     }//GEN-LAST:event_buscadorProductesFocusLost
 
     private void taulaProductesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taulaProductesMouseClicked
-
-        // Afegeix el producte a la taula ticket
-        int filaSeleccionada = taulaProductes.getSelectedRow();
-
-        if (filaSeleccionada != -1) {
-            DefaultTableModel sourceTableModel = (DefaultTableModel) taulaProductes.getModel();
-            DefaultTableModel destinationTableModel = (DefaultTableModel) taulaProductesTicket.getModel();
-
-            Object[] dadesFila = new Object[3];
-            dadesFila[0] = sourceTableModel.getValueAt(filaSeleccionada, 0);
-            dadesFila[1] = sourceTableModel.getValueAt(filaSeleccionada, 1);
-            dadesFila[2] = sourceTableModel.getValueAt(filaSeleccionada, 2);
-
-            destinationTableModel.addRow(dadesFila);
-        }
-        actualitzaTotal();
+        afegirProducteTaulaTicket();
     }//GEN-LAST:event_taulaProductesMouseClicked
 
     private void taulaProductesTicketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taulaProductesTicketMouseClicked
-        // Eliminar el producte del ticket        
-        int filaSeleccionada = taulaProductesTicket.getSelectedRow();
-
-        if (filaSeleccionada != -1) {
-            DefaultTableModel destinationTableModel = (DefaultTableModel) taulaProductesTicket.getModel();
-
-            destinationTableModel.removeRow(filaSeleccionada);
-        }
-        actualitzaTotal();
+        eliminarProducteTaulaTicket();
     }//GEN-LAST:event_taulaProductesTicketMouseClicked
 
     private void botoBuscaClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBuscaClientActionPerformed
-        // Obtenir el text del camp de text BuscadorClient
-        String dniClient = buscadorClient.getText();
-
-        // Comprovar si el text no és buit 
-        if (!dniClient.isEmpty() && !dniClient.equals(missatgeBuscadorClient)) {
-            try {
-                // Crida al mètode per mostrar el client individual al buscador
-                clientM = clientC.getClientByDNI(dniClient);
-                // Mostra el nom i cognoms si el client no és null
-                if (clientM != null) {
-                    buscadorClient.setText(clientM.getNom() + " " + clientM.getCognoms());
-                } else {
-                    // Si el client és null, deixa el buscadorClient en blanc
-                    buscadorClient.setText(missatgeBuscadorClient);
-                    GestorErrors.displayError("Client no trobat a la base de dades.");
-                }
-            } catch (NumberFormatException e) {
-                // Gestionar el cas en què dniClient no sigui una entrada vàlida
-                System.out.println("Format de dniClient no vàlid.");
-            }
-        }
+        buscaClientPerDNI();
     }//GEN-LAST:event_botoBuscaClientActionPerformed
 
     private void botoNetejaBuscadorClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoNetejaBuscadorClientActionPerformed
@@ -780,112 +969,12 @@ public class CompraV extends javax.swing.JPanel {
     }//GEN-LAST:event_botoNetejaBuscadorClientActionPerformed
 
     private void pagamentEfectiuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pagamentEfectiuActionPerformed
-        try {
-            // Check if entregatText and cupoText are not empty and are valid double values
-            if (entregatText.getText().isEmpty() || cupoText.getText().isEmpty()) {
-                // Show dialog for empty fields
-                JOptionPane.showMessageDialog(this, "Els camps 'Entregat' i 'Descompte' no poden estar buits.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Replace commas with dots in the input strings
-            String entregatTextValue = entregatText.getText().replace(",", ".");
-            String cupoTextValue = cupoText.getText().replace(",", ".");
-
-            // Corrected data types using DecimalFormat with explicit locale
-            DecimalFormat decimalFormat = new DecimalFormat("0.00", DecimalFormatSymbols.getInstance(Locale.US));
-            double entregat = Double.parseDouble(decimalFormat.format(Double.parseDouble(entregatTextValue)));
-            double descompte = Double.parseDouble(decimalFormat.format(Double.parseDouble(cupoTextValue)));
-
-            // Check if entregat is more than importTotal
-            if (entregat <= 0 || descompte < 0) {
-                // Show dialog for invalid values
-                JOptionPane.showMessageDialog(this, "Els camps 'Entregat' i 'Descompte' han de ser valors positius.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Create a map to store product IDs and their quantities
-            HashMap<Integer, Integer> productQuantities = new HashMap<>();
-
-            // Iterate through the rows of taulaProductesTicket
-            DefaultTableModel model = (DefaultTableModel) taulaProductesTicket.getModel();
-            for (int row = 0; row < model.getRowCount(); row++) {
-                int idProducte = (int) model.getValueAt(row, 0);
-
-                // Update the quantity in the map
-                productQuantities.put(idProducte, productQuantities.getOrDefault(idProducte, 0) + 1);
-            }
-
-            // Create a list of novaLiniaCompraM objects using the map
-            List<novaLiniaCompraM> linies = new ArrayList<>();
-            for (Map.Entry<Integer, Integer> entry : productQuantities.entrySet()) {
-                int idProducte = entry.getKey();
-                int quantitat = entry.getValue();
-                linies.add(new novaLiniaCompraM(idProducte, quantitat));
-            }
-
-            // Create a sample novaCompraM object
-            int client_id = clientM.getId();
-            int treballador_id = AuthorizationM.getInstance().getId();
-
-            String metodePagament = "Efectiu";
-
-            // Corrected data types using DecimalFormat
-            double importTotal = Double.parseDouble(decimalFormat.format(Double.parseDouble(totalQuantitat.getText().replace(",", "."))));
-            double canvi = Double.parseDouble(decimalFormat.format(entregat - importTotal));
-
-            // Check if entregat is more than importTotal
-            if (canvi < 0) {
-                // Show dialog for insufficient payment
-                JOptionPane.showMessageDialog(this, "L'import entregat no pot ser menor que l'import total.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            novaCompraM novaCompra = new novaCompraM(client_id, treballador_id, linies, metodePagament,
-                    Double.parseDouble(decimalFormat.format(entregat)),
-                    Double.parseDouble(decimalFormat.format(canvi)),
-                    Double.parseDouble(decimalFormat.format(descompte)));
-
-            // Create an instance of CompraC and make the API request
-            CompraC compraController = new CompraC();
-            compraController.creaCompra(novaCompra);
-
-            // Show success dialog with change information
-            JOptionPane.showMessageDialog(this, String.format("Recorda entregar %.2f al client.", canvi), "Compra realitzada amb èxit", JOptionPane.INFORMATION_MESSAGE);
-        } catch (NumberFormatException e) {
-            // Handle number format exception if needed
-            e.printStackTrace();
-        }
+        procesPagament("Efectiu");
     }//GEN-LAST:event_pagamentEfectiuActionPerformed
 
     private void botoBuscaProducteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBuscaProducteActionPerformed
-        // Obtenir el text del camp de text BuscadorProductes
-        String idProducteText = buscadorProductes.getText();
-
-        // Comprovar si el text no és buit 
-        if (!idProducteText.isEmpty()) {
-            try {
-                // Intenta analitzar el text per obtenir la identificació del producte
-                int idProducte = Integer.parseInt(idProducteText);
-
-                // Crida al mètode per mostrar el producte individual a la taula
-                mostrarProducte(idProducte);
-            } catch (NumberFormatException e) {
-                // Gestionar el cas en què idProducteText no sigui un enter vàlid
-                System.out.println("Format d'ID de producte no vàlid. Mostrant tots els productes en lloc d'això.");
-
-                // Mostra tots els productes
-                actualitzaModelDeTaula();
-            }
-        } else {
-            // Si el text és buit, obtenir tots els productes i omplir la taula
-            actualitzaModelDeTaula();
-        }
+        buscaProductes();
     }//GEN-LAST:event_botoBuscaProducteActionPerformed
-
-    private void buscadorClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscadorClientActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_buscadorClientActionPerformed
 
     private void entregatTextFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_entregatTextFocusGained
         if (entregatText.getText().matches("ENTREGAT")) {
@@ -898,74 +987,7 @@ public class CompraV extends javax.swing.JPanel {
     }//GEN-LAST:event_entregatTextFocusLost
 
     private void pagamentTargetaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pagamentTargetaActionPerformed
-        try {
-            // Check if descompteText is not empty and is a valid double value
-            if (cupoText.getText().isEmpty()) {
-                // Show dialog for empty fields
-                JOptionPane.showMessageDialog(this, "El camp 'Descompte' no pot estar buit.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Replace commas with dots in the input string
-            String cupoTextValue = cupoText.getText().replace(",", ".");
-
-            // Corrected data types using DecimalFormat with explicit locale
-            DecimalFormat decimalFormat = new DecimalFormat("0.00", DecimalFormatSymbols.getInstance(Locale.US));
-            double descompte = Double.parseDouble(decimalFormat.format(Double.parseDouble(cupoTextValue)));
-
-            // Check if descompte is less than 0
-            if (descompte < 0) {
-                // Show dialog for invalid value
-                JOptionPane.showMessageDialog(this, "El camp 'Descompte' ha de ser un valor positiu o zero.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Create a map to store product IDs and their quantities
-            HashMap<Integer, Integer> productQuantities = new HashMap<>();
-
-            // Iterate through the rows of taulaProductesTicket
-            DefaultTableModel model = (DefaultTableModel) taulaProductesTicket.getModel();
-            for (int row = 0; row < model.getRowCount(); row++) {
-                int idProducte = (int) model.getValueAt(row, 0);
-
-                // Update the quantity in the map
-                productQuantities.put(idProducte, productQuantities.getOrDefault(idProducte, 0) + 1);
-            }
-
-            // Create a list of novaLiniaCompraM objects using the map
-            List<novaLiniaCompraM> linies = new ArrayList<>();
-            for (Map.Entry<Integer, Integer> entry : productQuantities.entrySet()) {
-                int idProducte = entry.getKey();
-                int quantitat = entry.getValue();
-                linies.add(new novaLiniaCompraM(idProducte, quantitat));
-            }
-
-            // Create a sample novaCompraM object
-            int client_id = clientM.getId();
-            int treballador_id = AuthorizationM.getInstance().getId();
-
-            String metodePagament = "Targeta";
-
-            // Corrected data types using DecimalFormat
-            double importTotal = Double.parseDouble(decimalFormat.format(Double.parseDouble(totalQuantitat.getText().replace(",", "."))));
-            double entregat = importTotal;
-            double canvi = 0;
-
-            novaCompraM novaCompra = new novaCompraM(client_id, treballador_id, linies, metodePagament,
-                    Double.parseDouble(decimalFormat.format(entregat)),
-                    Double.parseDouble(decimalFormat.format(canvi)),
-                    Double.parseDouble(decimalFormat.format(descompte)));
-
-            // Create an instance of CompraC and make the API request
-            CompraC compraController = new CompraC();
-            compraController.creaCompra(novaCompra);
-
-            // Show success dialog
-            JOptionPane.showMessageDialog(this, "Compra realitzada amb èxit", "Compra realitzada amb èxit", JOptionPane.INFORMATION_MESSAGE);
-        } catch (NumberFormatException e) {
-            // Handle number format exception if needed
-            e.printStackTrace();
-        }
+        procesPagament("Targeta");
     }//GEN-LAST:event_pagamentTargetaActionPerformed
 
 

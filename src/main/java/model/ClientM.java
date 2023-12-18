@@ -11,6 +11,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ClientM {
 
+    /**
+     * Atributs de la classe que representen les dades del client
+     */
     private int id;
     private String user;
     private String username;
@@ -22,10 +25,15 @@ public class ClientM {
     private String dataNaixement;
     private String telefon;
     private String imatge;
+    private String punts;
 
+    /**
+     * Constructor buit per a la deserialització JSON
+     */
     public ClientM() {
     }
-    
+
+    // Mètodes getters i setters
     public int getId() {
         return id;
     }
@@ -114,6 +122,20 @@ public class ClientM {
         this.imatge = imatge;
     }
 
+    public String getPunts() {
+        return punts;
+    }
+
+    public void setPunts(String punts) {
+        this.punts = punts;
+    }
+
+    /**
+     * Override del mètode toString per obtenir una representació en cadena de
+     * l'objecte
+     *
+     * @return
+     */
     @Override
     public String toString() {
         return "ClientM{"

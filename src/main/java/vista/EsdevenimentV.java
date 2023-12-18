@@ -46,17 +46,20 @@ public class EsdevenimentV extends javax.swing.JPanel {
      */
     public EsdevenimentV() {
         initComponents();
+
     }
 
-    public void actualitzaModelDeTaula() {
+    /**
+     * Mètode per mostrar la llista d'esdeveniments a la taula
+     *
+     * @param esdeveniments
+     */
+    public void actualitzaTaulaAmbEsdeveniments(List<EsdevenimentM> esdeveniments) {
         DefaultTableModel tableModel = (DefaultTableModel) taulaEsdeveniments.getModel();
-        tableModel.setRowCount(0); // Clear existing data.
-
-        // Call the getEsdeveniments method in EsdevenimentC to get the latest esdeveniment data.
-        esdeveniments = esdevenimentC.getEsdeveniments();
+        tableModel.setRowCount(0); // Esborra dades existents.
 
         if (esdeveniments != null) {
-            // Populate the table with esdeveniment data.
+            // Omple la taula amb les dades de l'esdeveniment
             for (EsdevenimentM esdeveniment : esdeveniments) {
                 String formattedDate = DateUtils.format(esdeveniment.getData());
 
@@ -71,11 +74,14 @@ public class EsdevenimentV extends javax.swing.JPanel {
                 tableModel.addRow(rowData);
             }
         } else {
-            // Handle the case where the esdeveniment data retrieval fails.
+            // Gestiona l'error obtenint les dades de l'esdeveniment.
             JOptionPane.showMessageDialog(this, "Error retrieving esdeveniment data.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    /**
+     * Mètode per omplir la taula amb els assistents de l'esdeveniment
+     */
     public void actualitzaTaulaAssistents() {
         // Obté la fila seleccionada de la taulaEsdeveniments
         int filaSeleccionada = taulaEsdeveniments.getSelectedRow();
@@ -136,6 +142,196 @@ public class EsdevenimentV extends javax.swing.JPanel {
     }
 
     /**
+     * Mètode per omplir el formulari amb les dades de l'esdeveniment
+     */
+    public void ompleFormulariAmbDadesEsdeveniment() {
+        // Selecciona l'esdeveniment de la taula
+        int fila = taulaEsdeveniments.getSelectedRow();
+
+        if (fila != -1 && esdeveniments != null && fila < esdeveniments.size()) {
+            EsdevenimentM selectedEsdeveniment = esdeveniments.get(fila);
+
+            // Omple el formulari amb les dades de l'esdeveniment seleccionat
+            String nom = selectedEsdeveniment.getNom();
+            String descripcio = selectedEsdeveniment.getDescripcio();
+            String ubicacio = selectedEsdeveniment.getUbicacio();
+            int aforament = selectedEsdeveniment.getAforament();
+            String durada = selectedEsdeveniment.getDurada();
+            String data = DateUtils.format(selectedEsdeveniment.getData());
+
+            nomText.setText(nom);
+            descripcioText.setText(descripcio);
+            ubicacioText.setText(ubicacio);
+            aforamentText.setText(String.valueOf(aforament));
+            duradaText.setText(durada);
+            dataText.setText(data.substring(0, 8));
+
+            try {
+                // Parse el string per obtenir un objecte Date
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+                Date date = dateFormat.parse(data);
+
+                // Posa la data a SpinnerDateModel
+                SpinnerDateModel model = new SpinnerDateModel(date, null, null, java.util.Calendar.HOUR_OF_DAY);
+
+                // Actualitza horaSpinner amb el nou model
+                horaSpinner.setModel(model);
+
+                // Parse la part HH:mm de la data i posa-ho a horaSpinner
+                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+                Date time = timeFormat.parse(data.substring(9, 14));
+                horaSpinner.setValue(time);
+
+            } catch (ParseException ex) {
+                Logger.getLogger(EsdevenimentV.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            actualitzaTaulaAssistents();
+        }
+    }
+
+    /**
+     * Mètode per editar un esdeveniment
+     */
+    public void editarEsdeveniment() {
+        try {
+            // Obté l'índex de la fila seleccionada
+            int filaSeleccionada = taulaEsdeveniments.getSelectedRow();
+
+            // Comprova si s'ha seleccionat una fila
+            if (filaSeleccionada != -1) {
+                // Obté l'objecte EsdevenimentM de la llista
+                EsdevenimentM selectedEsdeveniment = esdeveniments.get(filaSeleccionada);
+
+                String nom = nomText.getText();
+                String descripcio = descripcioText.getText();
+                String ubicacio = ubicacioText.getText();
+                int aforament = Integer.parseInt(aforamentText.getText());
+                String durada = duradaText.getText();
+
+                String timeFormat = "HH:mm:ss";
+                String dateFormat = "dd/MM/yy HH:mm:ss";
+
+                SimpleDateFormat sdfTime = new SimpleDateFormat(timeFormat);
+                SimpleDateFormat sdfFinalDate = new SimpleDateFormat(dateFormat);
+
+                String dia = dataText.getText();
+                String hora = sdfTime.format(horaSpinner.getValue());
+                String dataSenseFormat = dia + " " + hora;
+
+                Date data = sdfFinalDate.parse(dataSenseFormat);  // Use parse instead of format
+
+                // Comprova si hi ha algun camp buit
+                if (nom.isEmpty() || descripcio.isEmpty() || ubicacio.isEmpty() || durada.isEmpty()) {
+                    // Gestionar l'error quan algun camp està buit
+                    GestorErrors.displayError("Cal omplir tots els camps abans d'editar un producte.");
+                } else {
+
+                    // Crea un objecte nouEsdevenimentM amb la informació actualitzada
+                    nouEsdevenimentM esdevenimentEditat = new nouEsdevenimentM();
+                    esdevenimentEditat.setNom(nom);
+                    esdevenimentEditat.setDescripcio(descripcio);
+                    esdevenimentEditat.setData(data);
+                    esdevenimentEditat.setUbicacio(ubicacio);
+                    esdevenimentEditat.setAforament(aforament);
+                    esdevenimentEditat.setDurada(durada);
+                    esdevenimentEditat.setCreador_id(AuthorizationM.getInstance().getId());
+
+                    // Crida al mètode editarEsdeveniment a EsdevenimentC
+                    esdevenimentC.editarEsdeveniment(selectedEsdeveniment.getId(), esdevenimentEditat);
+
+                    // Actualitza la taula després de l'edició
+                    esdeveniments = esdevenimentC.getEsdeveniments();
+                    actualitzaTaulaAmbEsdeveniments(esdeveniments);
+
+                }
+            } else {
+                // Si no s'ha seleccionat cap fila, mostra un missatge d'error
+                GestorErrors.displayError("Cal seleccionar un esdeveniment per editar-lo.");
+            }
+        } catch (NumberFormatException e) {
+            // Gestionar el cas en què el text no sigui un número vàlid
+            GestorErrors.displayError("Entrada no vàlida per a valors numèrics");
+        } catch (ParseException ex) {
+            Logger.getLogger(EsdevenimentV.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Mètode per afegir un esdeveniment
+     */
+    public void afegirEsdeveniment() {
+        try {
+            String nom = nomText.getText();
+            String descripcio = descripcioText.getText();
+            String ubicacio = ubicacioText.getText();
+            int aforament = Integer.parseInt(aforamentText.getText());
+            String durada = duradaText.getText();
+
+            String timeFormat = "HH:mm:ss";
+            String dateFormat = "dd/MM/yy HH:mm:ss";
+
+            SimpleDateFormat sdfTime = new SimpleDateFormat(timeFormat);
+            SimpleDateFormat sdfFinalDate = new SimpleDateFormat(dateFormat);
+
+            String dia = dataText.getText();
+            String hora = sdfTime.format(horaSpinner.getValue());
+            String dataSenseFormat = dia + " " + hora;
+
+            Date data = sdfFinalDate.parse(dataSenseFormat);  // Use parse instead of format
+
+            // Comprova si hi ha algun camp buit
+            if (nom.isEmpty() || descripcio.isEmpty() || ubicacio.isEmpty() || durada.isEmpty()) {
+                // Gestionar l'error quan algun camp està buit
+                GestorErrors.displayError("Cal omplir tots els camps abans d'afegir un nou esdeveniment.");
+            } else {
+
+                // Crea un objecte nouEsdevenimentM amb les dades del formulari
+                nouEsdevenimentM nouesdeveniment = new nouEsdevenimentM();
+                nouesdeveniment.setNom(nom);
+                nouesdeveniment.setDescripcio(descripcio);
+                nouesdeveniment.setData(data);
+                nouesdeveniment.setAforament(aforament);
+                nouesdeveniment.setDurada(durada);
+                nouesdeveniment.setUbicacio(ubicacio);
+                nouesdeveniment.setCreador_id(AuthorizationM.getInstance().getId());
+
+                // Crida al mètode afegeixEsdeveniment a EsdevenimentC
+                esdevenimentC.afegeixEsdeveniment(nouesdeveniment);
+            }
+
+        } catch (NumberFormatException e) {
+            // Gestiona l'error en cas de que no sigui un valor numèric
+            GestorErrors.displayError("Entrada no vàlida per a valors numèrics");
+        } catch (ParseException ex) {
+            Logger.getLogger(EsdevenimentV.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Mètode per eliminar un esdeveniment
+     */
+    public void eliminarEsdeveniment() {
+        // Obtenir l'índex de la fila seleccionada
+        int filaSeleccionada = taulaEsdeveniments.getSelectedRow();
+
+        // Comprovar si s'ha seleccionat una fila
+        if (filaSeleccionada != -1) {
+            // Obtenir l'ID de l'esdeveniment de la fila seleccionada
+            int idEsdeveniment = (int) taulaEsdeveniments.getValueAt(filaSeleccionada, 0);
+
+            // Cridar al mètode eliminarEsdeveniment a EsdevenimentC amb aquest ID
+            esdevenimentC.eliminarEsdeveniment(idEsdeveniment);
+
+            // Actualitzar la taula després de l'eliminació
+            esdeveniments = esdevenimentC.getEsdeveniments();
+            actualitzaTaulaAmbEsdeveniments(esdeveniments);
+        } else {
+            // Si no s'ha seleccionat cap fila, mostrar un missatge d'error
+            GestorErrors.displayError("Cal seleccionar un esdeveniment per eliminar-lo.");
+        }
+    }
+
+    /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
@@ -145,14 +341,17 @@ public class EsdevenimentV extends javax.swing.JPanel {
     private void initComponents() {
 
         buscadorPanel = new javax.swing.JPanel();
-        buscadorEsdeveniment = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         taulaEsdeveniments = new javax.swing.JTable();
         jPanel6 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
-        botoBuscaClient = new javax.swing.JButton();
-        botoNetejaBuscadorClient = new javax.swing.JButton();
+        botoBuscaEsdeveniment = new javax.swing.JButton();
+        botoNetejaEsdeveniment = new javax.swing.JButton();
+        nomLabel1 = new javax.swing.JLabel();
+        aforamentBoto = new javax.swing.JButton();
+        dataBoto = new javax.swing.JButton();
+        ubicacioBoto = new javax.swing.JButton();
         infoPanel = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         jPanel10 = new javax.swing.JPanel();
@@ -196,19 +395,6 @@ public class EsdevenimentV extends javax.swing.JPanel {
         setBackground(new java.awt.Color(217, 4, 41));
 
         buscadorPanel.setBackground(new java.awt.Color(217, 4, 41));
-
-        buscadorEsdeveniment.setBackground(new java.awt.Color(237, 242, 244));
-        buscadorEsdeveniment.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
-        buscadorEsdeveniment.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        buscadorEsdeveniment.setText("Busca tots els esdeveniments");
-        buscadorEsdeveniment.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                buscadorEsdevenimentFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                buscadorEsdevenimentFocusLost(evt);
-            }
-        });
 
         jScrollPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jScrollPane1.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
@@ -263,11 +449,11 @@ public class EsdevenimentV extends javax.swing.JPanel {
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 632, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 28, Short.MAX_VALUE)
+            .addGap(0, 14, Short.MAX_VALUE)
         );
 
         jPanel7.setBackground(new java.awt.Color(217, 4, 41));
@@ -296,23 +482,69 @@ public class EsdevenimentV extends javax.swing.JPanel {
             .addGap(0, 100, Short.MAX_VALUE)
         );
 
-        botoBuscaClient.setBackground(new java.awt.Color(43, 45, 66));
-        botoBuscaClient.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/lupaB.png"))); // NOI18N
-        botoBuscaClient.setBorder(null);
-        botoBuscaClient.setBorderPainted(false);
-        botoBuscaClient.addActionListener(new java.awt.event.ActionListener() {
+        botoBuscaEsdeveniment.setBackground(new java.awt.Color(43, 45, 66));
+        botoBuscaEsdeveniment.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/lupaB.png"))); // NOI18N
+        botoBuscaEsdeveniment.setBorder(null);
+        botoBuscaEsdeveniment.setBorderPainted(false);
+        botoBuscaEsdeveniment.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botoBuscaClientActionPerformed(evt);
+                botoBuscaEsdevenimentActionPerformed(evt);
             }
         });
 
-        botoNetejaBuscadorClient.setBackground(new java.awt.Color(43, 45, 66));
-        botoNetejaBuscadorClient.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/XB.png"))); // NOI18N
-        botoNetejaBuscadorClient.setBorder(null);
-        botoNetejaBuscadorClient.setBorderPainted(false);
-        botoNetejaBuscadorClient.addActionListener(new java.awt.event.ActionListener() {
+        botoNetejaEsdeveniment.setBackground(new java.awt.Color(43, 45, 66));
+        botoNetejaEsdeveniment.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/XB.png"))); // NOI18N
+        botoNetejaEsdeveniment.setBorder(null);
+        botoNetejaEsdeveniment.setBorderPainted(false);
+        botoNetejaEsdeveniment.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botoNetejaBuscadorClientActionPerformed(evt);
+                botoNetejaEsdevenimentActionPerformed(evt);
+            }
+        });
+
+        nomLabel1.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        nomLabel1.setForeground(new java.awt.Color(237, 242, 244));
+        nomLabel1.setText("Ordenar per:");
+
+        aforamentBoto.setBackground(new java.awt.Color(43, 45, 66));
+        aforamentBoto.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
+        aforamentBoto.setForeground(new java.awt.Color(237, 242, 244));
+        aforamentBoto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/aforament.png"))); // NOI18N
+        aforamentBoto.setText("  AFORAMENT");
+        aforamentBoto.setMaximumSize(new java.awt.Dimension(150, 31));
+        aforamentBoto.setMinimumSize(new java.awt.Dimension(150, 31));
+        aforamentBoto.setPreferredSize(new java.awt.Dimension(200, 31));
+        aforamentBoto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aforamentBotoActionPerformed(evt);
+            }
+        });
+
+        dataBoto.setBackground(new java.awt.Color(43, 45, 66));
+        dataBoto.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
+        dataBoto.setForeground(new java.awt.Color(237, 242, 244));
+        dataBoto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/data_esdeveniment.png"))); // NOI18N
+        dataBoto.setText("  DATA");
+        dataBoto.setMaximumSize(new java.awt.Dimension(150, 31));
+        dataBoto.setMinimumSize(new java.awt.Dimension(150, 31));
+        dataBoto.setPreferredSize(new java.awt.Dimension(200, 31));
+        dataBoto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dataBotoActionPerformed(evt);
+            }
+        });
+
+        ubicacioBoto.setBackground(new java.awt.Color(43, 45, 66));
+        ubicacioBoto.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
+        ubicacioBoto.setForeground(new java.awt.Color(237, 242, 244));
+        ubicacioBoto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/ubicacio2.png"))); // NOI18N
+        ubicacioBoto.setText("  UBICACIO");
+        ubicacioBoto.setMaximumSize(new java.awt.Dimension(150, 31));
+        ubicacioBoto.setMinimumSize(new java.awt.Dimension(150, 31));
+        ubicacioBoto.setPreferredSize(new java.awt.Dimension(200, 31));
+        ubicacioBoto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ubicacioBotoActionPerformed(evt);
             }
         });
 
@@ -331,12 +563,18 @@ public class EsdevenimentV extends javax.swing.JPanel {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, buscadorPanelLayout.createSequentialGroup()
                         .addGroup(buscadorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(buscadorPanelLayout.createSequentialGroup()
-                                .addComponent(botoBuscaClient, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(botoBuscaEsdeveniment, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(buscadorEsdeveniment)
+                                .addComponent(nomLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(botoNetejaBuscadorClient, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 670, Short.MAX_VALUE))
+                                .addComponent(dataBoto, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(aforamentBoto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(ubicacioBoto, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(botoNetejaEsdeveniment, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 888, Short.MAX_VALUE))
                         .addGap(18, 18, 18)))
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -346,24 +584,26 @@ public class EsdevenimentV extends javax.swing.JPanel {
             .addGroup(buscadorPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(buscadorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(buscadorPanelLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(buscadorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(buscadorEsdeveniment)
-                            .addComponent(botoBuscaClient, javax.swing.GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
-                            .addComponent(botoNetejaBuscadorClient, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, buscadorPanelLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(252, 252, 252))))
+                .addGap(17, 17, 17)
+                .addGroup(buscadorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(botoBuscaEsdeveniment, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(aforamentBoto, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dataBoto, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ubicacioBoto, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(botoNetejaEsdeveniment, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(nomLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1)
+                .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, buscadorPanelLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(243, 243, 243))
+                .addGroup(buscadorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, buscadorPanelLayout.createSequentialGroup()
+                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(252, 252, 252))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, buscadorPanelLayout.createSequentialGroup()
+                        .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(243, 243, 243))))
         );
 
         infoPanel.setBackground(new java.awt.Color(217, 4, 41));
@@ -763,7 +1003,7 @@ public class EsdevenimentV extends javax.swing.JPanel {
                 .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(31, 31, 31)
                 .addGroup(buscadorPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 670, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3)
                     .addGroup(buscadorPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel15)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -826,221 +1066,66 @@ public class EsdevenimentV extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void taulaEsdevenimentsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taulaEsdevenimentsMouseClicked
-        // Omple el formulari
-        int fila = taulaEsdeveniments.getSelectedRow();
-
-        if (fila != -1 && esdeveniments != null && fila < esdeveniments.size()) {
-            EsdevenimentM selectedEsdeveniment = esdeveniments.get(fila);
-
-            // Fill the form with the selected Esdeveniment's data
-            String nom = selectedEsdeveniment.getNom();
-            String descripcio = selectedEsdeveniment.getDescripcio();
-            String ubicacio = selectedEsdeveniment.getUbicacio();
-            int aforament = selectedEsdeveniment.getAforament();
-            String durada = selectedEsdeveniment.getDurada();
-            String data = DateUtils.format(selectedEsdeveniment.getData());
-
-            nomText.setText(nom);
-            descripcioText.setText(descripcio);
-            ubicacioText.setText(ubicacio);
-            aforamentText.setText(String.valueOf(aforament));
-            duradaText.setText(durada);
-            dataText.setText(data.substring(0, 8));
-
-            try {
-                // Parse the string to obtain a Date object
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-                Date date = dateFormat.parse(data);
-
-                // Set up the SpinnerDateModel with the parsed date
-                SpinnerDateModel model = new SpinnerDateModel(date, null, null, java.util.Calendar.HOUR_OF_DAY);
-
-                // Update the existing horaSpinner with the new model
-                horaSpinner.setModel(model);
-
-                // Parse the HH:mm part from the data string and set it as the value of horaSpinner
-                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-                Date time = timeFormat.parse(data.substring(9, 14));
-                horaSpinner.setValue(time);
-
-            } catch (ParseException ex) {
-                Logger.getLogger(EsdevenimentV.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            actualitzaTaulaAssistents();
-        }
+        ompleFormulariAmbDadesEsdeveniment();
 
     }//GEN-LAST:event_taulaEsdevenimentsMouseClicked
 
-    private void botoBuscaClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBuscaClientActionPerformed
-        System.out.println(esdevenimentC.getEsdeveniments());
-        esdevenimentC.printEsdeveniments(esdevenimentC.getEsdeveniments());
-        actualitzaModelDeTaula();
-    }//GEN-LAST:event_botoBuscaClientActionPerformed
+    private void botoBuscaEsdevenimentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBuscaEsdevenimentActionPerformed
+        esdeveniments = esdevenimentC.getEsdeveniments();
+        actualitzaTaulaAmbEsdeveniments(esdeveniments);
+    }//GEN-LAST:event_botoBuscaEsdevenimentActionPerformed
 
     private void netejaBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_netejaBotoActionPerformed
         buidaFormulari();
     }//GEN-LAST:event_netejaBotoActionPerformed
 
     private void editarBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarBotoActionPerformed
-        try {
-            // Obté l'índex de la fila seleccionada
-            int filaSeleccionada = taulaEsdeveniments.getSelectedRow();
-
-            // Comprova si s'ha seleccionat una fila
-            if (filaSeleccionada != -1) {
-                // Obté l'objecte EsdevenimentM de la llista
-                EsdevenimentM selectedEsdeveniment = esdeveniments.get(filaSeleccionada);
-
-                String nom = nomText.getText();
-                String descripcio = descripcioText.getText();
-                String ubicacio = ubicacioText.getText();
-                int aforament = Integer.parseInt(aforamentText.getText());
-                String durada = duradaText.getText();
-
-                String timeFormat = "HH:mm:ss";
-                String dateFormat = "dd/MM/yy HH:mm:ss";
-
-                SimpleDateFormat sdfTime = new SimpleDateFormat(timeFormat);
-                SimpleDateFormat sdfFinalDate = new SimpleDateFormat(dateFormat);
-
-                String dia = dataText.getText();
-                String hora = sdfTime.format(horaSpinner.getValue());
-                String dataSenseFormat = dia + " " + hora;
-
-                Date data = sdfFinalDate.parse(dataSenseFormat);  // Use parse instead of format
-
-                // Comprova si hi ha algun camp buit
-                if (nom.isEmpty() || descripcio.isEmpty() || ubicacio.isEmpty() || durada.isEmpty()) {
-                    // Gestionar l'error quan algun camp està buit
-                    GestorErrors.displayError("Cal omplir tots els camps abans d'editar un producte.");
-                } else {
-
-                    // Crea un objecte nouEsdevenimentM amb la informació actualitzada
-                    nouEsdevenimentM esdevenimentEditat = new nouEsdevenimentM();
-                    esdevenimentEditat.setNom(nom);
-                    esdevenimentEditat.setDescripcio(descripcio);
-                    esdevenimentEditat.setData(data);
-                    esdevenimentEditat.setUbicacio(ubicacio);
-                    esdevenimentEditat.setAforament(aforament);
-                    esdevenimentEditat.setDurada(durada);
-                    esdevenimentEditat.setCreador_id(AuthorizationM.getInstance().getId());
-
-                    // Crida al mètode editarEsdeveniment a EsdevenimentC
-                    esdevenimentC.editarEsdeveniment(selectedEsdeveniment.getId(), esdevenimentEditat);
-
-                    // Actualitza la taula després de l'edició
-                    actualitzaModelDeTaula();
-
-                }
-            } else {
-                // Si no s'ha seleccionat cap fila, mostra un missatge d'error
-                GestorErrors.displayError("Cal seleccionar un esdeveniment per editar-lo.");
-            }
-        } catch (NumberFormatException e) {
-            // Gestionar el cas en què el text no sigui un número vàlid
-            GestorErrors.displayError("Entrada no vàlida per a valors numèrics");
-        } catch (ParseException ex) {
-            Logger.getLogger(EsdevenimentV.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        editarEsdeveniment();
     }//GEN-LAST:event_editarBotoActionPerformed
 
     private void afegirBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afegirBotoActionPerformed
-        try {
-            String nom = nomText.getText();
-            String descripcio = descripcioText.getText();
-            String ubicacio = ubicacioText.getText();
-            int aforament = Integer.parseInt(aforamentText.getText());
-            String durada = duradaText.getText();
-
-            String timeFormat = "HH:mm:ss";
-            String dateFormat = "dd/MM/yy HH:mm:ss";
-
-            SimpleDateFormat sdfTime = new SimpleDateFormat(timeFormat);
-            SimpleDateFormat sdfFinalDate = new SimpleDateFormat(dateFormat);
-
-            String dia = dataText.getText();
-            String hora = sdfTime.format(horaSpinner.getValue());
-            String dataSenseFormat = dia + " " + hora;
-
-            Date data = sdfFinalDate.parse(dataSenseFormat);  // Use parse instead of format
-
-            // Comprova si hi ha algun camp buit
-            if (nom.isEmpty() || descripcio.isEmpty() || ubicacio.isEmpty() || durada.isEmpty()) {
-                // Gestionar l'error quan algun camp està buit
-                GestorErrors.displayError("Cal omplir tots els camps abans d'afegir un nou esdeveniment.");
-            } else {
-
-                // Crea un objecte nouEsdevenimentM amb les dades del formulari
-                nouEsdevenimentM nouesdeveniment = new nouEsdevenimentM();
-                nouesdeveniment.setNom(nom);
-                nouesdeveniment.setDescripcio(descripcio);
-                nouesdeveniment.setData(data);
-                nouesdeveniment.setAforament(aforament);
-                nouesdeveniment.setDurada(durada);
-                nouesdeveniment.setUbicacio(ubicacio);
-                nouesdeveniment.setCreador_id(AuthorizationM.getInstance().getId());
-
-                // Crida al mètode afegeixEsdeveniment a EsdevenimentC
-                esdevenimentC.afegeixEsdeveniment(nouesdeveniment);
-            }
-
-        } catch (NumberFormatException e) {
-            // Gestiona l'error en cas de que no sigui un valor numèric
-            GestorErrors.displayError("Entrada no vàlida per a valors numèrics");
-        } catch (ParseException ex) {
-            Logger.getLogger(EsdevenimentV.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        afegirEsdeveniment();
     }//GEN-LAST:event_afegirBotoActionPerformed
 
     private void eliminarBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarBotoActionPerformed
-        // Obtenir l'índex de la fila seleccionada
-        int filaSeleccionada = taulaEsdeveniments.getSelectedRow();
-
-        // Comprovar si s'ha seleccionat una fila
-        if (filaSeleccionada != -1) {
-            // Obtenir l'ID de l'esdeveniment de la fila seleccionada
-            int idEsdeveniment = (int) taulaEsdeveniments.getValueAt(filaSeleccionada, 0);
-
-            // Cridar al mètode eliminarEsdeveniment a EsdevenimentC amb aquest ID
-            esdevenimentC.eliminarEsdeveniment(idEsdeveniment);
-
-            // Actualitzar la taula després de l'eliminació
-            actualitzaModelDeTaula();
-        } else {
-            // Si no s'ha seleccionat cap fila, mostrar un missatge d'error
-            GestorErrors.displayError("Cal seleccionar un esdeveniment per eliminar-lo.");
-        }
+        eliminarEsdeveniment();
     }//GEN-LAST:event_eliminarBotoActionPerformed
 
     private void taulaAssistentsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taulaAssistentsMouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_taulaAssistentsMouseClicked
 
-    private void botoNetejaBuscadorClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoNetejaBuscadorClientActionPerformed
+    private void botoNetejaEsdevenimentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoNetejaEsdevenimentActionPerformed
         buidaFormulari();
         buidaTaula();
-    }//GEN-LAST:event_botoNetejaBuscadorClientActionPerformed
+    }//GEN-LAST:event_botoNetejaEsdevenimentActionPerformed
 
-    private void buscadorEsdevenimentFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_buscadorEsdevenimentFocusGained
-        buscadorEsdeveniment.setText("");
-    }//GEN-LAST:event_buscadorEsdevenimentFocusGained
+    private void aforamentBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aforamentBotoActionPerformed
+        esdeveniments = esdevenimentC.getEsdevenimentsPerOrdre("aforament");
+        actualitzaTaulaAmbEsdeveniments(esdeveniments);
+    }//GEN-LAST:event_aforamentBotoActionPerformed
 
-    private void buscadorEsdevenimentFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_buscadorEsdevenimentFocusLost
-        if (buscadorEsdeveniment.getText().isEmpty()) {
-            buscadorEsdeveniment.setText(missatgeBuscador);
-        }
-    }//GEN-LAST:event_buscadorEsdevenimentFocusLost
+    private void dataBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dataBotoActionPerformed
+        esdeveniments = esdevenimentC.getEsdevenimentsPerOrdre("data");
+        actualitzaTaulaAmbEsdeveniments(esdeveniments);
+    }//GEN-LAST:event_dataBotoActionPerformed
+
+    private void ubicacioBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ubicacioBotoActionPerformed
+        esdeveniments = esdevenimentC.getEsdevenimentsPerOrdre("ubicacio");
+        actualitzaTaulaAmbEsdeveniments(esdeveniments);
+    }//GEN-LAST:event_ubicacioBotoActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton afegirBoto;
+    private javax.swing.JButton aforamentBoto;
     private javax.swing.JLabel aforamentLabel;
     private javax.swing.JTextField aforamentText;
-    private javax.swing.JButton botoBuscaClient;
-    private javax.swing.JButton botoNetejaBuscadorClient;
-    private javax.swing.JTextField buscadorEsdeveniment;
+    private javax.swing.JButton botoBuscaEsdeveniment;
+    private javax.swing.JButton botoNetejaEsdeveniment;
     private javax.swing.JPanel buscadorPanel;
     private javax.swing.JPanel buscadorPanel1;
+    private javax.swing.JButton dataBoto;
     private javax.swing.JLabel dataLabel;
     private javax.swing.JTextField dataText;
     private javax.swing.JLabel descripcioLabel;
@@ -1068,10 +1153,12 @@ public class EsdevenimentV extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JButton netejaBoto;
     private javax.swing.JLabel nomLabel;
+    private javax.swing.JLabel nomLabel1;
     private javax.swing.JTextField nomText;
     private javax.swing.JLabel separadorLabel;
     private javax.swing.JTable taulaAssistents;
     private javax.swing.JTable taulaEsdeveniments;
+    private javax.swing.JButton ubicacioBoto;
     private javax.swing.JLabel ubicacioLabel;
     private javax.swing.JTextField ubicacioText;
     // End of variables declaration//GEN-END:variables

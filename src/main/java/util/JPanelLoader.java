@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 
 /**
  * Classe encarregada de carregar panells (JPanel) a la part esquerra del menú
+ *
  * @author Enric
  */
 public class JPanelLoader {

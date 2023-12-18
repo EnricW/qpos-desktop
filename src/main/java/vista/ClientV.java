@@ -16,7 +16,7 @@ import model.ClientM;
 public class ClientV extends javax.swing.JPanel {
 
     private ClientC clientC = new ClientC();
-    private List<ClientM> clientList; // Store Client objects here
+    private List<ClientM> clientList;
     private String missatgeBuscador = "Busca tots els clients o busca per DNI";
 
     /**
@@ -26,18 +26,21 @@ public class ClientV extends javax.swing.JPanel {
         initComponents();
     }
 
-    public void actualitzaModelDeTaula() {
+    /**
+     * Mètode per actualitzar la taula amb tots els clients
+     */
+    public void actualitzaTaulaAmbClients() {
         DefaultTableModel tableModel = (DefaultTableModel) taulaClients.getModel();
-        tableModel.setRowCount(0); // Clear existing data.
+        tableModel.setRowCount(0); // Esborra les dades existents.
 
-        // Call the getClients method in ClientC to get the latest client data.
+        // Crida al mètode getClients de ClientC per obtenir les dades més recents dels clients.
         ClientM clients = clientC.getClients();
 
         if (clients != null) {
-            // Store the Client objects in the list
+            // Emmagatzema els objectes Client a la llista
             clientList = Arrays.asList(clients.getClients());
 
-            // Populate the table with client data.
+            // Omple la taula amb les dades dels clients.
             for (ClientM client : clients.getClients()) {
                 Object[] rowData = {
                     client.getId(),
@@ -51,22 +54,27 @@ public class ClientV extends javax.swing.JPanel {
             }
 
         } else {
-            // Handle the case where the client data retrieval fails.
-            JOptionPane.showMessageDialog(this, "Error retrieving client data.", "Error", JOptionPane.ERROR_MESSAGE);
+            // Gestionar el cas en què falli la recuperació de les dades del client.
+            JOptionPane.showMessageDialog(this, "Error en recuperar les dades del client.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public void mostrarClient(String dni) {
-        ClientM client = clientC.getClientByDNI(dni);
+    /**
+     * Mètode per actualitzar la taula amb un client específic
+     *
+     * @param dni El DNI del client
+     */
+    public void actualitzaTaulaAmbClientPerDNI(String dni) {
+        ClientM client = clientC.getClientPerDNI(dni);
 
         DefaultTableModel tableModel = (DefaultTableModel) taulaClients.getModel();
-        tableModel.setRowCount(0); // Clear existing data.
+        tableModel.setRowCount(0); // Esborra les dades existents.
 
         if (client != null) {
-            // Update the clientList with the single client from the search
+            // Actualitza la clientList amb l'únic client de la cerca
             clientList = Collections.singletonList(client);
 
-            // Populate the table with client data.
+            // Omple la taula amb les dades del client.
             Object[] rowData = {
                 client.getId(),
                 client.getDni(),
@@ -78,11 +86,11 @@ public class ClientV extends javax.swing.JPanel {
             tableModel.addRow(rowData);
 
         } else {
-            // Handle the case where the client data retrieval fails.
-            JOptionPane.showMessageDialog(this, "Error retrieving client data.", "Error", JOptionPane.ERROR_MESSAGE);
+            // Gestionar el cas en què falli la recuperació de les dades del client.
+            JOptionPane.showMessageDialog(this, "Error en recuperar les dades del client.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     /**
      * Mètode per buidar la taula
      */
@@ -103,6 +111,56 @@ public class ClientV extends javax.swing.JPanel {
         telefonText.setText("");
         emailText.setText("");
         dataNaixementText.setText("");
+        bioText.setText("");
+        puntsText.setText("");
+    }
+
+    /**
+     * Mètode per omplir el formulari amb les dades del client seleccionat
+     */
+    public void ompleFormulariAmbDadesClient() {
+        // Selecciona el client
+        int fila = taulaClients.getSelectedRow();
+
+        if (fila != -1 && clientList != null && fila < clientList.size()) {
+            ClientM selectedClient = clientList.get(fila);
+
+            // Omple el formulari amb les dades del client seleccionat
+            dniText.setText(selectedClient.getDni());
+            nomText.setText(selectedClient.getNom());
+            cognomsText.setText(selectedClient.getCognoms());
+            telefonText.setText(selectedClient.getTelefon());
+            emailText.setText(selectedClient.getEmail());
+            dataNaixementText.setText(selectedClient.getDataNaixement());
+            bioText.setText(selectedClient.getBio());
+            puntsText.setText(selectedClient.getPunts());
+        }
+    }
+
+    /**
+     * Mètode per determinar si omplim la taula amb tots els clients o amb un
+     * client segons el text a buscadorClients
+     */
+    public void buscaClients() {
+        // Obtenir el text del camp de text BuscadorClient
+        String dniClient = buscadorClients.getText();
+
+        // Comprovar si el text no és buit 
+        if (!dniClient.isEmpty() && !dniClient.equals(missatgeBuscador)) {
+            try {
+                // Crida al mètode per mostrar el client individual a la taula
+                actualitzaTaulaAmbClientPerDNI(dniClient);
+            } catch (NumberFormatException e) {
+                // Gestionar el cas en què dniClient no sigui una entrada vàlida
+                System.out.println("Format de dniClient no vàlid. Mostrant tots els clients en lloc d'això.");
+
+                // Mostra tots els clients
+                actualitzaTaulaAmbClients();
+            }
+        } else {
+            // Si el text és buit, obtenir tots els clients i omplir la taula
+            actualitzaTaulaAmbClients();
+        }
     }
 
     /**
@@ -587,44 +645,11 @@ public class ClientV extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void taulaClientsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taulaClientsMouseClicked
-        // Omple el formulari amb les dades del Client seleccionat
-        int fila = taulaClients.getSelectedRow();
-
-        if (fila != -1 && clientList != null && fila < clientList.size()) {
-            ClientM selectedClient = clientList.get(fila);
-
-            // Fill the form with the selected Client's data
-            dniText.setText(selectedClient.getDni());
-            nomText.setText(selectedClient.getNom());
-            cognomsText.setText(selectedClient.getCognoms());
-            telefonText.setText(selectedClient.getTelefon());
-            emailText.setText(selectedClient.getEmail());
-            dataNaixementText.setText(selectedClient.getDataNaixement());
-            bioText.setText(selectedClient.getBio());
-            puntsText.setText("0");
-        }
+        ompleFormulariAmbDadesClient();
     }//GEN-LAST:event_taulaClientsMouseClicked
 
     private void botoBuscaClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBuscaClientActionPerformed
-        // Obtenir el text del camp de text BuscadorClient
-        String dniClient = buscadorClients.getText();
-
-        // Comprovar si el text no és buit 
-        if (!dniClient.isEmpty() && !dniClient.equals(missatgeBuscador)) {
-            try {
-                // Crida al mètode per mostrar el client individual a la taula
-                mostrarClient(dniClient);
-            } catch (NumberFormatException e) {
-                // Gestionar el cas en què dniClient no sigui una entrada vàlida
-                System.out.println("Format de dniClient no vàlid. Mostrant tots els clients en lloc d'això.");
-
-                // Mostra tots els clients
-                actualitzaModelDeTaula();
-            }
-        } else {
-            // Si el text és buit, obtenir tots els clients i omplir la taula
-            actualitzaModelDeTaula();
-        }
+        buscaClients();
     }//GEN-LAST:event_botoBuscaClientActionPerformed
 
     private void botoNetejaBuscadorClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoNetejaBuscadorClientActionPerformed

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Classe que representa un proveidor
+ *
  * @author Enric
  */
 // Annotació per ignorar propietats desconegudes durant la deserialització JSON
@@ -16,24 +17,26 @@ public class ProveidorM {
     private int id;
     private String nom;
     private String descripcio;
-    
+
     /**
-     * Contructor
+     * Constructor buit per a la deserialització JSON
      */
-    public ProveidorM(){
-        
+    public ProveidorM() {
+
     }
-    
+
     /**
      * Constructor amb paràmetre
+     *
      * @param id
      */
-    public ProveidorM(int id){
-        
+    public ProveidorM(int id) {
+
     }
 
     /**
      * Get id
+     *
      * @return
      */
     public int getId() {
@@ -42,6 +45,7 @@ public class ProveidorM {
 
     /**
      * Set id
+     *
      * @param id
      */
     public void setId(int id) {
@@ -50,6 +54,7 @@ public class ProveidorM {
 
     /**
      * Get nom
+     *
      * @return
      */
     public String getNom() {
@@ -58,6 +63,7 @@ public class ProveidorM {
 
     /**
      * Set nom
+     *
      * @param nom
      */
     public void setNom(String nom) {
@@ -66,6 +72,7 @@ public class ProveidorM {
 
     /**
      * Get descripcio
+     *
      * @return
      */
     public String getDescripcio() {
@@ -74,21 +81,23 @@ public class ProveidorM {
 
     /**
      * Set descripcio
+     *
      * @param descripcio
      */
     public void setDescripcio(String descripcio) {
         this.descripcio = descripcio;
     }
-    
+
     /**
      * Mètode toString per obtenir una representació en cadena de l'objecte
+     *
      * @return
      */
     @Override
     public String toString() {
         return "Proveidor [id=" + id + ", nom=" + nom + ", descripcio=" + descripcio + "]";
     }
-    
+
     /**
      * Atribut per emmagatzemar una llista de proveidors
      */

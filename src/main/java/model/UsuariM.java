@@ -2,6 +2,7 @@ package model;
 
 /**
  * Classe que representa un usuari
+ *
  * @author Enric
  */
 public class UsuariM {
@@ -16,6 +17,7 @@ public class UsuariM {
 
     /**
      * Constructor amb paràmetres per establir el nom d'usuari i la contrasenya
+     *
      * @param username
      * @param password
      */
@@ -25,14 +27,15 @@ public class UsuariM {
     }
 
     /**
-     * Constructor buit per a la deserialització JSON
-     * Pot ser utilitzat pel mapeig de les respostes del servidor a aquest objecte 
+     * Constructor buit per a la deserialització JSON Pot ser utilitzat pel
+     * mapeig de les respostes del servidor a aquest objecte
      */
     public UsuariM() {
     }
 
     /**
      * Get username
+     *
      * @return
      */
     public String getUsername() {
@@ -41,6 +44,7 @@ public class UsuariM {
 
     /**
      * Set username
+     *
      * @param username
      */
     public void setUsername(String username) {
@@ -49,6 +53,7 @@ public class UsuariM {
 
     /**
      * Get password
+     *
      * @return
      */
     public String getPassword() {
@@ -57,6 +62,7 @@ public class UsuariM {
 
     /**
      * Set password
+     *
      * @param password
      */
     public void setPassword(String password) {
@@ -65,6 +71,7 @@ public class UsuariM {
 
     /**
      * Get token
+     *
      * @return
      */
     public String getToken() {
@@ -73,6 +80,7 @@ public class UsuariM {
 
     /**
      * Set token
+     *
      * @param token
      */
     public void setToken(String token) {
@@ -81,6 +89,7 @@ public class UsuariM {
 
     /**
      * Get isAdmin
+     *
      * @return
      */
     public Boolean getIsAdmin() {
@@ -89,6 +98,7 @@ public class UsuariM {
 
     /**
      * Set isAdmin
+     *
      * @param isAdmin
      */
     public void setIsAdmin(Boolean isAdmin) {

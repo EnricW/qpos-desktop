@@ -4,11 +4,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 
 /**
+ * Classe que representa un nou esdeveniment
  *
  * @author Enric
  */
 public class nouEsdevenimentM {
 
+    /**
+     * Atributs de la classe que representen les dades del nou esdeveniment
+     */
     private String nom;
     private String descripcio;
 
@@ -20,11 +24,23 @@ public class nouEsdevenimentM {
     private String ubicacio;
     private int creador_id;
 
+    /**
+     * Constructor buit per a la deserialització JSON
+     */
     public nouEsdevenimentM() {
-        // Default constructor
     }
 
-    // Constructor with parameters
+    /**
+     * Constructor amb paràmetres
+     *
+     * @param nom
+     * @param descripcio
+     * @param data
+     * @param aforament
+     * @param durada
+     * @param ubicacio
+     * @param creador_id
+     */
     public nouEsdevenimentM(String nom, String descripcio, Date data, int aforament, String durada, String ubicacio, int creador_id) {
         this.nom = nom;
         this.descripcio = descripcio;
@@ -35,7 +51,7 @@ public class nouEsdevenimentM {
         this.creador_id = creador_id;
     }
 
-    // Getters and setters
+    // Mètodes getters i setters
     public String getNom() {
         return nom;
     }

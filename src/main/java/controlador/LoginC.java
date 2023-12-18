@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package controlador;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,12 +17,14 @@ import vista.MenuV;
 
 /**
  * Classe encarregada de gestionar les operacions relacionades amb l'usuari, com ara el login
+ * 
  * @author Enric
  */
 public class LoginC {
 
     /**
      * Mètode per iniciar la sessió d'un usuari
+     * 
      * @param username
      * @param password
      * @param isAdmin
@@ -97,6 +95,7 @@ public class LoginC {
 
     /**
      * Mètode per gestionar el login amb èxit
+     * 
      * @param user
      */
     private void handleSuccessfulLogin(UsuariM user) {

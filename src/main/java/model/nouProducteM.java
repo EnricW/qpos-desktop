@@ -2,6 +2,7 @@ package model;
 
 /**
  * Classe per a afegir nous productes
+ *
  * @author Enric
  */
 public class nouProducteM {
@@ -17,13 +18,14 @@ public class nouProducteM {
     private int estoc;
 
     /**
-     * Constructor
+     * Constructor buit per a la deserialització JSON
      */
     public nouProducteM() {
     }
 
     /**
      * Get id del proveidor
+     *
      * @return
      */
     public int getProveidor_id() {
@@ -32,14 +34,16 @@ public class nouProducteM {
 
     /**
      * Set id del proveidor
+     *
      * @param proveidor_id
      */
     public void setProveidor_id(int proveidor_id) {
         this.proveidor_id = proveidor_id;
     }
-    
+
     /**
      * Get nom
+     *
      * @return
      */
     public String getNom() {
@@ -48,6 +52,7 @@ public class nouProducteM {
 
     /**
      * Set nom
+     *
      * @param nom
      */
     public void setNom(String nom) {
@@ -56,6 +61,7 @@ public class nouProducteM {
 
     /**
      * Get descripcio
+     *
      * @return
      */
     public String getDescripcio() {
@@ -64,6 +70,7 @@ public class nouProducteM {
 
     /**
      * Set descripcio
+     *
      * @param descripcio
      */
     public void setDescripcio(String descripcio) {
@@ -72,6 +79,7 @@ public class nouProducteM {
 
     /**
      * Get preu
+     *
      * @return
      */
     public double getPreu() {
@@ -80,6 +88,7 @@ public class nouProducteM {
 
     /**
      * Set preu
+     *
      * @param preu
      */
     public void setPreu(double preu) {
@@ -88,6 +97,7 @@ public class nouProducteM {
 
     /**
      * Get codi de barres
+     *
      * @return
      */
     public String getCodiBarres() {
@@ -96,6 +106,7 @@ public class nouProducteM {
 
     /**
      * Set codi de barres
+     *
      * @param codiBarres
      */
     public void setCodiBarres(String codiBarres) {
@@ -104,6 +115,7 @@ public class nouProducteM {
 
     /**
      * Get estoc
+     *
      * @return
      */
     public int getEstoc() {
@@ -112,6 +124,7 @@ public class nouProducteM {
 
     /**
      * Set estoc
+     *
      * @param estoc
      */
     public void setEstoc(int estoc) {

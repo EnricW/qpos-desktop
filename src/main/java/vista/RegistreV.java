@@ -14,17 +14,27 @@ import util.GestorErrors;
 import javax.xml.bind.DatatypeConverter;
 
 /**
+ * Classe que representa la pantalla de registre d'un nou usuari
  *
  * @author Enric
  */
 public class RegistreV extends javax.swing.JFrame {
 
+    /**
+     * Instància de TreballadorC
+     */
     TreballadorC treballadorC = new TreballadorC();
 
+    /**
+     * Constructor
+     */
     public RegistreV() {
         initComponents();
     }
 
+    /**
+     * Mètode per buidar el formulari
+     */
     private void buidarFormulari() {
         usuariRText.setText("DNI");
         mailRText.setText("CORREU ELECTRÒNIC");
@@ -36,6 +46,11 @@ public class RegistreV extends javax.swing.JFrame {
         password2RText.setText("Password");
     }
 
+    /**
+     * Mètode per validar el format de la data
+     * @param date
+     * @return
+     */
     private boolean isValidDateFormat(String date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         dateFormat.setLenient(false);
@@ -46,14 +61,88 @@ public class RegistreV extends javax.swing.JFrame {
             return false;
         }
     }
-    
-    // Mètode per xifrar la contrasenya amb SHA-256
+
+    /**
+     * Mètode per xifrar la contrasenya amb SHA-256
+     * @param password
+     * @return
+     * @throws NoSuchAlgorithmException
+     */
     private String hashPassword(String password) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] hashedBytes = digest.digest(password.getBytes(StandardCharsets.UTF_8));
         return DatatypeConverter.printHexBinary(hashedBytes);
     }
 
+    /**
+     * Mètode per registrar un nou usuari
+     */
+    public void registrarUsuari() {
+        try {
+            String dni = usuariRText.getText();
+            String nom = nomRText.getText();
+            String cognoms = cognomsRText.getText();
+            String dataNaixement = dataRText.getText();
+            String telefon = telefonRText.getText();
+            String mail = mailRText.getText();
+            String password = String.valueOf(passwordRText.getPassword());
+            String password2 = String.valueOf(password2RText.getPassword());
+
+            String user = nom + cognoms.substring(0, 1);
+
+            if ("DNI".equals(dni) || "NOM".equals(nom) || "COGNOMS".equals(cognoms)
+                    || "TELÉFON".equals(telefon) || "CORREU ELECTRÒNIC".equals(mail)
+                    || "Password".equals(password) || "Password".equals(password2)
+                    || "DATA NAIXEMENT YYYY-MM-DD".equals(dataNaixement)
+                    || !isValidDateFormat(dataNaixement)) {
+                // Gestionar l'error quan algun camp està buit o té el valor per defecte
+                GestorErrors.displayError("Cal omplir tots els camps correctament abans d'afegir un treballador.");
+            } else if (!password.equals(password2)) {
+                // Gestionar l'error quan les contrasenyes no coincideixen
+                GestorErrors.displayError("Les contrasenyes han de coincidir.");
+            } else {
+                // Parse dataNaixement a un objecte Date
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date parsedDate = dateFormat.parse(dataNaixement);
+
+                // Crea un objecte TreballadorM amb les dades del formulari
+                TreballadorM nouTreballador = new TreballadorM();
+                nouTreballador.setUser(user);
+                nouTreballador.setUsername(user);
+                nouTreballador.setNom(nom);
+                nouTreballador.setCognoms(cognoms);
+                nouTreballador.setDataNaixement(parsedDate);
+                nouTreballador.setDni(dni);
+                nouTreballador.setTelefon(telefon);
+                nouTreballador.setEmail(mail);
+
+                // Xifra les contrasenyes abans d'enviar-les
+                nouTreballador.setPassword(hashPassword(password));
+                nouTreballador.setPassword2(hashPassword(password2));
+
+                // Crida al mètode afegeixTreballador a TreballadorC
+                treballadorC.afegeixTreballador(nouTreballador);
+
+                GestorErrors.mostraMissatge("Treballador amb nom d'usuari " + user + " afegit correctament.");
+                
+                dispose();
+            }
+        } catch (NumberFormatException e) {
+            // Gestiona l'error en cas de que no sigui un valor numèric
+            GestorErrors.displayError("Entrada no vàlida per a valors numèrics");
+        } catch (ParseException e) {
+            // Gestiona l'error en cas de que el format de la data sigui incorrecte
+            GestorErrors.displayError("Format de data incorrecte. Utilitza el format YYYY-MM-DD.");
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(RegistreV.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -466,65 +555,7 @@ public class RegistreV extends javax.swing.JFrame {
     }//GEN-LAST:event_botoBuidarFormulariActionPerformed
 
     private void botoRegistrarse1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoRegistrarse1ActionPerformed
-        try {
-            String dni = usuariRText.getText();
-            String nom = nomRText.getText();
-            String cognoms = cognomsRText.getText();
-            String dataNaixement = dataRText.getText();
-            String telefon = telefonRText.getText();
-            String mail = mailRText.getText();
-            String password = String.valueOf(passwordRText.getPassword());
-            String password2 = String.valueOf(password2RText.getPassword());
-
-            String user = nom + cognoms.substring(0, 1);
-
-            if ("DNI".equals(dni) || "NOM".equals(nom) || "COGNOMS".equals(cognoms)
-                    || "TELÉFON".equals(telefon) || "CORREU ELECTRÒNIC".equals(mail)
-                    || "Password".equals(password) || "Password".equals(password2)
-                    || "DATA NAIXEMENT YYYY-MM-DD".equals(dataNaixement)
-                    || !isValidDateFormat(dataNaixement)) {
-                // Gestionar l'error quan algun camp està buit o té el valor per defecte
-                GestorErrors.displayError("Cal omplir tots els camps correctament abans d'afegir un treballador.");
-            } else if (!password.equals(password2)) {
-                // Gestionar l'error quan les contrasenyes no coincideixen
-                GestorErrors.displayError("Les contrasenyes han de coincidir.");
-            } else {
-                // Parse dataNaixement to a Date object
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                Date parsedDate = dateFormat.parse(dataNaixement);
-
-                // Crea un objecte TreballadorM amb les dades del formulari
-                TreballadorM nouTreballador = new TreballadorM();
-                nouTreballador.setUser(user);
-                nouTreballador.setUsername(user);
-                nouTreballador.setNom(nom);
-                nouTreballador.setCognoms(cognoms);
-                nouTreballador.setDataNaixement(parsedDate);
-                nouTreballador.setDni(dni);
-                nouTreballador.setTelefon(telefon);
-                nouTreballador.setEmail(mail);
-
-                 // Xifra les contrasenyes abans d'enviar-les
-                nouTreballador.setPassword(hashPassword(password));
-                nouTreballador.setPassword2(hashPassword(password2));
-                
-                // Crida al mètode afegeixTreballador a TreballadorC
-                treballadorC.afegeixTreballador(nouTreballador);
-
-                GestorErrors.mostraMissatge("Treballador amb nom d'usuari "+user+" afegit correctament.");
-                System.out.println("Contrasenya xifrada: password es "+nouTreballador.getPassword());
-                System.out.println("Contrasenya xifrada: password2 es "+nouTreballador.getPassword2());
-                dispose();
-            }
-        } catch (NumberFormatException e) {
-            // Gestiona l'error en cas de que no sigui un valor numèric
-            GestorErrors.displayError("Entrada no vàlida per a valors numèrics");
-        } catch (ParseException e) {
-            // Handle the error if parsing of date fails
-            GestorErrors.displayError("Format de data incorrecte. Utilitza el format YYYY-MM-DD.");
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(RegistreV.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        registrarUsuari();
     }//GEN-LAST:event_botoRegistrarse1ActionPerformed
 
     private void botoRetrocedirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoRetrocedirActionPerformed

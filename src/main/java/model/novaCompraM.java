@@ -4,12 +4,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
 /**
+ * Classe per a afegir noves compres
  *
  * @author Enric
  */
+// Annotació per ignorar propietats desconegudes durant la deserialització JSON
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class novaCompraM {
 
+    /**
+     * Atributs de la classe que representen les dades de la nova compra
+     */
     private int client_id;
     private int treballador_id;
     private List<novaLiniaCompraM> linies;
@@ -17,10 +22,24 @@ public class novaCompraM {
     private double dinersEntregats;
     private double dinersCanvi;
     private double descompte;
-    
+
+    /**
+     * Constructor buit per a la deserialització JSON
+     */
     public novaCompraM() {
     }
 
+    /**
+     * Contrustor amb paràmetres
+     *
+     * @param client_id
+     * @param treballador_id
+     * @param linies
+     * @param metodePagament
+     * @param dinersEntregats
+     * @param dinersCanvi
+     * @param descompte
+     */
     public novaCompraM(int client_id, int treballador_id, List<novaLiniaCompraM> linies, String metodePagament, double dinersEntregats, double dinersCanvi, double descompte) {
         this.client_id = client_id;
         this.treballador_id = treballador_id;
@@ -31,6 +50,7 @@ public class novaCompraM {
         this.descompte = descompte;
     }
 
+    // Mètodes getters i setters
     public int getClient_id() {
         return client_id;
     }
@@ -87,5 +107,4 @@ public class novaCompraM {
         this.descompte = descompte;
     }
 
-    
 }

@@ -1,11 +1,15 @@
 package model;
 
 /**
+ * Classe que representa el creador de l'esdeveniment
  *
  * @author Enric
  */
 public class CreadorM {
- 
+
+    /**
+     * Atributs de la classe que representen les dades del creador
+     */
     private int id;
     private String user;
     private String username;
@@ -18,9 +22,13 @@ public class CreadorM {
     private String telefon;
     private String imatge;
 
+    /**
+     * Constructor buit per a la deserialització JSON
+     */
     public CreadorM() {
     }
 
+    // Mètodes getters i setters
     public int getId() {
         return id;
     }
@@ -109,6 +117,12 @@ public class CreadorM {
         this.imatge = imatge;
     }
 
+    /**
+     * Override del mètode toString per obtenir una representació en cadena de
+     * l'objecte
+     *
+     * @return
+     */
     @Override
     public String toString() {
         return "CreadorM{"

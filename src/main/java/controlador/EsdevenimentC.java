@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package controlador;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -24,11 +20,18 @@ import model.nouEsdevenimentM;
 import util.GestorErrors;
 
 /**
+ * Classe encarregada de gestionar les operacions relacionades amb els
+ * esdeveniments
  *
  * @author Enric
  */
 public class EsdevenimentC {
 
+    /**
+     * Mètode que retorna la llista d'esdeveniments
+     *
+     * @return La llista d'esdeveniments
+     */
     public List<EsdevenimentM> getEsdeveniments() {
         try {
             // Obté la instància de la classe AuthorizationM (gestora de tokens)
@@ -80,11 +83,69 @@ public class EsdevenimentC {
         // Retorna una llista buida si hi ha hagut problemes en l'execució
         return Collections.emptyList();
     }
-    
+
+    /**
+     * Mètode que retorna una llista d'esdeveniments ordenats segons un criteri
+     *
+     * @param criteri El criteri amb el que ordenarem els esdeveniments
+     * @return La llista ordenada segons el criteri
+     */
+    public List<EsdevenimentM> getEsdevenimentsPerOrdre(String criteri) {
+        try {
+            // Obté la instància de la classe AuthorizationM (gestora de tokens)
+            AuthorizationM authInstance = AuthorizationM.getInstance();
+
+            // Obtinguem el token d'autenticació
+            String token = authInstance.getToken();
+
+            // Fes una crida GET per obtenir l'array d'Esdeveniment a través de l'API
+            String apiUrl = "https://qpos.onrender.com/api/esdeveniments?ordering=" + criteri;
+            URL urlEsdeveniments = new URL(apiUrl);
+            HttpURLConnection conn = (HttpURLConnection) urlEsdeveniments.openConnection();
+            conn.setRequestMethod("GET");
+
+            // Estableix l'autorització mitjançant el token obtingut
+            conn.setRequestProperty("Authorization", "Token " + token);
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0");
+            conn.setRequestProperty("Accept", "application/json");
+
+            int responseCode = conn.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Utilitza try-with-resources per gestionar el tancament automàtic del Scanner
+                try (Scanner scanner = new Scanner(conn.getInputStream())) {
+                    // Llegeix la resposta JSON i construeix una llista d'EsdevenimentM
+                    StringBuilder sb = new StringBuilder();
+                    while (scanner.hasNext()) {
+                        sb.append(scanner.nextLine());
+                    }
+
+                    ObjectMapper objMapper = new ObjectMapper();
+
+                    List<EsdevenimentM> esdeveniments = objMapper.readValue(sb.toString(), new TypeReference<List<EsdevenimentM>>() {
+                    });
+
+                    // Retorna la llista d'EsdevenimentM
+                    return esdeveniments;
+                }
+            } else {
+                // En cas d'error en la crida, mostra un missatge d'error
+                GestorErrors.displayError("No s'ha pogut obtenir les dades dels esdeveniments. Codi d'error HTTP: " + responseCode);
+            }
+        } catch (IOException e) {
+            // Gestiona els errors d'IO mostrant-los a la consola
+            GestorErrors.logError("Excepció d'IO durant la recuperació dels esdeveniments", e);
+        }
+
+        // Retorna una llista buida si hi ha hagut problemes en l'execució
+        return Collections.emptyList();
+    }
+
     /**
      * Mètode per afegir un esdeveniment mitjançant una crida POST a l'API
      *
-     * @param esdeveniment
+     * @param esdeveniment El nou esdeveniment a afegir
      */
     public void afegeixEsdeveniment(nouEsdevenimentM esdeveniment) {
         try {
@@ -126,7 +187,12 @@ public class EsdevenimentC {
             GestorErrors.handleIOException(e);
         }
     }
-    
+
+    /**
+     * Imprimeix els esdeveniments proporcionats a la consola
+     *
+     * @param esdeveniments Llista d'esdeveniments a imprimir
+     */
     public void printEsdeveniments(List<EsdevenimentM> esdeveniments) {
         for (EsdevenimentM esdeveniment : esdeveniments) {
             System.out.println("ID: " + esdeveniment.getId());
@@ -160,11 +226,11 @@ public class EsdevenimentC {
             System.out.println("------------------------------------");
         }
     }
-    
+
     /**
      * Mètode per eliminar un esdeveniment mitjançant una crida DELETE a l'API
      *
-     * @param idEsdeveniment
+     * @param idEsdeveniment El id de l'esdeveniment a eliminar
      */
     public void eliminarEsdeveniment(int idEsdeveniment) {
         try {
@@ -196,12 +262,12 @@ public class EsdevenimentC {
             GestorErrors.handleIOException(e);
         }
     }
-    
+
     /**
      * Mètode per editar un esdeveniment mitjançant una crida PUT a l'API
      *
-     * @param idEsdeveniment
-     * @param esdeveniment
+     * @param idEsdeveniment ID de l'esdeveniment a editar
+     * @param esdeveniment Esdeveniment editat
      */
     public void editarEsdeveniment(int idEsdeveniment, nouEsdevenimentM esdeveniment) {
         try {

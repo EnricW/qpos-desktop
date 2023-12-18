@@ -5,12 +5,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.Date;
 
 /**
+ * Classe que representa un treballador
  *
  * @author Enric
  */
+// Annotació per ignorar propietats desconegudes durant la deserialització JSON
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TreballadorM {
 
+    /**
+     * Atributs de la classe que representen les dades del treballador
+     */
     private int id;
     private String user;
     private String username;
@@ -24,15 +29,32 @@ public class TreballadorM {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dataNaixement;
-    
 
     private String telefon;
     private String imatge;
 
-    // Constructors, getters, and setters
+    /**
+     * Constructor buit per a la deserialització JSON
+     */
     public TreballadorM() {
     }
 
+    /**
+     * Constructor amb paràmetres
+     *
+     * @param user
+     * @param username
+     * @param password
+     * @param password2
+     * @param nom
+     * @param cognoms
+     * @param email
+     * @param dni
+     * @param bio
+     * @param dataNaixement
+     * @param telefon
+     * @param imatge
+     */
     public TreballadorM(String user, String username, String password, String password2, String nom, String cognoms,
             String email, String dni, String bio, Date dataNaixement, String telefon, String imatge) {
         this.user = user;
@@ -49,8 +71,7 @@ public class TreballadorM {
         this.imatge = imatge;
     }
 
-    // Add getters and setters for each field
-
+    // Mètodes getters i setters
     public int getId() {
         return id;
     }
@@ -58,7 +79,7 @@ public class TreballadorM {
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public String getUser() {
         return user;
     }

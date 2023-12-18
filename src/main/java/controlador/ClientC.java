@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package controlador;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -25,7 +21,7 @@ public class ClientC {
     /**
      * Mètode per obtenir els clients mitjançant una crida GET a l'API
      *
-     * @return
+     * @return Els clients
      */
     public ClientM getClients() {
 
@@ -83,10 +79,10 @@ public class ClientC {
      * Mètode per obtenir un client mitjançant una crida GET a l'API amb un
      * identificador específic
      *
-     * @param dni
-     * @return
+     * @param dni El dni del client
+     * @return El client
      */
-    public ClientM getClientByDNI(String dni) {
+    public ClientM getClientPerDNI(String dni) {
         try {
             // Obte l'instància de la classe AuthorizationM (gestora de tokens)
             AuthorizationM authInstance = AuthorizationM.getInstance();
@@ -121,12 +117,12 @@ public class ClientC {
                     return clients.length > 0 ? clients[0] : null;
                 }
             } else {
-                // Handle HTTP error codes
+                // Gestiona HTTP error codes
                 System.out.println("Error: HTTP response code " + responseCode);
                 return null;
             }
         } catch (IOException e) {
-            // Handle IO exceptions
+            // Gestiona IO exceptions
             e.printStackTrace();
             return null;
         }

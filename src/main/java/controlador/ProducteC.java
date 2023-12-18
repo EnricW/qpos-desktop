@@ -25,7 +25,7 @@ public class ProducteC {
     /**
      * Mètode per obtenir els productes mitjançant una crida GET a l'API
      *
-     * @return
+     * @return Llista de productes
      */
     public ProducteM getProductes() {
 
@@ -82,7 +82,7 @@ public class ProducteC {
     /**
      * Mètode per afegir un producte mitjançant una crida POST a l'API
      *
-     * @param producte
+     * @param producte El nou producte a afegir
      */
     public void afegeixProducte(nouProducteM producte) {
         try {
@@ -128,7 +128,7 @@ public class ProducteC {
     /**
      * Mètode per eliminar un producte mitjançant una crida DELETE a l'API
      *
-     * @param idProducte
+     * @param idProducte ID del producte a eliminar
      */
     public void eliminarProducte(int idProducte) {
         try {
@@ -164,8 +164,8 @@ public class ProducteC {
     /**
      * Mètode per editar un producte mitjançant una crida PUT a l'API
      *
-     * @param idProducte
-     * @param producte
+     * @param idProducte ID del producte a editar
+     * @param producte El producte editat
      */
     public void editarProducte(int idProducte, nouProducteM producte) {
         try {
@@ -213,8 +213,8 @@ public class ProducteC {
      * Mètode per obtenir un producte mitjançant una crida GET a l'API amb un
      * identificador específic
      *
-     * @param idproducte
-     * @return
+     * @param idproducte ID del producte a obtindre
+     * @return El producte
      */
     public ProducteM getProducte(int idproducte) {
         try {

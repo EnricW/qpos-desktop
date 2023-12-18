@@ -5,12 +5,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.Date;
 
 /**
- *
+ * Classe que representa una compra
+ * 
  * @author Enric
  */
+// Annotació per ignorar propietats desconegudes durant la deserialització JSON
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CompraM {
 
+    /**
+     * Atributs de la classe que representen les dades de la compra
+     */
     private int id;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yy HH:mm:ss")
@@ -26,9 +31,13 @@ public class CompraM {
     private double dinersCanvi;
     private double descompte;
 
+    /**
+     * Constructor buit per a la deserialització JSON
+     */
     public CompraM() {
     }
 
+    // Mètodes getters i setters
     public int getId() {
         return id;
     }

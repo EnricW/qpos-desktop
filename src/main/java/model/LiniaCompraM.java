@@ -1,26 +1,31 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
+ * Classe que representa una linia de compra
  *
- * @author sardineta_fresca
+ * @author Enric
  */
+// Annotació per ignorar propietats desconegudes durant la deserialització JSON
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LiniaCompraM {
 
+    /**
+     * Atributs de la classe que representen les dades d'una linia de compra
+     */
     private int id;
     private ProducteM producte;
     private int quantitat;
     private int compra;
 
+    /**
+     * Constructor buit per a la deserialització JSON
+     */
     public LiniaCompraM() {
     }
 
+    // Mètodes getters i setters
     public int getId() {
         return id;
     }

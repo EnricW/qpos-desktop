@@ -1,12 +1,18 @@
 package vista;
 
 import controlador.CompraC;
+import controlador.TreballadorC;
 import java.awt.Component;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -14,6 +20,7 @@ import javax.swing.table.TableColumnModel;
 import model.CompraM;
 import model.LiniaCompraM;
 import model.ProducteM;
+import model.TreballadorM;
 import util.GestorErrors;
 
 /**
@@ -30,21 +37,60 @@ public class TicketsV extends javax.swing.JPanel {
     List<CompraM> compres;
 
     /**
+     * Map per emmagatzemar la relació entre username i ID del treballador
+     */
+    private Map<String, String> treballadorsMap;
+
+    TreballadorC treballadorsC = new TreballadorC();
+
+    /**
      * Constructor
      */
     public TicketsV() {
         initComponents();
-        // Set the custom renderer for the "Pagament" column
+
+        // Determina el renderer per a la columna "Pagament"
         TableColumnModel columnModel = taulaVendes.getColumnModel();
         columnModel.getColumn(PAGAMENT_COLUMN_INDEX).setCellRenderer(new PagamentRenderer());
+
+        // Inicialitzem el Map
+        treballadorsMap = new HashMap<>();
+
+        // Carreguem la llista de treballadors al combobox
+        carregarTreballadorsAlComboBox();
     }
 
-    public void actualitzaModelTaula() {
+    /**
+     * Mètode per omplir la taula amb les vendes segons el filtre
+     *
+     * @param filtre
+     */
+    public void actualitzaTaulaAmbVendes(Boolean filtre) {
         DefaultTableModel modelDeTaula = (DefaultTableModel) taulaVendes.getModel();
         modelDeTaula.setRowCount(0); // Clears existing data
 
-        // Crida el mètode getCompres a CompraC per obtenir les dades actualitzades de les compres
-        compres = compraC.getCompres(); // Initialize the class variable
+        if (filtre) {
+            String clientID = compratPerText.getText();
+
+            // Obtenim el username seleccionat del JComboBox
+            String selectedUsername = (String) cobratPerComboBox.getSelectedItem();
+
+            // Inicialitzem treballadorID a null per defecte
+            String treballadorID = null;
+
+            // Comprovem si s'ha seleccionat algun username
+            if (selectedUsername != null && !selectedUsername.isEmpty()) {
+                // Obtenim la ID del treballador mitjançant el Map
+                treballadorID = String.valueOf(treballadorsMap.get(selectedUsername));
+            }
+
+            String metodePagament = (String) metodePagamentComboBox.getSelectedItem();
+
+            // Crida el mètode getCompresAmbFiltres a CompraC per obtenir les dades actualitzades de les compres
+            compres = compraC.getCompresAmbFiltres(clientID, treballadorID, metodePagament);
+        } else {
+            compres = compraC.getCompres();
+        }
 
         if (!compres.isEmpty()) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -54,14 +100,111 @@ public class TicketsV extends javax.swing.JPanel {
                     compra.getId(),
                     dateFormat.format(compra.getData()),
                     compra.getTreballador().getUsername(),
-                    compra.getClient().getNom()+" "+compra.getClient().getCognoms(),
+                    compra.getClient().getNom() + " " + compra.getClient().getCognoms(),
                     compra.getMetodePagament(),
                     compra.getImportFinal()
                 };
                 modelDeTaula.addRow(dadesFila);
             }
         } else {
-            GestorErrors.displayError("Error en recuperar les dades de les compres.");
+            if (filtre) {
+                GestorErrors.displayError("Paràmetres de cerca no vàlids. Error en recuperar les dades de les compres.");
+            } else {
+                GestorErrors.displayError("Error en recuperar les dades de les compres.");
+            }
+        }
+    }
+
+    /**
+     * Mètode per actualitzar la taula amb una venda per ID
+     *
+     * @param compraID
+     */
+    public void actualitzaTaulaAmbVendaPerID(String compraID) {
+        CompraM compra = compraC.getCompraPerID(compraID);
+
+        DefaultTableModel tableModel = (DefaultTableModel) taulaVendes.getModel();
+        tableModel.setRowCount(0); // Esborra les dades existents.
+
+        if (compra != null) {
+            // Actualitza la llista de compres amb la única compra de la cerca
+            compres = Collections.singletonList(compra);
+
+            // Omple la taula amb les dades de la compra.
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            Object[] rowData = {
+                compra.getId(),
+                dateFormat.format(compra.getData()),
+                compra.getTreballador().getUsername(),
+                compra.getClient().getNom() + " " + compra.getClient().getCognoms(),
+                compra.getMetodePagament(),
+                compra.getImportFinal()
+            };
+            tableModel.addRow(rowData);
+
+        } else {
+            // Gestiona el cas en què falli l'obtenció de les dades de la compra.
+            JOptionPane.showMessageDialog(this, "Error en recuperar les dades de la compra.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * Mètode que determina si omplim la taula amb totes les vendes o amb una
+     * per ID
+     */
+    public void buscaVendes() {
+        // Obté el text de buscadorVendes JTextField
+        String compraID = buscadorVendes.getText();
+
+        // Comprova si el text no està buit
+        if (!compraID.isEmpty() && !compraID.equals(missatgeBuscador)) {
+            try {
+                // Crida al mètode per mostrar la compra individual a la taula
+                actualitzaTaulaAmbVendaPerID(compraID);
+            } catch (NumberFormatException e) {
+                // Gestiona el cas en què compraID no sigui una entrada vàlida
+                System.out.println("Format no vàlid per compraID. Mostrant totes les compres en lloc d'això.");
+
+                // Mostra totes les compres
+                actualitzaTaulaAmbVendes(false);
+            }
+        } else {
+            // Si el text està buit, obtenir totes les compres i omplir la taula
+            actualitzaTaulaAmbVendes(false);
+        }
+    }
+
+    /**
+     * Mètode que carrega cobratPerComboBox amb els usuaris dels treballadors
+     */
+    private void carregarTreballadorsAlComboBox() {
+        // Crida al mètode getTreballadors per obtenir la llista de treballadors
+        List<TreballadorM> treballadors = treballadorsC.getTreballadors();
+
+        // Verifiquem si s'han obtingut els treballadors correctament
+        if (treballadors != null) {
+            // Obté el model del JComboBox
+            DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
+
+            // Afegim la primera opció en blanc amb valor null
+            comboBoxModel.addElement("");
+
+            // Recorre la llista de treballadors i afegix els usernames al ComboBox i al Map
+            for (TreballadorM treballador : treballadors) {
+                String username = treballador.getUsername();
+                String id = String.valueOf(treballador.getId());
+
+                comboBoxModel.addElement(username);
+                treballadorsMap.put(username, id);
+            }
+
+            // Assigna el model al JComboBox
+            cobratPerComboBox.setModel(comboBoxModel);
+
+            System.out.println("Map dels treballadors: " + treballadorsMap);
+        } else {
+            // Gestiona error en obtenir la llista de treballadors
+            GestorErrors.displayError("Error en obtenir la llista de treballadors.");
         }
     }
 
@@ -110,7 +253,7 @@ public class TicketsV extends javax.swing.JPanel {
     private static final int PAGAMENT_COLUMN_INDEX = 4;
 
     /**
-     * Custom cell renderer for displaying icons in the "Pagament" column
+     * Render per mostrar a la columna de "Pagament" la icona d'Efectiu o Targeta
      */
     private static class PagamentRenderer extends DefaultTableCellRenderer {
 
@@ -131,6 +274,17 @@ public class TicketsV extends javax.swing.JPanel {
             return null;
         }
 
+        /**
+         * Determina la icona segons el mètode de pagament
+         *
+         * @param table
+         * @param value
+         * @param isSelected
+         * @param hasFocus
+         * @param row
+         * @param column
+         * @return
+         */
         @Override
         public Component getTableCellRendererComponent(
                 JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -180,8 +334,16 @@ public class TicketsV extends javax.swing.JPanel {
         jScrollPane2 = new javax.swing.JScrollPane();
         taulaTicket = new javax.swing.JTable();
         separador4 = new javax.swing.JPanel();
+        botoFiltrar = new javax.swing.JButton();
+        compratPerLabel = new javax.swing.JLabel();
+        compratPerText = new javax.swing.JTextField();
+        cobratPerLabel = new javax.swing.JLabel();
+        metodePagamentLabel = new javax.swing.JLabel();
+        cobratPerComboBox = new javax.swing.JComboBox<>();
+        jLabel15 = new javax.swing.JLabel();
+        separadorLabel = new javax.swing.JLabel();
+        metodePagamentComboBox = new javax.swing.JComboBox<>();
         jLabel14 = new javax.swing.JLabel();
-        separador5 = new javax.swing.JPanel();
 
         setBackground(new java.awt.Color(217, 4, 41));
 
@@ -190,7 +352,6 @@ public class TicketsV extends javax.swing.JPanel {
         buscadorVendes.setBackground(new java.awt.Color(237, 242, 244));
         buscadorVendes.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
         buscadorVendes.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        buscadorVendes.setText("Busca tickets o busca per ID");
         buscadorVendes.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 buscadorVendesFocusGained(evt);
@@ -253,7 +414,7 @@ public class TicketsV extends javax.swing.JPanel {
         separador2.setLayout(separador2Layout);
         separador2Layout.setHorizontalGroup(
             separador2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 68, Short.MAX_VALUE)
+            .addGap(0, 34, Short.MAX_VALUE)
         );
         separador2Layout.setVerticalGroup(
             separador2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -298,14 +459,14 @@ public class TicketsV extends javax.swing.JPanel {
                 .addGap(31, 31, 31)
                 .addGroup(vendesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(separador1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, vendesPanelLayout.createSequentialGroup()
                         .addComponent(botoBuscaVendes, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buscadorVendes, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(botoNetejaBuscadorVendes, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(38, 38, 38)
+                .addGap(10, 10, 10)
                 .addComponent(separador2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -388,25 +549,126 @@ public class TicketsV extends javax.swing.JPanel {
 
         separador4.setBackground(new java.awt.Color(217, 4, 41));
 
-        jLabel14.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
-        jLabel14.setForeground(new java.awt.Color(237, 242, 244));
-        jLabel14.setText("PRODUCTES DEL TICKET");
+        botoFiltrar.setBackground(new java.awt.Color(43, 45, 66));
+        botoFiltrar.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        botoFiltrar.setForeground(new java.awt.Color(237, 242, 244));
+        botoFiltrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/filtre.png"))); // NOI18N
+        botoFiltrar.setText("FILTRA");
+        botoFiltrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botoFiltrarActionPerformed(evt);
+            }
+        });
+
+        compratPerLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        compratPerLabel.setForeground(new java.awt.Color(237, 242, 244));
+        compratPerLabel.setText("Compra del client amb ID:");
+
+        compratPerText.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
+        compratPerText.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+
+        cobratPerLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        cobratPerLabel.setForeground(new java.awt.Color(237, 242, 244));
+        cobratPerLabel.setText("Cobrat per l'empleat :");
+
+        metodePagamentLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        metodePagamentLabel.setForeground(new java.awt.Color(237, 242, 244));
+        metodePagamentLabel.setText("Mètode de pagament:");
+
+        cobratPerComboBox.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
+        cobratPerComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "", "Efectiu", "Targeta" }));
+        cobratPerComboBox.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        cobratPerComboBox.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                cobratPerComboBoxFocusGained(evt);
+            }
+        });
+        cobratPerComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cobratPerComboBoxActionPerformed(evt);
+            }
+        });
+
+        jLabel15.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        jLabel15.setForeground(new java.awt.Color(237, 242, 244));
+        jLabel15.setText("OPCIONS DE CERCA AVANÇADA");
+
+        separadorLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
+        separadorLabel.setForeground(new java.awt.Color(237, 242, 244));
+        separadorLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        separadorLabel.setText("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
+
+        metodePagamentComboBox.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 18)); // NOI18N
+        metodePagamentComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "", "Efectiu", "Targeta" }));
+        metodePagamentComboBox.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        metodePagamentComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                metodePagamentComboBoxActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout separador4Layout = new javax.swing.GroupLayout(separador4);
         separador4.setLayout(separador4Layout);
         separador4Layout.setHorizontalGroup(
             separador4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(separador4Layout.createSequentialGroup()
-                .addComponent(jLabel14)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGroup(separador4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(separador4Layout.createSequentialGroup()
+                        .addGap(17, 17, 17)
+                        .addGroup(separador4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(separador4Layout.createSequentialGroup()
+                                .addComponent(compratPerLabel)
+                                .addGap(38, 38, 38)
+                                .addComponent(compratPerText))
+                            .addGroup(separador4Layout.createSequentialGroup()
+                                .addComponent(metodePagamentLabel)
+                                .addGap(12, 12, 12)
+                                .addComponent(metodePagamentComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(separador4Layout.createSequentialGroup()
+                                .addComponent(cobratPerLabel)
+                                .addGap(12, 12, 12)
+                                .addComponent(cobratPerComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addGroup(separador4Layout.createSequentialGroup()
+                        .addGroup(separador4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(separador4Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(separadorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 508, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(separador4Layout.createSequentialGroup()
+                                .addGap(151, 151, 151)
+                                .addComponent(botoFiltrar, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(separador4Layout.createSequentialGroup()
+                                .addGap(60, 60, 60)
+                                .addComponent(jLabel15)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         separador4Layout.setVerticalGroup(
             separador4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, separador4Layout.createSequentialGroup()
-                .addContainerGap(38, Short.MAX_VALUE)
-                .addComponent(jLabel14)
-                .addContainerGap())
+                .addGap(37, 37, 37)
+                .addComponent(jLabel15)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(separadorLabel)
+                .addGap(49, 49, 49)
+                .addGroup(separador4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(compratPerText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(compratPerLabel, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGap(18, 18, 18)
+                .addGroup(separador4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cobratPerLabel)
+                    .addComponent(cobratPerComboBox))
+                .addGap(18, 18, 18)
+                .addGroup(separador4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(metodePagamentLabel)
+                    .addComponent(metodePagamentComboBox))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
+                .addComponent(botoFiltrar, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(71, 71, 71))
         );
+
+        jLabel14.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(237, 242, 244));
+        jLabel14.setText("PRODUCTES DEL TICKET");
 
         javax.swing.GroupLayout ticketPanelLayout = new javax.swing.GroupLayout(ticketPanel);
         ticketPanel.setLayout(ticketPanelLayout);
@@ -414,32 +676,26 @@ public class TicketsV extends javax.swing.JPanel {
             ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(ticketPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(separador4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE))
-                .addGap(86, 86, 86))
+                .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(ticketPanelLayout.createSequentialGroup()
+                        .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(separador4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2))
+                        .addGap(86, 86, 86))
+                    .addGroup(ticketPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel14)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         ticketPanelLayout.setVerticalGroup(
             ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(ticketPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(separador4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(separador4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 641, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel14)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-        );
-
-        separador5.setBackground(new java.awt.Color(217, 4, 41));
-
-        javax.swing.GroupLayout separador5Layout = new javax.swing.GroupLayout(separador5);
-        separador5.setLayout(separador5Layout);
-        separador5Layout.setHorizontalGroup(
-            separador5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        separador5Layout.setVerticalGroup(
-            separador5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 133, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -451,40 +707,22 @@ public class TicketsV extends javax.swing.JPanel {
                     .addComponent(vendesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(operacionsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(ticketPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 612, Short.MAX_VALUE)
-                    .addComponent(separador5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addComponent(ticketPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 612, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(vendesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(ticketPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 732, Short.MAX_VALUE)
-                        .addGap(10, 10, 10)
-                        .addComponent(separador5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(ticketPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 887, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(operacionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void buscadorVendesFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_buscadorVendesFocusGained
-        buscadorVendes.setText("");
-    }//GEN-LAST:event_buscadorVendesFocusGained
-
-    private void buscadorVendesFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_buscadorVendesFocusLost
-        if (buscadorVendes.getText().isEmpty()) {
-            buscadorVendes.setText(missatgeBuscador);
-        }
-
-    }//GEN-LAST:event_buscadorVendesFocusLost
-
     private void taulaVendesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taulaVendesMouseClicked
-
         actualitzaTaulaTicket();
-
     }//GEN-LAST:event_taulaVendesMouseClicked
 
     private void taulaTicketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taulaTicketMouseClicked
@@ -492,23 +730,57 @@ public class TicketsV extends javax.swing.JPanel {
     }//GEN-LAST:event_taulaTicketMouseClicked
 
     private void botoBuscaVendesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBuscaVendesActionPerformed
-        actualitzaModelTaula();
+        buscaVendes();
     }//GEN-LAST:event_botoBuscaVendesActionPerformed
+
+    private void buscadorVendesFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_buscadorVendesFocusLost
+        if (buscadorVendes.getText().isEmpty()) {
+            buscadorVendes.setText(missatgeBuscador);
+        }
+    }//GEN-LAST:event_buscadorVendesFocusLost
+
+    private void buscadorVendesFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_buscadorVendesFocusGained
+        buscadorVendes.setText("");
+    }//GEN-LAST:event_buscadorVendesFocusGained
+
+    private void botoFiltrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoFiltrarActionPerformed
+        actualitzaTaulaAmbVendes(true);
+    }//GEN-LAST:event_botoFiltrarActionPerformed
+
+    private void cobratPerComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cobratPerComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cobratPerComboBoxActionPerformed
+
+    private void metodePagamentComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_metodePagamentComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_metodePagamentComboBoxActionPerformed
+
+    private void cobratPerComboBoxFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cobratPerComboBoxFocusGained
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cobratPerComboBoxFocusGained
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botoBuscaVendes;
+    private javax.swing.JButton botoFiltrar;
     private javax.swing.JButton botoNetejaBuscadorVendes;
     private javax.swing.JTextField buscadorVendes;
+    private javax.swing.JComboBox<String> cobratPerComboBox;
+    private javax.swing.JLabel cobratPerLabel;
+    private javax.swing.JLabel compratPerLabel;
+    private javax.swing.JTextField compratPerText;
     private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JComboBox<String> metodePagamentComboBox;
+    private javax.swing.JLabel metodePagamentLabel;
     private javax.swing.JPanel operacionsPanel;
     private javax.swing.JPanel separador1;
     private javax.swing.JPanel separador2;
     private javax.swing.JPanel separador3;
     private javax.swing.JPanel separador4;
-    private javax.swing.JPanel separador5;
+    private javax.swing.JLabel separadorLabel;
     private javax.swing.JTable taulaTicket;
     private javax.swing.JTable taulaVendes;
     private javax.swing.JPanel ticketPanel;

@@ -50,10 +50,6 @@ public class MagatzemV extends javax.swing.JPanel {
         initComponents();
         inicialitzaProveidorMap();
         producteList = new ArrayList<>(); // Initialize the producteList
-
-        getAllProveidors();
-        displayProveidors();
-        updateTextFields();
     }
 
     /**
@@ -179,7 +175,7 @@ public class MagatzemV extends javax.swing.JPanel {
     /**
      * Mètode per buidar el formulari
      */
-    public void buidaFormulari() {
+    public void buidaFormulariProducte() {
         taulaProductes.clearSelection();
 
         nomText.setText("");
@@ -187,6 +183,14 @@ public class MagatzemV extends javax.swing.JPanel {
         eanText.setText("");
         preuText.setText("");
         estocText.setText("");
+    }
+    
+    /**
+     * Mètode per buidar el formulari
+     */
+    public void buidaFormulariProveidor() {
+        nomPText.setText("");
+        descripcioPText.setText("");
     }
 
     /**
@@ -314,6 +318,7 @@ public class MagatzemV extends javax.swing.JPanel {
         proveidorComboBoxP = new javax.swing.JComboBox<>();
         jScrollPane2 = new javax.swing.JScrollPane();
         descripcioPText = new javax.swing.JTextArea();
+        botoBuscaProveidors = new javax.swing.JButton();
         botonsProveidorsPanel = new javax.swing.JPanel();
         editarBotoP = new javax.swing.JButton();
         afegirBotoP = new javax.swing.JButton();
@@ -516,6 +521,7 @@ public class MagatzemV extends javax.swing.JPanel {
 
         jTabbedPane1.setBackground(new java.awt.Color(217, 4, 41));
         jTabbedPane1.setForeground(new java.awt.Color(237, 242, 244));
+        jTabbedPane1.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
 
         productesPanel.setBackground(new java.awt.Color(217, 4, 41));
 
@@ -690,7 +696,7 @@ public class MagatzemV extends javax.swing.JPanel {
                             .addComponent(proveidorLabel)
                             .addComponent(proveidorComboBox))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(netejaBoto, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE))))
+                        .addComponent(netejaBoto, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
 
         botonsProductesPanel.setBackground(new java.awt.Color(217, 4, 41));
@@ -808,7 +814,7 @@ public class MagatzemV extends javax.swing.JPanel {
 
         proveidorPLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
         proveidorPLabel.setForeground(new java.awt.Color(237, 242, 244));
-        proveidorPLabel.setText("Proveidor");
+        proveidorPLabel.setText("Proveidors");
 
         descripcioPLabel.setFont(new java.awt.Font("DejaVu Sans Condensed", 1, 24)); // NOI18N
         descripcioPLabel.setForeground(new java.awt.Color(237, 242, 244));
@@ -855,6 +861,16 @@ public class MagatzemV extends javax.swing.JPanel {
         descripcioPText.setWrapStyleWord(true);
         jScrollPane2.setViewportView(descripcioPText);
 
+        botoBuscaProveidors.setBackground(new java.awt.Color(43, 45, 66));
+        botoBuscaProveidors.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/lupaB.png"))); // NOI18N
+        botoBuscaProveidors.setBorder(null);
+        botoBuscaProveidors.setBorderPainted(false);
+        botoBuscaProveidors.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botoBuscaProveidorsActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout infoPanel1Layout = new javax.swing.GroupLayout(infoPanel1);
         infoPanel1.setLayout(infoPanel1Layout);
         infoPanel1Layout.setHorizontalGroup(
@@ -862,22 +878,26 @@ public class MagatzemV extends javax.swing.JPanel {
             .addGroup(infoPanel1Layout.createSequentialGroup()
                 .addGroup(infoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(infoPanel1Layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
                         .addGroup(infoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(infoPanel1Layout.createSequentialGroup()
+                                .addGap(10, 10, 10)
                                 .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 79, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 85, Short.MAX_VALUE))
                             .addGroup(infoPanel1Layout.createSequentialGroup()
+                                .addContainerGap()
                                 .addGroup(infoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(proveidorPLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(descripcioPLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
-                                    .addComponent(nomPLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(descripcioPLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(nomPLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(18, 18, 18)
                                 .addGroup(infoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(proveidorComboBoxP, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(nomPText)
-                                    .addComponent(jScrollPane2))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jScrollPane2)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, infoPanel1Layout.createSequentialGroup()
+                                        .addComponent(botoBuscaProveidors, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(proveidorComboBoxP, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                         .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(infoPanel1Layout.createSequentialGroup()
                         .addGroup(infoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -902,15 +922,22 @@ public class MagatzemV extends javax.swing.JPanel {
                 .addComponent(separadorLabel1)
                 .addGroup(infoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(infoPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 92, Short.MAX_VALUE)
                         .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(163, 163, 163))
                     .addGroup(infoPanel1Layout.createSequentialGroup()
-                        .addGap(41, 41, 41)
-                        .addGroup(infoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(proveidorPLabel)
-                            .addComponent(proveidorComboBoxP))
-                        .addGap(15, 15, 15)
+                        .addGap(18, 18, 18)
+                        .addGroup(infoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, infoPanel1Layout.createSequentialGroup()
+                                .addGroup(infoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(infoPanel1Layout.createSequentialGroup()
+                                        .addComponent(proveidorComboBoxP)
+                                        .addGap(2, 2, 2))
+                                    .addComponent(botoBuscaProveidors, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(17, 17, 17))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, infoPanel1Layout.createSequentialGroup()
+                                .addComponent(proveidorPLabel)
+                                .addGap(27, 27, 27)))
                         .addGroup(infoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(nomPText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(nomPLabel, javax.swing.GroupLayout.Alignment.TRAILING))
@@ -918,8 +945,9 @@ public class MagatzemV extends javax.swing.JPanel {
                         .addGroup(infoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(descripcioPLabel)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(51, 51, 51)
-                        .addComponent(netejaBotoP, javax.swing.GroupLayout.DEFAULT_SIZE, 49, Short.MAX_VALUE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(netejaBotoP, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(35, 35, 35))))
         );
 
         botonsProveidorsPanel.setBackground(new java.awt.Color(217, 4, 41));
@@ -964,7 +992,7 @@ public class MagatzemV extends javax.swing.JPanel {
                 .addGroup(botonsProveidorsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(editarBotoP, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(afegirBotoP, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(26, Short.MAX_VALUE))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout proveidorsPanelLayout = new javax.swing.GroupLayout(proveidorsPanel);
@@ -1078,12 +1106,12 @@ public class MagatzemV extends javax.swing.JPanel {
     private void botoNetejaBuscadorProducteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoNetejaBuscadorProducteActionPerformed
         buscadorProductes.setText(missatgeBuscador);
         proveidorComboBox.removeAllItems();
-        buidaFormulari();
+        buidaFormulariProducte();
         buidaTaula();
     }//GEN-LAST:event_botoNetejaBuscadorProducteActionPerformed
 
     private void netejaBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_netejaBotoActionPerformed
-        buidaFormulari();
+        buidaFormulariProducte();
     }//GEN-LAST:event_netejaBotoActionPerformed
 
     private void editarBotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarBotoActionPerformed
@@ -1202,7 +1230,7 @@ public class MagatzemV extends javax.swing.JPanel {
 
             // Actualitzar la taula després de l'eliminació i buida formulari
             actualitzaModelDeTaula();
-            buidaFormulari();
+            buidaFormulariProducte();
         } else {
             // Si no s'ha seleccionat cap fila, mostrar un missatge d'error
             GestorErrors.displayError("Cal seleccionar un producte per eliminar-lo.");
@@ -1210,7 +1238,7 @@ public class MagatzemV extends javax.swing.JPanel {
     }//GEN-LAST:event_eliminarBotoActionPerformed
 
     private void netejaBotoPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_netejaBotoPActionPerformed
-
+        buidaFormulariProveidor();
     }//GEN-LAST:event_netejaBotoPActionPerformed
 
     private void editarBotoPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarBotoPActionPerformed
@@ -1287,11 +1315,18 @@ public class MagatzemV extends javax.swing.JPanel {
         updateTextFields();
     }//GEN-LAST:event_proveidorComboBoxPActionPerformed
 
+    private void botoBuscaProveidorsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBuscaProveidorsActionPerformed
+        getAllProveidors();
+        displayProveidors();
+        updateTextFields();
+    }//GEN-LAST:event_botoBuscaProveidorsActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton afegirBoto;
     private javax.swing.JButton afegirBotoP;
     private javax.swing.JButton botoBuscaProducte;
+    private javax.swing.JButton botoBuscaProveidors;
     private javax.swing.JButton botoNetejaBuscadorProducte;
     private javax.swing.JPanel botonsProductesPanel;
     private javax.swing.JPanel botonsProveidorsPanel;

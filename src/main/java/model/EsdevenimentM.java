@@ -5,13 +5,18 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.Date;
 import java.util.List;
 
-
 /**
+ * Classe que representa un esdeveniment
  *
  * @author Enric
  */
+// Annotació per ignorar propietats desconegudes durant la deserialització JSON
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EsdevenimentM {
+
+    /**
+     * Atributs de la classe que representen les dades de l'esdeveniment
+     */
     private int id;
     private String nom;
     private String descripcio;
@@ -26,12 +31,15 @@ public class EsdevenimentM {
     private String durada;
     private String ubicacio;
     private CreadorM creador;
-    private List<AssistenciaM> assistencies; 
+    private List<AssistenciaM> assistencies;
 
+    /**
+     * Constructor buit per a la deserialització JSON
+     */
     public EsdevenimentM() {
     }
 
-    
+    // Mètodes getters i setters
     public int getId() {
         return id;
     }
@@ -111,14 +119,15 @@ public class EsdevenimentM {
     public void setAssistencies(List<AssistenciaM> assistencies) {
         this.assistencies = assistencies;
     }
-    
-     /**
+
+    /**
      * Atribut per emmagatzemar una llista d'esdeveniments
      */
     private EsdevenimentM[] esdeveniments;
 
     /**
      * Constructor que rep una llista d'esdeveniments
+     *
      * @param esdeveniments
      */
     public EsdevenimentM(EsdevenimentM[] esdeveniments) {
@@ -127,10 +136,11 @@ public class EsdevenimentM {
 
     /**
      * Mètode per obtenir la llista d'esdeveniments
+     *
      * @return
      */
     public EsdevenimentM[] getEsdeveniments() {
         return esdeveniments;
     }
-    
+
 }

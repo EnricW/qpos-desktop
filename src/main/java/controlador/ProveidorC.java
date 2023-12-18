@@ -15,11 +15,18 @@ import model.ProveidorM;
 import util.GestorErrors;
 
 /**
- *
+ * Classe encarregada de gestionar les operacions relacionades amb els
+ * proveïdors
+ * 
  * @author Enric
  */
 public class ProveidorC {
 
+    /**
+     * Mètode que retorna la llista de proveïdors
+     * 
+     * @return La llista de proveïdors
+     */
     public ProveidorM getProveidors() {
         try {
             AuthorizationM authInstance = AuthorizationM.getInstance();
@@ -60,6 +67,11 @@ public class ProveidorC {
         return null;
     }
 
+    /**
+     * Mètode per afegir un proveïdor mitjançant una crida POST a l'API
+     * 
+     * @param proveidor El nou proveïdor a afegir
+     */
     public void afegeixProveidor(ProveidorM proveidor) {
         try {
             AuthorizationM authInstance = AuthorizationM.getInstance();
@@ -94,6 +106,12 @@ public class ProveidorC {
         }
     }
 
+    /**
+     * Mètode per editar un proveïdor mitjançant una crida PUT a l'API
+     * 
+     * @param idProveidor La ID del proveïdor a editar
+     * @param proveidor El proveïdor editat
+     */
     public void editarProveidor(int idProveidor, ProveidorM proveidor) {
         try {
             AuthorizationM authInstance = AuthorizationM.getInstance();
@@ -129,6 +147,12 @@ public class ProveidorC {
         }
     }
 
+    /**
+     * Mètode per obtindre un proveïdor per ID mitjançant una crida GET a l'API
+     * 
+     * @param idProveidor ID del proveïdor
+     * @return El proveïdor
+     */
     public ProveidorM getProveidor(int idProveidor) {
         try {
             AuthorizationM authInstance = AuthorizationM.getInstance();

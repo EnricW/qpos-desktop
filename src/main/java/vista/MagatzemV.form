@@ -360,6 +360,9 @@
         <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="f4" green="f2" red="ed" type="rgb"/>
         </Property>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="DejaVu Sans Condensed" size="24" style="1"/>
+        </Property>
       </Properties>
       <AccessibilityProperties>
         <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
@@ -517,7 +520,7 @@
                                       <Component id="proveidorComboBox" alignment="0" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="netejaBoto" pref="48" max="32767" attributes="0"/>
+                                  <Component id="netejaBoto" min="-2" pref="48" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -883,27 +886,32 @@
                       <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="102" alignment="0" attributes="0">
+                                      <Group type="102" attributes="0">
+                                          <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                                           <Component id="jPanel11" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace min="0" pref="79" max="32767" attributes="0"/>
+                                          <EmptySpace pref="85" max="32767" attributes="0"/>
                                       </Group>
                                       <Group type="102" alignment="0" attributes="0">
+                                          <EmptySpace max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                               <Component id="proveidorPLabel" max="32767" attributes="0"/>
-                                              <Component id="descripcioPLabel" alignment="0" pref="147" max="32767" attributes="0"/>
-                                              <Component id="nomPLabel" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="descripcioPLabel" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="nomPLabel" alignment="0" min="-2" pref="147" max="-2" attributes="0"/>
                                           </Group>
                                           <EmptySpace type="separate" max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" attributes="0">
-                                              <Component id="proveidorComboBoxP" alignment="0" max="32767" attributes="0"/>
                                               <Component id="nomPText" alignment="0" max="32767" attributes="0"/>
                                               <Component id="jScrollPane2" max="32767" attributes="0"/>
+                                              <Group type="102" alignment="1" attributes="0">
+                                                  <Component id="botoBuscaProveidors" max="32767" attributes="0"/>
+                                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                                  <Component id="proveidorComboBoxP" min="-2" pref="290" max="-2" attributes="0"/>
+                                              </Group>
                                           </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jPanel12" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
@@ -936,17 +944,28 @@
                           <Component id="separadorLabel1" min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace max="32767" attributes="0"/>
+                                  <EmptySpace pref="92" max="32767" attributes="0"/>
                                   <Component id="jPanel12" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" pref="163" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="3" attributes="0">
-                                      <Component id="proveidorPLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="proveidorComboBoxP" alignment="3" max="32767" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                              <Group type="102" alignment="0" attributes="0">
+                                                  <Component id="proveidorComboBoxP" max="32767" attributes="0"/>
+                                                  <EmptySpace min="2" pref="2" max="-2" attributes="0"/>
+                                              </Group>
+                                              <Component id="botoBuscaProveidors" alignment="1" min="-2" pref="51" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Component id="proveidorPLabel" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
+                                      </Group>
                                   </Group>
-                                  <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="nomPText" alignment="1" min="-2" pref="29" max="-2" attributes="0"/>
                                       <Component id="nomPLabel" alignment="1" min="-2" max="-2" attributes="0"/>
@@ -956,8 +975,9 @@
                                       <Component id="descripcioPLabel" min="-2" max="-2" attributes="0"/>
                                       <Component id="jScrollPane2" min="-2" pref="131" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace min="-2" pref="51" max="-2" attributes="0"/>
-                                  <Component id="netejaBotoP" pref="49" max="32767" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="netejaBotoP" min="-2" pref="48" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -1013,7 +1033,7 @@
                     <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="f4" green="f2" red="ed" type="rgb"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Proveidor"/>
+                    <Property name="text" type="java.lang.String" value="Proveidors"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="descripcioPLabel">
@@ -1125,6 +1145,23 @@
                     </Component>
                   </SubComponents>
                 </Container>
+                <Component class="javax.swing.JButton" name="botoBuscaProveidors">
+                  <Properties>
+                    <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                      <Color blue="42" green="2d" red="2b" type="rgb"/>
+                    </Property>
+                    <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                      <Image iconType="3" name="/media/lupaB.png"/>
+                    </Property>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="null"/>
+                    </Property>
+                    <Property name="borderPainted" type="boolean" value="false"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="botoBuscaProveidorsActionPerformed"/>
+                  </Events>
+                </Component>
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="botonsProveidorsPanel">
@@ -1154,7 +1191,7 @@
                               <Component id="editarBotoP" alignment="3" min="-2" pref="58" max="-2" attributes="0"/>
                               <Component id="afegirBotoP" alignment="3" min="-2" pref="58" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="26" max="32767" attributes="0"/>
+                          <EmptySpace pref="33" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>

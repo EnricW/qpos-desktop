@@ -10,6 +10,7 @@ import model.AuthorizationM;
 
 /**
  * Classe encarregada de processar la resposta de l'autenticació
+ * 
  * @author Enric
  */
 public class AuthorizationC {
